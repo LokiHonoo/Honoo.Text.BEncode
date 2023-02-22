@@ -7,6 +7,7 @@
 - [Honoo.Text.BEncode](#honootextbencode)
   - [INTRODUCTION](#introduction)
   - [CHANGELOG](#changelog)
+    - [1.0.1](#101)
     - [1.0.0](#100)
   - [USAGE](#usage)
     - [NuGet](#nuget)
@@ -21,6 +22,10 @@
 读写 BEncode 编码格式，例如 torrent 文件。
 
 ## CHANGELOG
+
+### 1.0.1
+
+**Refactored* BEncodeList 公开所有 IList 的方法。
 
 ### 1.0.0
 

@@ -37,11 +37,11 @@ namespace Test
                 Console.WriteLine(name.GetStringValue());
 
                 info.TryGetValue("files", out BEncodeList files);
-                foreach (BEncodeDictionary file in files.Values)
+                foreach (BEncodeDictionary file in files)
                 {
                     List<string> comb = new List<string>();
                     var path = (BEncodeList)file["path"];
-                    foreach (BEncodeSingle df in path.Values)
+                    foreach (BEncodeSingle df in path)
                     {
                         comb.Add(df.GetStringValue());
                     }

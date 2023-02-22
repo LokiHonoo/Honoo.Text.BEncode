@@ -31,11 +31,11 @@ namespace Honoo.TorrentAnalysis
                 torrent.TryGetValue("info", out BEncodeDictionary info);
                 if (info.TryGetValue("files", out BEncodeList files))
                 {
-                    foreach (BEncodeDictionary file in files.Values)
+                    foreach (BEncodeDictionary file in files)
                     {
                         List<string> splits = new List<string>();
                         var path = (BEncodeList)file["path"];
-                        foreach (BEncodeSingle df in path.Values)
+                        foreach (BEncodeSingle df in path)
                         {
                             splits.Add(df.GetStringValue());
                         }
@@ -51,7 +51,7 @@ namespace Honoo.TorrentAnalysis
                 {
                     List<string> splits = new List<string>();
                     var path = (BEncodeList)info["path"];
-                    foreach (BEncodeSingle df in path.Values)
+                    foreach (BEncodeSingle df in path)
                     {
                         splits.Add(df.GetStringValue());
                     }

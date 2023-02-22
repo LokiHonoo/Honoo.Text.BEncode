@@ -77,6 +77,16 @@ namespace Honoo.Text
         #endregion Construction
 
         /// <summary>
+        /// 获取转换为 Int32 格式的数据值。
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public int GetInt32Value()
+        {
+            return int.Parse(_value);
+        }
+
+        /// <summary>
         /// 获取转换为 Int64 格式的数据值。
         /// </summary>
         /// <returns></returns>

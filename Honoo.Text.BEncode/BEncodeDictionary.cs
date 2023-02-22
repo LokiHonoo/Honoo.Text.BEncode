@@ -11,7 +11,107 @@ namespace Honoo.Text
     /// </summary>
     public sealed class BEncodeDictionary : BEncodeValue, IEnumerable<KeyValuePair<string, BEncodeValue>>
     {
+        #region Class
+
+        /// <summary>
+        /// 代表此元素集合的键的集合。
+        /// </summary>
+        public sealed class KeyCollection : IEnumerable<string>, IEnumerable
+        {
+            #region Properties
+
+            private readonly Dictionary<string, BEncodeValue> _elements;
+
+            /// <summary>
+            /// 获取元素集合的键的元素数。
+            /// </summary>
+            public int Count => _elements.Count;
+
+            #endregion Properties
+
+            internal KeyCollection(Dictionary<string, BEncodeValue> elements)
+            {
+                _elements = elements;
+            }
+
+            /// <summary>
+            /// 从指定数组索引开始将键元素复制到到指定数组。
+            /// </summary>
+            /// <param name="array"></param>
+            /// <param name="arrayIndex">目标数组中从零开始的索引，从此处开始复制。</param>
+            public void CopyTo(string[] array, int arrayIndex)
+            {
+                _elements.Keys.CopyTo(array, arrayIndex);
+            }
+
+            /// <summary>
+            /// 支持在泛型集合上进行简单迭代。
+            /// </summary>
+            /// <returns></returns>
+            public IEnumerator<string> GetEnumerator()
+            {
+                return _elements.Keys.GetEnumerator();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return _elements.Keys.GetEnumerator();
+            }
+        }
+
+        /// <summary>
+        /// 代表此元素集合的值的集合。
+        /// </summary>
+        public sealed class ValueCollection : IEnumerable<BEncodeValue>
+        {
+            #region Properties
+
+            private readonly Dictionary<string, BEncodeValue> _elements;
+
+            /// <summary>
+            /// 获取元素集合的值的元素数。
+            /// </summary>
+            public int Count => _elements.Count;
+
+            #endregion Properties
+
+            internal ValueCollection(Dictionary<string, BEncodeValue> elements)
+            {
+                _elements = elements;
+            }
+
+            /// <summary>
+            /// 从指定数组索引开始将值元素复制到到指定数组。
+            /// </summary>
+            /// <param name="array"></param>
+            /// <param name="arrayIndex">目标数组中从零开始的索引，从此处开始复制。</param>
+            public void CopyTo(BEncodeValue[] array, int arrayIndex)
+            {
+                _elements.Values.CopyTo(array, arrayIndex);
+            }
+
+            /// <summary>
+            /// 支持在泛型集合上进行简单迭代。
+            /// </summary>
+            /// <returns></returns>
+            public IEnumerator<BEncodeValue> GetEnumerator()
+            {
+                return _elements.Values.GetEnumerator();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return _elements.Values.GetEnumerator();
+            }
+        }
+
+        #endregion Class
+
+        #region Properties
+
         private readonly Dictionary<string, BEncodeValue> _elements = new Dictionary<string, BEncodeValue>();
+        private readonly KeyCollection _keyExhibits;
+        private readonly ValueCollection _valueExhibits;
 
         /// <summary>
         /// 获取元素集合中包含的元素数。
@@ -21,12 +121,12 @@ namespace Honoo.Text
         /// <summary>
         /// 获取元素集合的键的集合。
         /// </summary>
-        public ICollection<string> Keys => _elements.Keys;
+        public KeyCollection Keys => _keyExhibits;
 
         /// <summary>
         /// 获取元素集合的值的集合。
         /// </summary>
-        public ICollection<BEncodeValue> Values => _elements.Values;
+        public ValueCollection Values => _valueExhibits;
 
         /// <summary>
         /// 获取或设置具有指定键的元素的值。直接赋值等同于 AddOrUpdate 方法。
@@ -40,6 +140,8 @@ namespace Honoo.Text
             set { AddOrUpdate(key, value); }
         }
 
+        #endregion Properties
+
         #region Construction
 
         /// <summary>
@@ -47,6 +149,8 @@ namespace Honoo.Text
         /// </summary>
         public BEncodeDictionary() : base(BEncodeValueKind.Dictionary)
         {
+            _keyExhibits = new KeyCollection(_elements);
+            _valueExhibits = new ValueCollection(_elements);
         }
 
         /// <summary>
@@ -104,6 +208,8 @@ namespace Honoo.Text
                     kc = content.ReadByte();
                 }
             }
+            _keyExhibits = new KeyCollection(_elements);
+            _valueExhibits = new ValueCollection(_elements);
         }
 
         #endregion Construction

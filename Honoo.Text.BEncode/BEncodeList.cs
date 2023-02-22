@@ -19,11 +19,6 @@ namespace Honoo.Text
         public int Count => _elements.Count;
 
         /// <summary>
-        /// 获取元素集合的值的集合。
-        /// </summary>
-        public ICollection<BEncodeValue> Values => _elements;
-
-        /// <summary>
         /// 获取或设置指定索引的元素的值。
         /// </summary>
         /// <param name="index">元素的索引。</param>
@@ -105,7 +100,7 @@ namespace Honoo.Text
         /// <exception cref="Exception"/>
         public void Add(BEncodeValue value)
         {
-            if (value is null)
+            if (value == null)
             {
                 throw new ArgumentNullException(nameof(value));
             }
@@ -119,7 +114,7 @@ namespace Honoo.Text
         /// <exception cref="Exception"/>
         public void AddRange(IEnumerable<BEncodeValue> values)
         {
-            if (values is null)
+            if (values == null)
             {
                 throw new ArgumentNullException(nameof(values));
             }
@@ -132,6 +127,26 @@ namespace Honoo.Text
         public void Clear()
         {
             _elements.Clear();
+        }
+
+        /// <summary>
+        /// 确定指定元素是否在集合中。
+        /// </summary>
+        /// <param name="item">搜索的指定对象。</param>
+        /// <returns></returns>
+        public bool Contains(BEncodeValue item)
+        {
+            return _elements.Contains(item);
+        }
+
+        /// <summary>
+        /// 从指定数组索引开始将值元素复制到到指定数组。
+        /// </summary>
+        /// <param name="array">要复制到的目标数组。</param>
+        /// <param name="arrayIndex">目标数组中从零开始的索引，从此处开始复制。</param>
+        public void CopyTo(BEncodeValue[] array, int arrayIndex)
+        {
+            _elements.CopyTo(array, arrayIndex);
         }
 
         /// <summary>
@@ -149,14 +164,34 @@ namespace Honoo.Text
         }
 
         /// <summary>
+        /// 搜索指定对象，并返回第一个匹配项从零开始的索引。
+        /// </summary>
+        /// <param name="item">搜索的指定对象。</param>
+        /// <returns></returns>
+        public int IndexOf(BEncodeValue item)
+        {
+            return _elements.IndexOf(item);
+        }
+
+        /// <summary>
+        /// 将元素插入指定索引处。
+        /// </summary>
+        /// <param name="index">指定索引。</param>
+        /// <param name="item">要插入的元素。</param>
+        public void Insert(int index, BEncodeValue item)
+        {
+            _elements.Insert(index, item);
+        }
+
+        /// <summary>
         /// 从元素集合中移除指定元素。
         /// </summary>
         /// <param name="value">要移除的元素。</param>
         /// <returns></returns>
         /// <exception cref="Exception"/>
-        public void Remove(BEncodeValue value)
+        public bool Remove(BEncodeValue value)
         {
-            _elements.Remove(value);
+            return _elements.Remove(value);
         }
 
         /// <summary>

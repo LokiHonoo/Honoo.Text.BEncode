@@ -99,6 +99,15 @@ namespace Honoo.Text
         #endregion Construction
 
         /// <summary>
+        /// 获取转换为十六进制字符串格式的数据值。
+        /// </summary>
+        /// <returns></returns>
+        public string GetHexValue()
+        {
+            return BitConverter.ToString(_value).Replace("-", null);
+        }
+
+        /// <summary>
         /// 获取转换为 String 格式的数据值。默认使用 Encoding.UTF8 编码。
         /// </summary>
         /// <returns></returns>
