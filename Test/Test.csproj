@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFrameworks>net40;net6.0</TargetFrameworks>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<Nullable>disable</Nullable>
+		<Copyright>Copyright (C) Loki Honoo 2020. All rights reserved.</Copyright>
+		<Company>Loki Honoo</Company>
+		<Authors>Loki Honoo</Authors>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<OutputPath>..\bin\Debug</OutputPath>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<OutputPath>..\bin\Release</OutputPath>
+	</PropertyGroup>
+	
+	<ItemGroup>
+	  <ProjectReference Include="..\Honoo.Text.BEncode\Honoo.Text.BEncode.csproj" />
+	</ItemGroup>
+
+</Project>

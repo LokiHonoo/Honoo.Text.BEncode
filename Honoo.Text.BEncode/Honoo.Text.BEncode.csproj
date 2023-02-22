@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net40;netstandard2.0</TargetFrameworks>
+    <PackageId>Honoo.Text.BEncode</PackageId>
+    <Company>Loki Honoo</Company>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+	<Copyright>Copyright (C) Loki Honoo 2022. All rights reserved.</Copyright>
+	<SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>Honoo.Text.BEncode.snk</AssemblyOriginatorKeyFile>
+    <Authors>Loki Honoo</Authors>
+    <Description>BEncode Analysis. Read/modify BEncode content (e.g. torrent file).</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/LokiHonoo/Honoo.Text.BEncode</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/LokiHonoo/Honoo.Text.BEncode</RepositoryUrl>
+    <PackageTags>Honoo BEncode Torrent</PackageTags>
+    <AssemblyName>Honoo.Text.BEncode</AssemblyName>
+    <RootNamespace>Honoo.Text</RootNamespace>
+    <Version>1.0.0</Version>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\bin\Debug</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\bin\Release</OutputPath>
+    <DocumentationFile>..\bin\Release\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+ 
+</Project>
