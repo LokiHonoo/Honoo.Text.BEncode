@@ -7,6 +7,7 @@
 - [Honoo.Text.BEncode](#honootextbencode)
   - [INTRODUCTION](#introduction)
   - [CHANGELOG](#changelog)
+    - [1.0.2](#102)
     - [1.0.1](#101)
     - [1.0.0](#100)
   - [USAGE](#usage)
@@ -22,6 +23,12 @@
 读写 BEncode 编码格式，例如 torrent 文件。
 
 ## CHANGELOG
+
+### 1.0.2
+
+**Refactored* BEncodeDictionary 的 AddOrUpdate() 方法可直接返回添加的值，并且支持泛型。
+
+**Refactored* BEncodeList 的 Add() AddRange() 方法可直接返回添加的值，并且支持泛型。
 
 ### 1.0.1
 
@@ -51,57 +58,44 @@ using Honoo.Text;
 
 private static void Main()
 {
-    using (FileStream stream = new FileStream("d:\\xxx.torrent", FileMode.Open, FileAccess.Read))
+    BEncodeDictionary root = new BEncodeDictionary();
+    //
+    // Write
+    //
+    var dict = root.AddOrUpdate("dict", new BEncodeDictionary());
+    dict.AddOrUpdate("key3", new BEncodeSingle("key3sorted"));
+    dict.AddOrUpdate("key2", new BEncodeSingle("key2sorted"));
+    dict.AddOrUpdate("key4", new BEncodeSingle("key4sorted"));
+    var list = dict.AddOrUpdate("key1", new BEncodeList());
+    list.Add(new BEncodeInteger(111));
+    list.Add(new BEncodeInteger(222));
+    list.Add(new BEncodeInteger(333));
+    //
+    // Read
+    //
+    root.TryGetValue("dict", out BEncodeDictionary dict1);
+    dict1.TryGetValue("key2", out BEncodeSingle single1);
+    Console.WriteLine(single1.GetStringValue());
+    dict1.TryGetValue("key3", out single1);
+    Console.WriteLine(single1.GetStringValue());
+    dict1.TryGetValue("key4", out single1);
+    Console.WriteLine(single1.GetStringValue());
+    var list1 = (BEncodeList)dict1["key1"];
+    Console.WriteLine(((BEncodeInteger)list1[0]).Value);
+    Console.WriteLine(((BEncodeInteger)list1[1]).GetInt32Value());
+    Console.WriteLine(((BEncodeInteger)list1[2]).GetInt64Value());
+    //
+    // Save
+    //
+    using (MemoryStream stream = new MemoryStream())
     {
-        BEncodeDictionary torrent = new BEncodeDictionary(stream);
-        //
-        // TODO: Read
-        //
-        torrent.TryGetValue("announce", out BEncodeSingle announce);
-        Console.WriteLine(announce.GetStringValue());
-
-        torrent.TryGetValue("announce-list", out BEncodeList announceList);
-        foreach (BEncodeList ll in announceList)
-        {
-            var ll0 = (BEncodeSingle)ll[0];
-            Console.WriteLine(ll0.GetStringValue());
-        }
-
-        torrent.TryGetValue("encoding", out BEncodeSingle encoding);
-        Console.WriteLine(encoding.GetStringValue());
-
-        torrent.TryGetValue("website", out BEncodeSingle website);
-        Console.WriteLine(website.GetStringValue());
-
-        torrent.TryGetValue("info", out BEncodeDictionary info);
-
-        info.TryGetValue("name", out BEncodeSingle name);
-        Console.WriteLine(name.GetStringValue());
-
-        info.TryGetValue("files", out BEncodeList files);
-        foreach (BEncodeDictionary file in files.Values)
-        {
-            List<string> comb = new List<string>();
-            var path = (BEncodeList)file["path"];
-            foreach (BEncodeSingle df in path.Values)
-            {
-                comb.Add(df.GetStringValue());
-            }
-            var length = (BEncodeInteger)file["length"];
-            Console.WriteLine(string.Join("\\", comb) + "    " + length.GetInt64Value());
-        }
-        //
-        // TODO: Write
-        //
-        info.AddOrUpdate("name", new BEncodeSingle("new torrent floder"));
-        //
-        // TODO: Save
-        //
-        using (FileStream stream2 = new FileStream("d:\\xxx2.torrent", FileMode.Create, FileAccess.ReadWrite))
-        {
-            torrent.Save(stream2);
-        }
+        root.Save(stream);
+        string content = Encoding.UTF8.GetString(stream.ToArray());
+        Console.WriteLine(content);
+        stream.Seek(0, SeekOrigin.Begin);
+        BEncodeDictionary root1 = new BEncodeDictionary(stream);
     }
+
     Console.ReadKey(true);
 }
 

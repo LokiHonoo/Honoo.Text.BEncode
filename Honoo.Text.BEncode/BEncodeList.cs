@@ -98,13 +98,29 @@ namespace Honoo.Text
         /// </summary>
         /// <param name="value">元素的值。</param>
         /// <exception cref="Exception"/>
-        public void Add(BEncodeValue value)
+        public BEncodeValue Add(BEncodeValue value)
         {
             if (value == null)
             {
                 throw new ArgumentNullException(nameof(value));
             }
             _elements.Add(value);
+            return value;
+        }
+
+        /// <summary>
+        /// 添加一个元素。
+        /// </summary>
+        /// <param name="value">元素的值。</param>
+        /// <exception cref="Exception"/>
+        public T Add<T>(T value) where T : BEncodeValue
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+            _elements.Add(value);
+            return value;
         }
 
         /// <summary>
@@ -112,13 +128,29 @@ namespace Honoo.Text
         /// </summary>
         /// <param name="values">元素的集合。</param>
         /// <exception cref="Exception"/>
-        public void AddRange(IEnumerable<BEncodeValue> values)
+        public IEnumerable<BEncodeValue> AddRange(IEnumerable<BEncodeValue> values)
         {
             if (values == null)
             {
                 throw new ArgumentNullException(nameof(values));
             }
             _elements.AddRange(values);
+            return values;
+        }
+
+        /// <summary>
+        /// 添加元素集合。
+        /// </summary>
+        /// <param name="values">元素的集合。</param>
+        /// <exception cref="Exception"/>
+        public T AddRange<T>(T values) where T : IEnumerable<BEncodeValue>
+        {
+            if (values == null)
+            {
+                throw new ArgumentNullException(nameof(values));
+            }
+            _elements.AddRange(values);
+            return values;
         }
 
         /// <summary>

@@ -16,7 +16,7 @@
     <PackageTags>Honoo BEncode Torrent</PackageTags>
     <AssemblyName>Honoo.Text.BEncode</AssemblyName>
     <RootNamespace>Honoo.Text</RootNamespace>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 

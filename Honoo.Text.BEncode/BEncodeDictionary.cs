@@ -20,7 +20,7 @@ namespace Honoo.Text
         {
             #region Properties
 
-            private readonly Dictionary<string, BEncodeValue> _elements;
+            private readonly SortedDictionary<string, BEncodeValue> _elements;
 
             /// <summary>
             /// 获取元素集合的键的元素数。
@@ -29,7 +29,7 @@ namespace Honoo.Text
 
             #endregion Properties
 
-            internal KeyCollection(Dictionary<string, BEncodeValue> elements)
+            internal KeyCollection(SortedDictionary<string, BEncodeValue> elements)
             {
                 _elements = elements;
             }
@@ -66,7 +66,7 @@ namespace Honoo.Text
         {
             #region Properties
 
-            private readonly Dictionary<string, BEncodeValue> _elements;
+            private readonly SortedDictionary<string, BEncodeValue> _elements;
 
             /// <summary>
             /// 获取元素集合的值的元素数。
@@ -75,7 +75,7 @@ namespace Honoo.Text
 
             #endregion Properties
 
-            internal ValueCollection(Dictionary<string, BEncodeValue> elements)
+            internal ValueCollection(SortedDictionary<string, BEncodeValue> elements)
             {
                 _elements = elements;
             }
@@ -109,7 +109,7 @@ namespace Honoo.Text
 
         #region Properties
 
-        private readonly Dictionary<string, BEncodeValue> _elements = new Dictionary<string, BEncodeValue>();
+        private readonly SortedDictionary<string, BEncodeValue> _elements = new SortedDictionary<string, BEncodeValue>();
         private readonly KeyCollection _keyExhibits;
         private readonly ValueCollection _valueExhibits;
 
@@ -220,7 +220,7 @@ namespace Honoo.Text
         /// <param name="key">元素的键。</param>
         /// <param name="value">元素的值。</param>
         /// <exception cref="Exception"/>
-        public void AddOrUpdate(string key, BEncodeValue value)
+        public BEncodeValue AddOrUpdate(string key, BEncodeValue value)
         {
             if (string.IsNullOrWhiteSpace(key))
             {
@@ -241,6 +241,37 @@ namespace Honoo.Text
                     _elements.Add(key, value);
                 }
             }
+            return value;
+        }
+
+        /// <summary>
+        /// 添加或更新一个元素。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="value">元素的值。</param>
+        /// <exception cref="Exception"/>
+        public T AddOrUpdate<T>(string key, T value) where T : BEncodeValue
+        {
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (value == null)
+            {
+                _elements.Remove(key);
+            }
+            else
+            {
+                if (_elements.TryGetValue(key, out _))
+                {
+                    _elements[key] = value;
+                }
+                else
+                {
+                    _elements.Add(key, value);
+                }
+            }
+            return value;
         }
 
         /// <summary>
@@ -412,21 +443,13 @@ namespace Honoo.Text
                 throw new ArgumentNullException(nameof(stream));
             }
             stream.WriteByte(100);  // 'd'
-            List<string> keys = new List<string>(_elements.Keys);
-            keys.Sort();
-            foreach (string key in keys)
+            var enumerator = _elements.GetEnumerator();
+            while (enumerator.MoveNext())
             {
-                BEncodeSingle keyEncode = new BEncodeSingle(key, keyEncoding);
-                keyEncode.SaveInternal(stream, null);
-                _elements[key].SaveInternal(stream, keyEncoding);
+                var key = new BEncodeSingle(enumerator.Current.Key, keyEncoding);
+                key.SaveInternal(stream, keyEncoding);
+                enumerator.Current.Value.SaveInternal(stream, keyEncoding);
             }
-            //var enumerator = _elements.GetEnumerator();
-            //while (enumerator.MoveNext())
-            //{
-            //    var key = new BEncodeSingle(enumerator.Current.Key, keyEncoding);
-            //    key.SaveInternal(stream, keyEncoding); // keyEncoding 忽略
-            //    enumerator.Current.Value.SaveInternal(stream, keyEncoding);
-            //}
             stream.WriteByte(101);  // 'e'
         }
     }
