@@ -16,7 +16,7 @@ namespace Honoo.Text
         /// <summary>
         /// 代表此元素集合的键的集合。
         /// </summary>
-        public sealed class KeyCollection : IEnumerable<string>, IEnumerable
+        public sealed class KeyCollection : IEnumerable<string>
         {
             #region Properties
 
