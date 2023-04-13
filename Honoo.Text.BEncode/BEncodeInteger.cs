@@ -1,22 +1,26 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Numerics;
 using System.Text;
 
-namespace Honoo.Text
+namespace Honoo.Text.BEncode
 {
     /// <summary>
     /// BEncode 数值类型。
     /// </summary>
-    public sealed class BEncodeInteger : BEncodeValue
+    public class BEncodeInteger : BEncodeValue, IEquatable<BEncodeInteger>, IComparable, IComparer<BEncodeInteger>
     {
+        private readonly BigInteger _numericValue;
         private readonly string _value;
 
         /// <summary>
         /// 获取原始格式的数据值。
         /// </summary>
         public string Value => _value;
+
+        internal BigInteger NumericValue => _numericValue;
 
         #region Construction
 
@@ -31,8 +35,8 @@ namespace Honoo.Text
             {
                 throw new ArgumentNullException(nameof(value));
             }
-            _ = BigInteger.Parse(value, NumberStyles.Number);
             _value = value;
+            _numericValue = BigInteger.Parse(value, NumberStyles.Number);
         }
 
         /// <summary>
@@ -43,6 +47,7 @@ namespace Honoo.Text
         public BEncodeInteger(long value) : base(BEncodeValueKind.Integer)
         {
             _value = value.ToString();
+            _numericValue = value;
         }
 
         /// <summary>
@@ -72,9 +77,62 @@ namespace Honoo.Text
                 }
             }
             _value = valueString.ToString();
+            _numericValue = BigInteger.Parse(_value, NumberStyles.Number);
         }
 
         #endregion Construction
+
+        /// <summary>
+        /// 比较两个对象并返回一个值。该值指示一个对象是小于、等于还是大于另一个对象。
+        /// </summary>
+        /// <param name="x">要比较的第一个对象。</param>
+        /// <param name="y">要比较的第二个对象。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public int Compare(BEncodeInteger x, BEncodeInteger y)
+        {
+            return x._numericValue.CompareTo(y._numericValue);
+        }
+
+        /// <summary>
+        /// 将当前实例与另一个对象比较并返回一个值。该值指示当前实例在排序位置是小于、等于还是大于另一个对象。
+        /// </summary>
+        /// <param name="obj">要比较的对象。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public int CompareTo(object obj)
+        {
+            return _numericValue.CompareTo((obj as BEncodeInteger)._numericValue);
+        }
+
+        /// <summary>
+        /// 确定此实例和指定的对象具有相同的值。
+        /// </summary>
+        /// <param name="other">比较的对象。</param>
+        /// <returns></returns>
+        public bool Equals(BEncodeInteger other)
+        {
+            return other is BEncodeInteger && _numericValue == other._numericValue;
+        }
+
+        /// <summary>
+        /// 确定指定的对象是否等于当前对象。
+        /// </summary>
+        /// <param name="obj">比较的对象。</param>
+        /// <returns></returns>
+        public override bool Equals(object obj)
+        {
+            return obj is BEncodeInteger other && _numericValue == other._numericValue;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode()
+        {
+            return -1939223833 + EqualityComparer<BigInteger>.Default.GetHashCode(_numericValue);
+        }
 
         /// <summary>
         /// 获取转换为 Int32 格式的数据值。
@@ -83,7 +141,7 @@ namespace Honoo.Text
         /// <exception cref="Exception"></exception>
         public int GetInt32Value()
         {
-            return int.Parse(_value);
+            return (int)_numericValue;
         }
 
         /// <summary>
@@ -93,7 +151,7 @@ namespace Honoo.Text
         /// <exception cref="Exception"></exception>
         public long GetInt64Value()
         {
-            return long.Parse(_value);
+            return (long)_numericValue;
         }
 
         /// <summary>
@@ -101,12 +159,7 @@ namespace Honoo.Text
         /// </summary>
         /// <param name="stream">指定保存的目标流。</param>
         /// <exception cref="Exception"/>
-        public void Save(Stream stream)
-        {
-            SaveInternal(stream, null);
-        }
-
-        internal override void SaveInternal(Stream stream, Encoding keyEncoding)
+        public override void Save(Stream stream)
         {
             if (stream == null)
             {
@@ -116,6 +169,15 @@ namespace Honoo.Text
             byte[] value = Encoding.ASCII.GetBytes(_value);
             stream.Write(value, 0, value.Length);
             stream.WriteByte(101);  // 'e'
+        }
+
+        /// <summary>
+        /// 方法已重写。获取原始格式的数据值。
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return _value;
         }
     }
 }

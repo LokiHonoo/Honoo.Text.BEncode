@@ -4,23 +4,23 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace Honoo.Text
+namespace Honoo.Text.BEncode
 {
     /// <summary>
     /// BEncode 字典类型。
     /// </summary>
-    public sealed class BEncodeDictionary : BEncodeValue, IEnumerable<KeyValuePair<string, BEncodeValue>>
+    public class BEncodeDictionary : BEncodeValue, IEnumerable<KeyValuePair<BEncodeString, BEncodeValue>>
     {
         #region Class
 
         /// <summary>
         /// 代表此元素集合的键的集合。
         /// </summary>
-        public sealed class KeyCollection : IEnumerable<string>
+        public sealed class KeyCollection : IEnumerable<BEncodeString>
         {
             #region Properties
 
-            private readonly SortedDictionary<string, BEncodeValue> _elements;
+            private readonly SortedDictionary<BEncodeString, BEncodeValue> _elements;
 
             /// <summary>
             /// 获取元素集合的键的元素数。
@@ -29,7 +29,7 @@ namespace Honoo.Text
 
             #endregion Properties
 
-            internal KeyCollection(SortedDictionary<string, BEncodeValue> elements)
+            internal KeyCollection(SortedDictionary<BEncodeString, BEncodeValue> elements)
             {
                 _elements = elements;
             }
@@ -37,18 +37,44 @@ namespace Honoo.Text
             /// <summary>
             /// 从指定数组索引开始将键元素复制到到指定数组。
             /// </summary>
-            /// <param name="array"></param>
+            /// <param name="array">目标数组。</param>
+            /// <param name="arrayIndex">目标数组中从零开始的索引，从此处开始复制。</param>
+            public void CopyTo(BEncodeString[] array, int arrayIndex)
+            {
+                _elements.Keys.CopyTo(array, arrayIndex);
+            }
+
+            /// <summary>
+            /// 从指定数组索引开始将键元素的文本值复制到到指定数组。默认使用 Encoding.UTF8 编码。
+            /// </summary>
+            /// <param name="array">目标数组。</param>
             /// <param name="arrayIndex">目标数组中从零开始的索引，从此处开始复制。</param>
             public void CopyTo(string[] array, int arrayIndex)
             {
-                _elements.Keys.CopyTo(array, arrayIndex);
+                CopyTo(array, arrayIndex, Encoding.UTF8);
+            }
+
+            /// <summary>
+            /// 从指定数组索引开始将键元素的文本值复制到到指定数组。
+            /// </summary>
+            /// <param name="array">目标数组。</param>
+            /// <param name="arrayIndex">目标数组中从零开始的索引，从此处开始复制。</param>
+            /// <param name="encoding">用于转换的字符编码。</param>
+
+            public void CopyTo(string[] array, int arrayIndex, Encoding encoding)
+            {
+                foreach (var key in _elements.Keys)
+                {
+                    array[arrayIndex] = key.GetStringValue(encoding);
+                    arrayIndex++;
+                }
             }
 
             /// <summary>
             /// 支持在泛型集合上进行简单迭代。
             /// </summary>
             /// <returns></returns>
-            public IEnumerator<string> GetEnumerator()
+            public IEnumerator<BEncodeString> GetEnumerator()
             {
                 return _elements.Keys.GetEnumerator();
             }
@@ -66,7 +92,7 @@ namespace Honoo.Text
         {
             #region Properties
 
-            private readonly SortedDictionary<string, BEncodeValue> _elements;
+            private readonly SortedDictionary<BEncodeString, BEncodeValue> _elements;
 
             /// <summary>
             /// 获取元素集合的值的元素数。
@@ -75,7 +101,7 @@ namespace Honoo.Text
 
             #endregion Properties
 
-            internal ValueCollection(SortedDictionary<string, BEncodeValue> elements)
+            internal ValueCollection(SortedDictionary<BEncodeString, BEncodeValue> elements)
             {
                 _elements = elements;
             }
@@ -83,7 +109,7 @@ namespace Honoo.Text
             /// <summary>
             /// 从指定数组索引开始将值元素复制到到指定数组。
             /// </summary>
-            /// <param name="array"></param>
+            /// <param name="array">目标数组。</param>
             /// <param name="arrayIndex">目标数组中从零开始的索引，从此处开始复制。</param>
             public void CopyTo(BEncodeValue[] array, int arrayIndex)
             {
@@ -109,7 +135,7 @@ namespace Honoo.Text
 
         #region Properties
 
-        private readonly SortedDictionary<string, BEncodeValue> _elements = new SortedDictionary<string, BEncodeValue>();
+        private readonly SortedDictionary<BEncodeString, BEncodeValue> _elements = new SortedDictionary<BEncodeString, BEncodeValue>();
         private readonly KeyCollection _keyExhibits;
         private readonly ValueCollection _valueExhibits;
 
@@ -134,10 +160,49 @@ namespace Honoo.Text
         /// <param name="key">元素的键。</param>
         /// <returns></returns>
         /// <exception cref="Exception"/>
-        public BEncodeValue this[string key]
+        public BEncodeValue this[BEncodeString key]
         {
             get => _elements.TryGetValue(key, out BEncodeValue value) ? value : null;
             set { AddOrUpdate(key, value); }
+        }
+
+        /// <summary>
+        /// 获取或设置具有指定键的元素的值。比较元素的键时默认使用 Encoding.UTF8 编码。直接赋值等同于 AddOrUpdate 方法。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public BEncodeValue this[string key]
+        {
+            get
+            {
+                var k = new BEncodeString(key, Encoding.UTF8);
+                return _elements.TryGetValue(k, out BEncodeValue value) ? value : null;
+            }
+            set
+            {
+                AddOrUpdate(key, value);
+            }
+        }
+
+        /// <summary>
+        /// 获取或设置具有指定键的元素的值。直接赋值等同于 AddOrUpdate 方法。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="keyEncoding">比较元素的键时使用的字符编码。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public BEncodeValue this[string key, Encoding keyEncoding]
+        {
+            get
+            {
+                var k = new BEncodeString(key, keyEncoding);
+                return _elements.TryGetValue(k, out BEncodeValue value) ? value : null;
+            }
+            set
+            {
+                AddOrUpdate(key, value);
+            }
         }
 
         #endregion Properties
@@ -154,21 +219,11 @@ namespace Honoo.Text
         }
 
         /// <summary>
-        /// 初始化 BEncodeDictionary 类的新实例。对自身和子集中字典类型的键默认使用 Encoding.UTF8 编码。
-        /// </summary>
-        /// <param name="content">指定从中读取的流。</param>
-        /// <exception cref="Exception"></exception>
-        public BEncodeDictionary(Stream content) : this(content, Encoding.UTF8)
-        {
-        }
-
-        /// <summary>
         /// 初始化 BEncodeDictionary 类的新实例。
         /// </summary>
         /// <param name="content">指定从中读取的流。</param>
-        /// <param name="keyEncoding">对自身和子集中字典类型的键解码使用的字符编码。</param>
         /// <exception cref="Exception"></exception>
-        public BEncodeDictionary(Stream content, Encoding keyEncoding) : base(BEncodeValueKind.Dictionary)
+        public BEncodeDictionary(Stream content) : base(BEncodeValueKind.Dictionary)
         {
             int kc = content.ReadByte();
             if (kc != 100)  // 'd'
@@ -185,13 +240,12 @@ namespace Honoo.Text
                 else
                 {
                     content.Seek(-1, SeekOrigin.Current);
-                    var single = new BEncodeSingle(content);
-                    string key = single.GetStringValue(keyEncoding);
+                    var key = new BEncodeString(content);
                     kc = content.ReadByte();
                     switch (kc)
                     {
-                        case 100: content.Seek(-1, SeekOrigin.Current); _elements.Add(key, new BEncodeDictionary(content, keyEncoding)); break;  // 'd'
-                        case 108: content.Seek(-1, SeekOrigin.Current); _elements.Add(key, new BEncodeList(content, keyEncoding)); break;        // 'l'
+                        case 100: content.Seek(-1, SeekOrigin.Current); _elements.Add(key, new BEncodeDictionary(content)); break;               // 'd'
+                        case 108: content.Seek(-1, SeekOrigin.Current); _elements.Add(key, new BEncodeList(content)); break;                     // 'l'
                         case 105: content.Seek(-1, SeekOrigin.Current); _elements.Add(key, new BEncodeInteger(content)); break;                  // 'i'
                         case 48:                                                                                                                 // '0'
                         case 49:                                                                                                                 // '1'
@@ -202,7 +256,7 @@ namespace Honoo.Text
                         case 54:                                                                                                                 // '6'
                         case 55:                                                                                                                 // '7'
                         case 56:                                                                                                                 // '8'
-                        case 57: content.Seek(-1, SeekOrigin.Current); _elements.Add(key, new BEncodeSingle(content)); break;                    // '9'
+                        case 57: content.Seek(-1, SeekOrigin.Current); _elements.Add(key, new BEncodeString(content)); break;                    // '9'
                         default: throw new Exception($"The incorrect identification char '{kc}'. Stop at position: {content.Position}.");
                     }
                     kc = content.ReadByte();
@@ -220,9 +274,9 @@ namespace Honoo.Text
         /// <param name="key">元素的键。</param>
         /// <param name="value">元素的值。</param>
         /// <exception cref="Exception"/>
-        public BEncodeValue AddOrUpdate(string key, BEncodeValue value)
+        public BEncodeValue AddOrUpdate(BEncodeString key, BEncodeValue value)
         {
-            if (string.IsNullOrWhiteSpace(key))
+            if (key == null)
             {
                 throw new ArgumentNullException(nameof(key));
             }
@@ -250,9 +304,9 @@ namespace Honoo.Text
         /// <param name="key">元素的键。</param>
         /// <param name="value">元素的值。</param>
         /// <exception cref="Exception"/>
-        public T AddOrUpdate<T>(string key, T value) where T : BEncodeValue
+        public T AddOrUpdate<T>(BEncodeString key, T value) where T : BEncodeValue
         {
-            if (string.IsNullOrWhiteSpace(key))
+            if (key == null)
             {
                 throw new ArgumentNullException(nameof(key));
             }
@@ -262,13 +316,58 @@ namespace Honoo.Text
             }
             else
             {
-                if (_elements.TryGetValue(key, out _))
+                if (_elements.ContainsKey(key))
                 {
                     _elements[key] = value;
                 }
                 else
                 {
                     _elements.Add(key, value);
+                }
+            }
+            return value;
+        }
+
+        /// <summary>
+        /// 添加或更新一个元素。比较元素的键时默认使用 Encoding.UTF8 编码。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="value">元素的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public T AddOrUpdate<T>(string key, T value) where T : BEncodeValue
+        {
+            return AddOrUpdate(key, Encoding.UTF8, value);
+        }
+
+        /// <summary>
+        /// 添加或更新一个元素。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="keyEncoding">比较元素的键时使用的字符编码。</param>
+        /// <param name="value">元素的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public T AddOrUpdate<T>(string key, Encoding keyEncoding, T value) where T : BEncodeValue
+        {
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            var k = new BEncodeString(key, keyEncoding);
+            if (value == null)
+            {
+                Remove(k);
+            }
+            else
+            {
+                if (_elements.ContainsKey(k))
+                {
+                    _elements[k] = value;
+                }
+                else
+                {
+                    _elements.Add(new BEncodeString(key), value);
                 }
             }
             return value;
@@ -288,16 +387,41 @@ namespace Honoo.Text
         /// <param name="key">元素的键。</param>
         /// <returns></returns>
         /// <exception cref="Exception"/>
-        public bool ContainsKey(string key)
+        public bool ContainsKey(BEncodeString key)
         {
             return _elements.ContainsKey(key);
+        }
+
+        /// <summary>
+        /// 确定元素集合是否包含带有指定键的元素。比较元素的键时默认使用 Encoding.UTF8 编码。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public bool ContainsKey(string key)
+        {
+            var k = new BEncodeString(key, Encoding.UTF8);
+            return _elements.ContainsKey(k);
+        }
+
+        /// <summary>
+        /// 确定元素集合是否包含带有指定键的元素。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="keyEncoding">比较元素的键时使用的字符编码。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public bool ContainsKey(string key, Encoding keyEncoding)
+        {
+            var k = new BEncodeString(key, keyEncoding);
+            return _elements.ContainsKey(k);
         }
 
         /// <summary>
         /// 支持在泛型集合上进行简单迭代。
         /// </summary>
         /// <returns></returns>
-        public IEnumerator<KeyValuePair<string, BEncodeValue>> GetEnumerator()
+        public IEnumerator<KeyValuePair<BEncodeString, BEncodeValue>> GetEnumerator()
         {
             return _elements.GetEnumerator();
         }
@@ -314,30 +438,57 @@ namespace Honoo.Text
         /// <param name="key">元素的键。</param>
         /// <returns></returns>
         /// <exception cref="Exception"/>
-        public bool Remove(string key)
+        public bool Remove(BEncodeString key)
         {
             return _elements.Remove(key);
         }
 
         /// <summary>
-        /// 保存到指定的流。对自身和子集中字典类型的键编码默认使用 Encoding.UTF8 编码。
+        /// 从元素集合中移除带有指定键的元素。比较元素的键时默认使用 Encoding.UTF8 编码。
+        /// <para/>如果该元素成功移除，返回 true。如果没有找到指定键，则仍返回 false。
         /// </summary>
-        /// <param name="stream">指定保存的目标流。</param>
+        /// <param name="key">元素的键。</param>
+        /// <returns></returns>
         /// <exception cref="Exception"/>
-        public void Save(Stream stream)
+        public bool Remove(string key)
         {
-            Save(stream, Encoding.UTF8);
+            var k = new BEncodeString(key, Encoding.UTF8);
+            return _elements.Remove(k);
+        }
+
+        /// <summary>
+        /// 从元素集合中移除带有指定键的元素。
+        /// <para/>如果该元素成功移除，返回 true。如果没有找到指定键，则仍返回 false。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="keyEncoding">比较元素的键时使用的字符编码。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public bool Remove(string key, Encoding keyEncoding)
+        {
+            var k = new BEncodeString(key, keyEncoding);
+            return _elements.Remove(k);
         }
 
         /// <summary>
         /// 保存到指定的流。
         /// </summary>
         /// <param name="stream">指定保存的目标流。</param>
-        /// <param name="keyEncoding">对自身和子集中字典类型的键编码使用的字符编码。</param>
         /// <exception cref="Exception"/>
-        public void Save(Stream stream, Encoding keyEncoding)
+        public override void Save(Stream stream)
         {
-            SaveInternal(stream, keyEncoding);
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+            stream.WriteByte(100);  // 'd'
+            var enumerator = _elements.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                enumerator.Current.Key.Save(stream);
+                enumerator.Current.Value.Save(stream);
+            }
+            stream.WriteByte(101);  // 'e'
         }
 
         /// <summary>
@@ -347,9 +498,54 @@ namespace Honoo.Text
         /// <param name="value">元素的值。</param>
         /// <returns></returns>
         /// <exception cref="Exception"/>
-        public bool TryGetValue(string key, out BEncodeDictionary value)
+        public bool TryGetValue(BEncodeString key, out BEncodeDictionary value)
         {
             if (_elements.TryGetValue(key, out BEncodeValue val))
+            {
+                value = (BEncodeDictionary)val;
+                return true;
+            }
+            else
+            {
+                value = null;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 获取与指定键关联的元素的值。比较元素的键时默认使用 Encoding.UTF8 编码。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="value">元素的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public bool TryGetValue(string key, out BEncodeDictionary value)
+        {
+            var k = new BEncodeString(key, Encoding.UTF8);
+            if (_elements.TryGetValue(k, out BEncodeValue val))
+            {
+                value = (BEncodeDictionary)val;
+                return true;
+            }
+            else
+            {
+                value = null;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 获取与指定键关联的元素的值。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="keyEncoding">比较元素的键时使用的字符编码。</param>
+        /// <param name="value">元素的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public bool TryGetValue(string key, Encoding keyEncoding, out BEncodeDictionary value)
+        {
+            var k = new BEncodeString(key, keyEncoding);
+            if (_elements.TryGetValue(k, out BEncodeValue val))
             {
                 value = (BEncodeDictionary)val;
                 return true;
@@ -368,9 +564,54 @@ namespace Honoo.Text
         /// <param name="value">元素的值。</param>
         /// <returns></returns>
         /// <exception cref="Exception"/>
-        public bool TryGetValue(string key, out BEncodeList value)
+        public bool TryGetValue(BEncodeString key, out BEncodeList value)
         {
             if (_elements.TryGetValue(key, out BEncodeValue val))
+            {
+                value = (BEncodeList)val;
+                return true;
+            }
+            else
+            {
+                value = null;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 获取与指定键关联的元素的值。比较元素的键时默认使用 Encoding.UTF8 编码。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="value">元素的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public bool TryGetValue(string key, out BEncodeList value)
+        {
+            var k = new BEncodeString(key, Encoding.UTF8);
+            if (_elements.TryGetValue(k, out BEncodeValue val))
+            {
+                value = (BEncodeList)val;
+                return true;
+            }
+            else
+            {
+                value = null;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 获取与指定键关联的元素的值。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="keyEncoding">比较元素的键时使用的字符编码。</param>
+        /// <param name="value">元素的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public bool TryGetValue(string key, Encoding keyEncoding, out BEncodeList value)
+        {
+            var k = new BEncodeString(key, keyEncoding);
+            if (_elements.TryGetValue(k, out BEncodeValue val))
             {
                 value = (BEncodeList)val;
                 return true;
@@ -389,9 +630,54 @@ namespace Honoo.Text
         /// <param name="value">元素的值。</param>
         /// <returns></returns>
         /// <exception cref="Exception"/>
-        public bool TryGetValue(string key, out BEncodeInteger value)
+        public bool TryGetValue(BEncodeString key, out BEncodeInteger value)
         {
             if (_elements.TryGetValue(key, out BEncodeValue val))
+            {
+                value = (BEncodeInteger)val;
+                return true;
+            }
+            else
+            {
+                value = null;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 获取与指定键关联的元素的值。比较元素的键时默认使用 Encoding.UTF8 编码。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="value">元素的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public bool TryGetValue(string key, out BEncodeInteger value)
+        {
+            var k = new BEncodeString(key, Encoding.UTF8);
+            if (_elements.TryGetValue(k, out BEncodeValue val))
+            {
+                value = (BEncodeInteger)val;
+                return true;
+            }
+            else
+            {
+                value = null;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 获取与指定键关联的元素的值。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="keyEncoding">比较元素的键时使用的字符编码。</param>
+        /// <param name="value">元素的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public bool TryGetValue(string key, Encoding keyEncoding, out BEncodeInteger value)
+        {
+            var k = new BEncodeString(key, keyEncoding);
+            if (_elements.TryGetValue(k, out BEncodeValue val))
             {
                 value = (BEncodeInteger)val;
                 return true;
@@ -410,11 +696,56 @@ namespace Honoo.Text
         /// <param name="value">元素的值。</param>
         /// <returns></returns>
         /// <exception cref="Exception"/>
-        public bool TryGetValue(string key, out BEncodeSingle value)
+        public bool TryGetValue(BEncodeString key, out BEncodeString value)
         {
             if (_elements.TryGetValue(key, out BEncodeValue val))
             {
-                value = (BEncodeSingle)val;
+                value = (BEncodeString)val;
+                return true;
+            }
+            else
+            {
+                value = null;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 获取与指定键关联的元素的值。比较元素的键时默认使用 Encoding.UTF8 编码。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="value">元素的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public bool TryGetValue(string key, out BEncodeString value)
+        {
+            var k = new BEncodeString(key, Encoding.UTF8);
+            if (_elements.TryGetValue(k, out BEncodeValue val))
+            {
+                value = (BEncodeString)val;
+                return true;
+            }
+            else
+            {
+                value = null;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 获取与指定键关联的元素的值。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="keyEncoding">比较元素的键时使用的字符编码。</param>
+        /// <param name="value">元素的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public bool TryGetValue(string key, Encoding keyEncoding, out BEncodeString value)
+        {
+            var k = new BEncodeString(key, keyEncoding);
+            if (_elements.TryGetValue(k, out BEncodeValue val))
+            {
+                value = (BEncodeString)val;
                 return true;
             }
             else
@@ -431,26 +762,36 @@ namespace Honoo.Text
         /// <param name="value">元素的值。</param>
         /// <returns></returns>
         /// <exception cref="Exception"/>
-        public bool TryGetValue(string key, out BEncodeValue value)
+        public bool TryGetValue(BEncodeString key, out BEncodeValue value)
         {
             return _elements.TryGetValue(key, out value);
         }
 
-        internal override void SaveInternal(Stream stream, Encoding keyEncoding)
+        /// <summary>
+        /// 获取与指定键关联的元素的值。比较元素的键时默认使用 Encoding.UTF8 编码。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="value">元素的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public bool TryGetValue(string key, out BEncodeValue value)
         {
-            if (stream == null)
-            {
-                throw new ArgumentNullException(nameof(stream));
-            }
-            stream.WriteByte(100);  // 'd'
-            var enumerator = _elements.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                var key = new BEncodeSingle(enumerator.Current.Key, keyEncoding);
-                key.SaveInternal(stream, keyEncoding);
-                enumerator.Current.Value.SaveInternal(stream, keyEncoding);
-            }
-            stream.WriteByte(101);  // 'e'
+            var k = new BEncodeString(key, Encoding.UTF8);
+            return _elements.TryGetValue(k, out value);
+        }
+
+        /// <summary>
+        /// 获取与指定键关联的元素的值。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="keyEncoding">比较元素的键时使用的字符编码。</param>
+        /// <param name="value">元素的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public bool TryGetValue(string key, Encoding keyEncoding, out BEncodeValue value)
+        {
+            var k = new BEncodeString(key, keyEncoding);
+            return _elements.TryGetValue(k, out value);
         }
     }
 }

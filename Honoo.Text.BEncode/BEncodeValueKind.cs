@@ -1,4 +1,4 @@
-﻿namespace Honoo.Text
+﻿namespace Honoo.Text.BEncode
 {
     /// <summary>
     /// BEncode 值的类型。
@@ -8,7 +8,7 @@
         /// <summary>
         /// BEncode 串行数据类型。
         /// </summary>
-        Single = 1,
+        String = 1,
 
         /// <summary>
         /// BEncode 数值类型。

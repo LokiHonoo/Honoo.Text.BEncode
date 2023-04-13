@@ -1,10 +1,8 @@
 ﻿/*
- * Copyright
- *
  * https://github.com/LokiHonoo/development-resources
  * Copyright (C) Loki Honoo 2015. All rights reserved.
  *
- * This code page is published under the terms of the MIT license.
+ * This code page is published by the MIT license.
  */
 
 using System;
@@ -14,14 +12,14 @@ namespace Honoo
     /// <summary>
     /// 数值对象辅助。
     /// </summary>
-    public static class Integer
+    public static class Numeric
     {
         #region 转换
 
         /// <summary>
         /// 字节数值的容量单位。进位是 1000。
         /// </summary>
-        public enum SizeRadix10
+        public enum Size1000
         {
             /// <summary>保持转换数值大于 1，选择可能的最大单位。</summary>
             Auto,
@@ -51,7 +49,7 @@ namespace Honoo
         /// <summary>
         /// 字节数值的容量单位。进位是 1024。
         /// </summary>
-        public enum SizeRadix2
+        public enum Size1024
         {
             /// <summary>保持转换数值大于 1，选择可能的最大单位。</summary>
             Auto,
@@ -76,6 +74,36 @@ namespace Honoo
 
             /// <summary></summary>
             EiB,
+        }
+
+        /// <summary>
+        /// 字节数值的速度单位。进位是 1024。
+        /// </summary>
+        public enum Speed1024
+        {
+            /// <summary>保持转换数值大于 1，选择可能的最大单位。</summary>
+            Auto,
+
+            /// <summary></summary>
+            Bps,
+
+            /// <summary></summary>
+            KiBps,
+
+            /// <summary></summary>
+            MiBps,
+
+            /// <summary></summary>
+            GiBps,
+
+            /// <summary></summary>
+            TiBps,
+
+            /// <summary></summary>
+            PiBps,
+
+            /// <summary></summary>
+            EiBps,
         }
 
         /// <summary>
@@ -109,36 +137,6 @@ namespace Honoo
         }
 
         /// <summary>
-        /// 字节数值的速度单位。进位是 1024。
-        /// </summary>
-        public enum SpeedRadix2
-        {
-            /// <summary>保持转换数值大于 1，选择可能的最大单位。</summary>
-            Auto,
-
-            /// <summary></summary>
-            Bps,
-
-            /// <summary></summary>
-            KiBps,
-
-            /// <summary></summary>
-            MiBps,
-
-            /// <summary></summary>
-            GiBps,
-
-            /// <summary></summary>
-            TiBps,
-
-            /// <summary></summary>
-            PiBps,
-
-            /// <summary></summary>
-            EiBps,
-        }
-
-        /// <summary>
         /// 将字节容量数值转换为指定单位。
         /// </summary>
         /// <param name="byteLength">字节数值。</param>
@@ -146,11 +144,11 @@ namespace Honoo
         /// <param name="places">保留小数位数。</param>
         /// <param name="unit">字节数值的容量单位的字符串表示。</param>
         /// <returns></returns>
-        public static double GetSize(long byteLength, SizeRadix2 radix, int places, out string unit)
+        public static double GetSize(long byteLength, Size1024 radix, int places, out string unit)
         {
             double value = byteLength;
             int index = 0;
-            if (radix == SizeRadix2.Auto)
+            if (radix == Size1024.Auto)
             {
                 while (value >= 1024 && index < 6)
                 {
@@ -188,11 +186,11 @@ namespace Honoo
         /// <param name="places">保留小数位数。</param>
         /// <param name="unit">字节数值的容量单位的字符串表示。</param>
         /// <returns></returns>
-        public static double GetSize(long byteLength, SizeRadix10 radix, int places, out string unit)
+        public static double GetSize(long byteLength, Size1000 radix, int places, out string unit)
         {
             double value = byteLength;
             int index = 0;
-            if (radix == SizeRadix10.Auto)
+            if (radix == Size1000.Auto)
             {
                 while (value >= 1000 && index < 6)
                 {
@@ -229,11 +227,11 @@ namespace Honoo
         /// <param name="radix">字节数值的速度单位。</param>
         /// <param name="places">保留小数位数。</param>
         /// <param name="unit">字节数值的容量单位的字符串表示。</param>
-        public static double GetSpeed(long byteLength, SpeedRadix2 radix, int places, out string unit)
+        public static double GetSpeed(long byteLength, Speed1024 radix, int places, out string unit)
         {
             double value = byteLength;
             int index = 0;
-            if (radix == SpeedRadix2.Auto)
+            if (radix == Speed1024.Auto)
             {
                 while (value >= 1024 && index < 6)
                 {

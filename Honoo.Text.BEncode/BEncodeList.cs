@@ -2,14 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
-namespace Honoo.Text
+namespace Honoo.Text.BEncode
 {
     /// <summary>
     /// BEncode 列表类型。
     /// </summary>
-    public sealed class BEncodeList : BEncodeValue, IEnumerable<BEncodeValue>
+    public class BEncodeList : BEncodeValue, IEnumerable<BEncodeValue>
     {
         private readonly List<BEncodeValue> _elements = new List<BEncodeValue>();
 
@@ -39,21 +38,11 @@ namespace Honoo.Text
         }
 
         /// <summary>
-        /// 初始化 BEncodeList 类的新实例。对子集中字典类型的键默认使用 Encoding.UTF8 编码。
-        /// </summary>
-        /// <param name="content">指定从中读取的流。</param>
-        /// <exception cref="Exception"></exception>
-        public BEncodeList(Stream content) : this(content, Encoding.UTF8)
-        {
-        }
-
-        /// <summary>
         /// 初始化 BEncodeList 类的新实例。
         /// </summary>
         /// <param name="content">指定从中读取的流。</param>
-        /// <param name="keyEncoding">对子集中字典类型的键解码使用的字符编码。</param>
         /// <exception cref="Exception"></exception>
-        public BEncodeList(Stream content, Encoding keyEncoding) : base(BEncodeValueKind.List)
+        public BEncodeList(Stream content) : base(BEncodeValueKind.List)
         {
             int kc = content.ReadByte();
             if (kc != 108)  // 'l'
@@ -71,8 +60,8 @@ namespace Honoo.Text
                 {
                     switch (kc)
                     {
-                        case 100: content.Seek(-1, SeekOrigin.Current); _elements.Add(new BEncodeDictionary(content, keyEncoding)); break;  // 'd'
-                        case 108: content.Seek(-1, SeekOrigin.Current); _elements.Add(new BEncodeList(content, keyEncoding)); break;        // 'l'
+                        case 100: content.Seek(-1, SeekOrigin.Current); _elements.Add(new BEncodeDictionary(content)); break;  // 'd'
+                        case 108: content.Seek(-1, SeekOrigin.Current); _elements.Add(new BEncodeList(content)); break;        // 'l'
                         case 105: content.Seek(-1, SeekOrigin.Current); _elements.Add(new BEncodeInteger(content)); break;                  // 'i'
                         case 48:                                                                                                            // '0'
                         case 49:                                                                                                            // '1'
@@ -83,7 +72,7 @@ namespace Honoo.Text
                         case 54:                                                                                                            // '6'
                         case 55:                                                                                                            // '7'
                         case 56:                                                                                                            // '8'
-                        case 57: content.Seek(-1, SeekOrigin.Current); _elements.Add(new BEncodeSingle(content)); break;                    // '9'
+                        case 57: content.Seek(-1, SeekOrigin.Current); _elements.Add(new BEncodeString(content)); break;                    // '9'
                         default: throw new Exception($"The incorrect identification char '{kc}'. Stop at position: {content.Position}.");
                     }
                     kc = content.ReadByte();
@@ -238,27 +227,11 @@ namespace Honoo.Text
         }
 
         /// <summary>
-        /// 保存到指定的流。对子集中字典类型的键默认使用 Encoding.UTF8 编码。
-        /// </summary>
-        /// <param name="stream">指定保存的目标流。</param>
-        /// <exception cref="Exception"/>
-        public void Save(Stream stream)
-        {
-            Save(stream, Encoding.UTF8);
-        }
-
-        /// <summary>
         /// 保存到指定的流。
         /// </summary>
         /// <param name="stream">指定保存的目标流。</param>
-        /// <param name="keyEncoding">对子集中字典类型的键编码使用的字符编码。</param>
         /// <exception cref="Exception"/>
-        public void Save(Stream stream, Encoding keyEncoding)
-        {
-            SaveInternal(stream, keyEncoding);
-        }
-
-        internal override void SaveInternal(Stream stream, Encoding keyEncoding)
+        public override void Save(Stream stream)
         {
             if (stream == null)
             {
@@ -268,7 +241,7 @@ namespace Honoo.Text
             var enumerator = _elements.GetEnumerator();
             while (enumerator.MoveNext())
             {
-                enumerator.Current.SaveInternal(stream, keyEncoding);
+                enumerator.Current.Save(stream);
             }
             stream.WriteByte(101);  // 'e'
         }

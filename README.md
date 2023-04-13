@@ -7,6 +7,7 @@
 - [Honoo.Text.BEncode](#honootextbencode)
   - [INTRODUCTION](#introduction)
   - [CHANGELOG](#changelog)
+    - [1.0.3](#103)
     - [1.0.2](#102)
     - [1.0.1](#101)
     - [1.0.0](#100)
@@ -23,6 +24,14 @@
 读写 BEncode 编码格式，例如 torrent 文件。
 
 ## CHANGELOG
+
+### 1.0.3
+
+**Refactored* 涉及文本编码的字段以原始值存储，不再自动转换。在取出时由使用者指定文本编码。
+
+**Features* 新增 BEncodeDictionary 的 AddOrUpdate() 方法的多个重载。
+
+**Features* 新增 TorrentAnalysis 类，从 BEncodeDictionary 继承，提供一些 Torrent 文件的相关方法。
 
 ### 1.0.2
 
@@ -48,7 +57,7 @@
 
 ```c#
 
-using Honoo.Text;
+using Honoo.Text.BEncode;
 
 ```
 
@@ -59,48 +68,79 @@ using Honoo.Text;
 private static void Main()
 {
     BEncodeDictionary root = new BEncodeDictionary();
-    //
-    // Write
-    //
-    var dict = root.AddOrUpdate("dict", new BEncodeDictionary());
-    dict.AddOrUpdate("key3", new BEncodeSingle("key3sorted"));
-    dict.AddOrUpdate("key2", new BEncodeSingle("key2sorted"));
-    dict.AddOrUpdate("key4", new BEncodeSingle("key4sorted"));
-    var list = dict.AddOrUpdate("key1", new BEncodeList());
-    list.Add(new BEncodeInteger(111));
-    list.Add(new BEncodeInteger(222));
-    list.Add(new BEncodeInteger(333));
-    //
-    // Read
-    //
-    root.TryGetValue("dict", out BEncodeDictionary dict1);
-    dict1.TryGetValue("key2", out BEncodeSingle single1);
-    Console.WriteLine(single1.GetStringValue());
-    dict1.TryGetValue("key3", out single1);
-    Console.WriteLine(single1.GetStringValue());
-    dict1.TryGetValue("key4", out single1);
-    Console.WriteLine(single1.GetStringValue());
-    var list1 = (BEncodeList)dict1["key1"];
-    Console.WriteLine(((BEncodeInteger)list1[0]).Value);
-    Console.WriteLine(((BEncodeInteger)list1[1]).GetInt32Value());
-    Console.WriteLine(((BEncodeInteger)list1[2]).GetInt64Value());
-    //
-    // Save
-    //
-    using (MemoryStream stream = new MemoryStream())
+    while (true)
     {
-        root.Save(stream);
-        string content = Encoding.UTF8.GetString(stream.ToArray());
-        Console.WriteLine(content);
-        stream.Seek(0, SeekOrigin.Begin);
-        BEncodeDictionary root1 = new BEncodeDictionary(stream);
+        //
+        // Write
+        //
+        var dict = root.AddOrUpdate("dict", new BEncodeDictionary());
+        dict.AddOrUpdate("key3", new BEncodeString("key3sorted"));
+        dict.AddOrUpdate("key2", new BEncodeString("key2sorted"));
+        dict.AddOrUpdate("key4", new BEncodeString("key4sorted"));
+        dict.AddOrUpdate("key2", new BEncodeString("key2reset"));
+        var list = dict.AddOrUpdate("key1", new BEncodeList());
+        list.Add(new BEncodeInteger(111));
+        list.Add(new BEncodeInteger(222));
+        list.Add(new BEncodeInteger(333));
+        //
+        // Read
+        //
+        root.TryGetValue("dict", out BEncodeDictionary dict1);
+        dict1.TryGetValue("key2", out BEncodeString string1);
+        Console.WriteLine(string1.GetStringValue());
+        dict1.TryGetValue("key3", out string1);
+        Console.WriteLine(string1.GetStringValue());
+        dict1.TryGetValue("key4", out string1);
+        Console.WriteLine(string1.GetStringValue());
+        var list1 = (BEncodeList)dict1["key1"];
+        Console.WriteLine(((BEncodeInteger)list1[0]).Value);
+        Console.WriteLine(((BEncodeInteger)list1[1]).GetInt32Value());
+        Console.WriteLine(((BEncodeInteger)list1[2]).GetInt64Value());
+        //
+        // Save
+        //
+        using (MemoryStream stream = new MemoryStream())
+        {
+            root.Save(stream);
+            string content = Encoding.UTF8.GetString(stream.ToArray());
+            Console.WriteLine(content);
+            stream.Seek(0, SeekOrigin.Begin);
+            root = new BEncodeDictionary(stream);
+        }
+        Console.ReadKey(true);
     }
-
-    Console.ReadKey(true);
 }
 
 ```
 
+```c#
+
+private static void Main()
+{
+    string fileName = "4.torrent";
+    using (var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read))
+    {
+        var torrent = new Honoo.Text.BEncode.TorrentAnalysis(stream);
+        Console.WriteLine(torrent.GetCreatedBy());
+        Console.WriteLine(torrent.GetCreationDate());
+        Console.WriteLine(torrent.GetAnnounce());
+        Console.WriteLine(torrent.GetName());
+        Console.WriteLine(torrent.GetPieceLength());
+        Console.WriteLine(torrent.GetComment());
+        var files = torrent.GetFiles(Encoding.UTF8, "", 0, long.MaxValue);
+        files.Sort((x, y) => { return x.Length < y.Length ? 1 : -1; });
+        foreach (var file in files)
+        {
+            Console.WriteLine(file.Path[^1] + "     " + Honoo.Numeric.GetSize(file.Length, Numeric.Size1024.Auto, 2, out string unit) + unit);
+        }
+        var magnet = torrent.GetMagnet(Encoding.UTF8, true, true, true);
+        Console.WriteLine(magnet);
+    }
+    Console.WriteLine();
+    Console.ReadKey(true);
+}
+
+```
 ## LICENSE
 
 MIT 协议。

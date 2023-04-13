@@ -1,8 +1,5 @@
-﻿using Honoo.Text;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Linq;
 using System.Text;
 
 namespace Honoo.TorrentAnalysis
@@ -13,65 +10,29 @@ namespace Honoo.TorrentAnalysis
 
         private static void Main(string[] args)
         {
-            string torrentFile = "aidmArchive.torrent";
-            string search = "RPG";
-            string outputFile = "search.csv";
-
-            var dicts = ExportFileNames(torrentFile, search);
-            if (dicts.Count > 0)
+            string fileName = "[kisssub.org][VCB-Studio] 街角魔族 二丁目  Machikado Mazoku 2-Choume  まちカドまぞく 2丁目 [S2 Fin].torrent";
+            using (var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read))
             {
-                var csv = new StringBuilder();
-                foreach (var en in dicts)
+                var torrent = new Honoo.Text.BEncode.TorrentAnalysis(stream);
+                Console.WriteLine(torrent.GetCreatedBy());
+                Console.WriteLine(torrent.GetCreationDate());
+                Console.WriteLine(torrent.GetAnnounce());
+                Console.WriteLine(torrent.GetName());
+                Console.WriteLine(torrent.GetPieceLength());
+                Console.WriteLine(torrent.GetComment());
+                var files = torrent.GetFiles(Encoding.UTF8, "", 0, long.MaxValue);
+                files.Sort((x, y) => { return x.Length < y.Length ? 1 : -1; });
+                foreach (var file in files)
                 {
-                    csv.AppendLine(en.Value);
+                    Console.WriteLine(file.Path[^1] + "     " + Honoo.Numeric.GetSize(file.Length, Numeric.Size1024.Auto, 2, out string unit) + unit);
                 }
-                File.WriteAllText(outputFile, csv.ToString(), Encoding.UTF8);
-                Console.WriteLine("Output file saved.");
-            }
-            else
-            {
-                Console.WriteLine("Nothing search.");
+                var magnet = torrent.GetMagnet(Encoding.UTF8, true, true, true);
+                Console.WriteLine(magnet);
             }
             Console.WriteLine();
             Console.ReadKey(true);
         }
 
         #endregion Main
-
-        private static Dictionary<string, string> ExportFileNames(string torrentFile, string search)
-        {
-            var result = new Dictionary<string, string>();
-            using (var stream = new FileStream(torrentFile, FileMode.Open, FileAccess.Read))
-            {
-                var torrent = new BEncodeDictionary(stream);
-                torrent.TryGetValue("info", out BEncodeDictionary info);
-                info.TryGetValue("files", out BEncodeList files);
-                foreach (BEncodeDictionary file in files.Cast<BEncodeDictionary>())
-                {
-                    var pathEntities = (BEncodeList)file["path"];
-                    var key = ((BEncodeSingle)pathEntities[0]).GetStringValue();
-                    var fn = ((BEncodeSingle)pathEntities[^1]).GetStringValue();
-                    if (fn.Contains(search))
-                    {
-                        if (!result.TryGetValue(key, out _))
-                        {
-                            result.Add(key, key + "," + fn );
-                        }
-                    }
-                }
-                foreach (BEncodeDictionary file in files.Cast<BEncodeDictionary>())
-                {
-                    var pathEntities = (BEncodeList)file["path"];
-                    var key = ((BEncodeSingle)pathEntities[0]).GetStringValue();
-                    if (result.TryGetValue(key, out string value))
-                    {
-                        var length = (BEncodeInteger)file["length"];
-                        var len = length.GetInt64Value();
-                        result[key] = value + "," + len + "," + Honoo.Integer.GetSize(len, Integer.SizeRadix2.GiB, 2, out _) + " GiB";
-                    }
-                }
-            }
-            return result;
-        }
     }
 }

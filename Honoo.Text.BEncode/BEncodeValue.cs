@@ -1,7 +1,6 @@
 ﻿using System.IO;
-using System.Text;
 
-namespace Honoo.Text
+namespace Honoo.Text.BEncode
 {
     /// <summary>
     /// 表示所有 BEncode 值类型从中继承的基本类型。
@@ -28,6 +27,10 @@ namespace Honoo.Text
 
         #endregion Construction
 
-        internal abstract void SaveInternal(Stream stream, Encoding keyEncoding);
+        /// <summary>
+        /// 保存到指定的流。
+        /// </summary>
+        /// <param name="stream">指定保存的目标流。</param>
+        public abstract void Save(Stream stream);
     }
 }
