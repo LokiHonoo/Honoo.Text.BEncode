@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Honoo.IO;
+using System;
 using System.IO;
 using System.Text;
 
@@ -24,7 +25,7 @@ namespace Honoo.TorrentAnalysis
                 files.Sort((x, y) => { return x.Length < y.Length ? 1 : -1; });
                 foreach (var file in files)
                 {
-                    Console.WriteLine(file.Path[^1] + "     " + Honoo.Numeric.GetSize(file.Length, Numeric.Size1024.Auto, 2, out string unit) + unit);
+                    Console.WriteLine(file.Path[^1] + "     " + Numeric.GetSize(file.Length, Numeric.SizeKilo.Auto, 2, out string unit) + unit);
                 }
                 var magnet = torrent.GetMagnet(Encoding.UTF8, true, true, true);
                 Console.WriteLine(magnet);

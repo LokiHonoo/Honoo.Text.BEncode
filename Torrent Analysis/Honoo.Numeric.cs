@@ -7,166 +7,212 @@
 
 using System;
 
-namespace Honoo
+namespace Honoo.IO
 {
     /// <summary>
-    /// 数值对象辅助。
+    /// I/O 数值对象辅助。
     /// </summary>
     public static class Numeric
     {
         #region 转换
 
         /// <summary>
-        /// 字节数值的容量单位。进位是 1000。
+        /// 字节类型的容量单位。单位进位是 1024。
         /// </summary>
-        public enum Size1000
+        public enum SizeKilo
         {
             /// <summary>保持转换数值大于 1，选择可能的最大单位。</summary>
             Auto,
 
-            /// <summary></summary>
+            /// <summary>单位是 B。</summary>
             B,
 
-            /// <summary></summary>
-            KB,
-
-            /// <summary></summary>
-            MB,
-
-            /// <summary></summary>
-            GB,
-
-            /// <summary></summary>
-            TB,
-
-            /// <summary></summary>
-            PB,
-
-            /// <summary></summary>
-            EB,
-        }
-
-        /// <summary>
-        /// 字节数值的容量单位。进位是 1024。
-        /// </summary>
-        public enum Size1024
-        {
-            /// <summary>保持转换数值大于 1，选择可能的最大单位。</summary>
-            Auto,
-
-            /// <summary></summary>
-            B,
-
-            /// <summary></summary>
+            /// <summary>单位是 KiB。</summary>
             KiB,
 
-            /// <summary></summary>
+            /// <summary>单位是 MiB。</summary>
             MiB,
 
-            /// <summary></summary>
+            /// <summary>单位是 GiB。</summary>
             GiB,
 
-            /// <summary></summary>
+            /// <summary>单位是 TiB。</summary>
             TiB,
 
-            /// <summary></summary>
+            /// <summary>单位是 PiB。</summary>
             PiB,
 
-            /// <summary></summary>
+            /// <summary>单位是 EiB。</summary>
             EiB,
+
+            /// <summary>单位是 BiB。</summary>
+            BiB,
         }
 
         /// <summary>
-        /// 字节数值的速度单位。进位是 1024。
+        /// 字节类型的容量单位。单位进位是 1000。
         /// </summary>
-        public enum Speed1024
+        public enum SizeThousands
         {
             /// <summary>保持转换数值大于 1，选择可能的最大单位。</summary>
             Auto,
 
-            /// <summary></summary>
-            Bps,
+            /// <summary>单位是 B。</summary>
+            B,
 
-            /// <summary></summary>
-            KiBps,
+            /// <summary>单位是 KB。</summary>
+            KB,
 
-            /// <summary></summary>
-            MiBps,
+            /// <summary>单位是 MB。</summary>
+            MB,
 
-            /// <summary></summary>
-            GiBps,
+            /// <summary>单位是 GB。</summary>
+            GB,
 
-            /// <summary></summary>
-            TiBps,
+            /// <summary>单位是 TB。</summary>
+            TB,
 
-            /// <summary></summary>
-            PiBps,
+            /// <summary>单位是 PB。</summary>
+            PB,
 
-            /// <summary></summary>
-            EiBps,
+            /// <summary>单位是 EB。</summary>
+            EB,
+
+            /// <summary>单位是 BB。</summary>
+            BB,
         }
 
         /// <summary>
-        /// 字节数值的速度单位。进位是 1024，并转换为 Bit 值。
+        /// 位类型的速度单位。单位进位是 1000。
         /// </summary>
         public enum SpeedBits
         {
             /// <summary>保持转换数值大于 1，选择可能的最大单位。</summary>
             Auto,
 
-            /// <summary></summary>
+            /// <summary>单位是 bps。</summary>
             bps,
 
-            /// <summary></summary>
+            /// <summary>单位是 Kbps。</summary>
             Kbps,
 
-            /// <summary></summary>
+            /// <summary>单位是 Mbps。</summary>
             Mbps,
 
-            /// <summary></summary>
+            /// <summary>单位是 Gbps。</summary>
             Gbps,
 
-            /// <summary></summary>
+            /// <summary>单位是 Tbps。</summary>
             Tbps,
 
-            /// <summary></summary>
+            /// <summary>单位是 Pbps。</summary>
             Pbps,
 
-            /// <summary></summary>
+            /// <summary>单位是 Ebps。</summary>
             Ebps,
+
+            /// <summary>单位是 Bbps。</summary>
+            Bbps,
+        }
+
+        /// <summary>
+        /// 字节类型的速度单位。单位进位是 1024。
+        /// </summary>
+        public enum SpeedKilo
+        {
+            /// <summary>保持转换数值大于 1，选择可能的最大单位。</summary>
+            Auto,
+
+            /// <summary>单位是 B/s。</summary>
+            Bps,
+
+            /// <summary>单位是 KiB/s。</summary>
+            KiBps,
+
+            /// <summary>单位是 MiB/s。</summary>
+            MiBps,
+
+            /// <summary>单位是 GiB/s。</summary>
+            GiBps,
+
+            /// <summary>单位是 TiB/s。</summary>
+            TiBps,
+
+            /// <summary>单位是 PiB/s。</summary>
+            PiBps,
+
+            /// <summary>单位是 EiB/s。</summary>
+            EiBps,
+
+            /// <summary>单位是 BiB/s。</summary>
+            BiBps,
+        }
+
+        /// <summary>
+        /// 字节类型的速度单位。单位进位是 1000。
+        /// </summary>
+        public enum SpeedThousands
+        {
+            /// <summary>保持转换数值大于 1，选择可能的最大单位。</summary>
+            Auto,
+
+            /// <summary>单位是 B/s。</summary>
+            Bps,
+
+            /// <summary>单位是 KB/s。</summary>
+            KBps,
+
+            /// <summary>单位是 MB/s。</summary>
+            MBps,
+
+            /// <summary>单位是 GB/s。</summary>
+            GBps,
+
+            /// <summary>单位是 TB/s。</summary>
+            TBps,
+
+            /// <summary>单位是 PB/s。</summary>
+            PBps,
+
+            /// <summary>单位是 EB/s。</summary>
+            EBps,
+
+            /// <summary>单位是 BB/s。</summary>
+            BBps,
         }
 
         /// <summary>
         /// 将字节容量数值转换为指定单位。
         /// </summary>
         /// <param name="byteLength">字节数值。</param>
-        /// <param name="radix">字节数值的容量单位。</param>
+        /// <param name="radix">字节类型的容量单位。</param>
         /// <param name="places">保留小数位数。</param>
         /// <param name="unit">字节数值的容量单位的字符串表示。</param>
         /// <returns></returns>
-        public static double GetSize(long byteLength, Size1024 radix, int places, out string unit)
+        public static double GetSize(long byteLength, SizeKilo radix, int places, out string unit)
         {
             double value = byteLength;
-            int index = 0;
-            if (radix == Size1024.Auto)
+            int unitIndex = 0;
+            if (radix == SizeKilo.Auto)
             {
-                while (value >= 1024 && index < 6)
+                while (value >= 1024 && unitIndex < 7)
                 {
                     value /= 1024;
-                    index++;
+                    unitIndex++;
                 }
             }
             else
             {
-                int um = (int)radix - 1;
-                while (index < um)
+                int unitLimit = (int)radix - 1;
+                while (unitIndex < unitLimit)
                 {
                     value /= 1024;
-                    index++;
+                    unitIndex++;
                 }
             }
-            switch (index)
+            switch (unitIndex)
             {
+                case 7: unit = "BiB"; break;
                 case 6: unit = "EiB"; break;
                 case 5: unit = "PiB"; break;
                 case 4: unit = "TiB"; break;
@@ -182,33 +228,34 @@ namespace Honoo
         /// 将字节容量数值转换为指定单位。
         /// </summary>
         /// <param name="byteLength">字节数值。</param>
-        /// <param name="radix">字节数值的容量单位。</param>
+        /// <param name="radix">字节类型的容量单位。</param>
         /// <param name="places">保留小数位数。</param>
         /// <param name="unit">字节数值的容量单位的字符串表示。</param>
         /// <returns></returns>
-        public static double GetSize(long byteLength, Size1000 radix, int places, out string unit)
+        public static double GetSize(long byteLength, SizeThousands radix, int places, out string unit)
         {
             double value = byteLength;
-            int index = 0;
-            if (radix == Size1000.Auto)
+            int unitIndex = 0;
+            if (radix == SizeThousands.Auto)
             {
-                while (value >= 1000 && index < 6)
+                while (value >= 1000 && unitIndex < 7)
                 {
                     value /= 1000;
-                    index++;
+                    unitIndex++;
                 }
             }
             else
             {
-                int um = (int)radix - 1;
-                while (index < um)
+                int unitLimit = (int)radix - 1;
+                while (unitIndex < unitLimit)
                 {
                     value /= 1000;
-                    index++;
+                    unitIndex++;
                 }
             }
-            switch (index)
+            switch (unitIndex)
             {
+                case 7: unit = "BB"; break;
                 case 6: unit = "EB"; break;
                 case 5: unit = "PB"; break;
                 case 4: unit = "TB"; break;
@@ -223,33 +270,76 @@ namespace Honoo
         /// <summary>
         /// 将字节速度数值转换为指定单位。
         /// </summary>
-        /// <param name="byteLength">字节数值。</param>
-        /// <param name="radix">字节数值的速度单位。</param>
+        /// <param name="bytesPerSecond">每秒字节数值。</param>
+        /// <param name="radix">位类型的速度单位。</param>
         /// <param name="places">保留小数位数。</param>
         /// <param name="unit">字节数值的容量单位的字符串表示。</param>
-        public static double GetSpeed(long byteLength, Speed1024 radix, int places, out string unit)
+        public static double GetSpeed(long bytesPerSecond, SpeedBits radix, int places, out string unit)
         {
-            double value = byteLength;
-            int index = 0;
-            if (radix == Speed1024.Auto)
+            double value = bytesPerSecond * 8;
+            int unitIndex = 0;
+            if (radix == SpeedBits.Auto)
             {
-                while (value >= 1024 && index < 6)
+                while (value >= 1000 && unitIndex < 7)
                 {
-                    value /= 1024;
-                    index++;
+                    value /= 1000;
+                    unitIndex++;
                 }
             }
             else
             {
-                int um = (int)radix - 1;
-                while (index < um)
+                int unitLimit = (int)radix - 1;
+                while (unitIndex < unitLimit)
                 {
-                    value /= 1024;
-                    index++;
+                    value /= 1000;
+                    unitIndex++;
                 }
             }
-            switch (index)
+            switch (unitIndex)
             {
+                case 7: unit = "Bbps"; break;
+                case 6: unit = "Ebps"; break;
+                case 5: unit = "Pbps"; break;
+                case 4: unit = "Tbps"; break;
+                case 3: unit = "Gbps"; break;
+                case 2: unit = "Mbps"; break;
+                case 1: unit = "Kbps"; break;
+                case 0: default: unit = "bps"; break;
+            }
+            return Math.Round(value, places);
+        }
+
+        /// <summary>
+        /// 将字节速度数值转换为指定单位。
+        /// </summary>
+        /// <param name="bytesPerSecond">每秒字节数值。</param>
+        /// <param name="radix">字节类型的速度单位。</param>
+        /// <param name="places">保留小数位数。</param>
+        /// <param name="unit">字节数值的容量单位的字符串表示。</param>
+        public static double GetSpeed(long bytesPerSecond, SpeedKilo radix, int places, out string unit)
+        {
+            double value = bytesPerSecond;
+            int unitIndex = 0;
+            if (radix == SpeedKilo.Auto)
+            {
+                while (value >= 1024 && unitIndex < 7)
+                {
+                    value /= 1024;
+                    unitIndex++;
+                }
+            }
+            else
+            {
+                int unitLimit = (int)radix - 1;
+                while (unitIndex < unitLimit)
+                {
+                    value /= 1024;
+                    unitIndex++;
+                }
+            }
+            switch (unitIndex)
+            {
+                case 7: unit = "BiB/s"; break;
                 case 6: unit = "EiB/s"; break;
                 case 5: unit = "PiB/s"; break;
                 case 4: unit = "TiB/s"; break;
@@ -264,42 +354,43 @@ namespace Honoo
         /// <summary>
         /// 将字节速度数值转换为指定单位。
         /// </summary>
-        /// <param name="byteLength">字节数值。</param>
-        /// <param name="radix">字节数值的速度单位。</param>
+        /// <param name="bytesPerSecond">每秒字节数值。</param>
+        /// <param name="radix">字节类型的速度单位。</param>
         /// <param name="places">保留小数位数。</param>
         /// <param name="unit">字节数值的容量单位的字符串表示。</param>
-        public static double GetSpeed(long byteLength, SpeedBits radix, int places, out string unit)
+        public static double GetSpeed(long bytesPerSecond, SpeedThousands radix, int places, out string unit)
         {
-            double value = byteLength;
-            int index = 0;
-            if (radix == SpeedBits.Auto)
+            double value = bytesPerSecond;
+            int unitIndex = 0;
+            if (radix == SpeedThousands.Auto)
             {
-                while (value >= 1024 && index < 6)
+                while (value >= 1000 && unitIndex < 7)
                 {
-                    value /= 1024;
-                    index++;
+                    value /= 1000;
+                    unitIndex++;
                 }
             }
             else
             {
-                int um = (int)radix - 1;
-                while (index < um)
+                int unitLimit = (int)radix - 1;
+                while (unitIndex < unitLimit)
                 {
-                    value /= 1024;
-                    index++;
+                    value /= 1000;
+                    unitIndex++;
                 }
             }
-            switch (index)
+            switch (unitIndex)
             {
-                case 6: unit = "Ebps"; break;
-                case 5: unit = "Pbps"; break;
-                case 4: unit = "Tbps"; break;
-                case 3: unit = "Gbps"; break;
-                case 2: unit = "Mbps"; break;
-                case 1: unit = "Kbps"; break;
-                case 0: default: unit = "bps"; break;
+                case 7: unit = "BB/s"; break;
+                case 6: unit = "EB/s"; break;
+                case 5: unit = "PB/s"; break;
+                case 4: unit = "TB/s"; break;
+                case 3: unit = "GB/s"; break;
+                case 2: unit = "MB/s"; break;
+                case 1: unit = "KB/s"; break;
+                case 0: default: unit = "B/s"; break;
             }
-            return Math.Round(value * 8, places);
+            return Math.Round(value, places);
         }
 
         #endregion 转换
