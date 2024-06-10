@@ -274,36 +274,6 @@ namespace Honoo.Text.BEncode
         /// <param name="key">元素的键。</param>
         /// <param name="value">元素的值。</param>
         /// <exception cref="Exception"/>
-        public BEncodeValue AddOrUpdate(BEncodeString key, BEncodeValue value)
-        {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-            if (value == null)
-            {
-                _elements.Remove(key);
-            }
-            else
-            {
-                if (_elements.TryGetValue(key, out _))
-                {
-                    _elements[key] = value;
-                }
-                else
-                {
-                    _elements.Add(key, value);
-                }
-            }
-            return value;
-        }
-
-        /// <summary>
-        /// 添加或更新一个元素。
-        /// </summary>
-        /// <param name="key">元素的键。</param>
-        /// <param name="value">元素的值。</param>
-        /// <exception cref="Exception"/>
         public T AddOrUpdate<T>(BEncodeString key, T value) where T : BEncodeValue
         {
             if (key == null)
