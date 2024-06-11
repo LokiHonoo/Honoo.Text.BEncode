@@ -268,6 +268,65 @@ namespace Honoo.Text.BEncode
 
         #endregion Construction
 
+        #region Add
+
+        /// <summary>
+        /// 添加一个元素。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="value">元素的值。</param>
+        /// <exception cref="Exception"/>
+        public T Add<T>(BEncodeString key, T value) where T : BEncodeValue
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+            _elements.Add(key, value);
+            return value;
+        }
+
+        /// <summary>
+        /// 添加一个元素。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="value">元素的值。</param>
+        /// <exception cref="Exception"/>
+        public T Add<T>(string key, T value) where T : BEncodeValue
+        {
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            var k = new BEncodeString(key, Encoding.UTF8);
+            return Add(k, value);
+        }
+
+        /// <summary>
+        /// 添加一个元素。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="keyEncoding">比较元素的键时使用的字符编码。</param>
+        /// <param name="value">元素的值。</param>
+        /// <exception cref="Exception"/>
+        public T Add<T>(string key, Encoding keyEncoding, T value) where T : BEncodeValue
+        {
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            var k = new BEncodeString(key, keyEncoding);
+            return Add(k, value);
+        }
+
+        #endregion Add
+
+        #region AddOrUpdate
+
         /// <summary>
         /// 添加或更新一个元素。
         /// </summary>
@@ -282,19 +341,10 @@ namespace Honoo.Text.BEncode
             }
             if (value == null)
             {
-                _elements.Remove(key);
+                throw new ArgumentNullException(nameof(value));
             }
-            else
-            {
-                if (_elements.ContainsKey(key))
-                {
-                    _elements[key] = value;
-                }
-                else
-                {
-                    _elements.Add(key, value);
-                }
-            }
+            Remove(key);
+            Add(key, value);
             return value;
         }
 
@@ -307,7 +357,12 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"/>
         public T AddOrUpdate<T>(string key, T value) where T : BEncodeValue
         {
-            return AddOrUpdate(key, Encoding.UTF8, value);
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            var k = new BEncodeString(key, Encoding.UTF8);
+            return AddOrUpdate(k, value);
         }
 
         /// <summary>
@@ -325,23 +380,283 @@ namespace Honoo.Text.BEncode
                 throw new ArgumentNullException(nameof(key));
             }
             var k = new BEncodeString(key, keyEncoding);
-            if (value == null)
+            return AddOrUpdate(k, value);
+        }
+
+        #endregion AddOrUpdate
+
+        #region TryGetValue
+
+        /// <summary>
+        /// 获取与指定键关联的元素的值。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="value">元素的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public bool TryGetValue(BEncodeString key, out BEncodeDictionary value)
+        {
+            if (_elements.TryGetValue(key, out BEncodeValue val))
             {
-                Remove(k);
+                value = (BEncodeDictionary)val;
+                return true;
             }
             else
             {
-                if (_elements.ContainsKey(k))
-                {
-                    _elements[k] = value;
-                }
-                else
-                {
-                    _elements.Add(new BEncodeString(key), value);
-                }
+                value = null;
+                return false;
             }
-            return value;
         }
+
+        /// <summary>
+        /// 获取与指定键关联的元素的值。比较元素的键时默认使用 Encoding.UTF8 编码。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="value">元素的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public bool TryGetValue(string key, out BEncodeDictionary value)
+        {
+            var k = new BEncodeString(key, Encoding.UTF8);
+            return TryGetValue(k, out value);
+        }
+
+        /// <summary>
+        /// 获取与指定键关联的元素的值。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="keyEncoding">比较元素的键时使用的字符编码。</param>
+        /// <param name="value">元素的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public bool TryGetValue(string key, Encoding keyEncoding, out BEncodeDictionary value)
+        {
+            var k = new BEncodeString(key, keyEncoding);
+            return TryGetValue(k, out value);
+        }
+
+        /// <summary>
+        /// 获取与指定键关联的元素的值。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="value">元素的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public bool TryGetValue(BEncodeString key, out BEncodeList value)
+        {
+            if (_elements.TryGetValue(key, out BEncodeValue val))
+            {
+                value = (BEncodeList)val;
+                return true;
+            }
+            else
+            {
+                value = null;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 获取与指定键关联的元素的值。比较元素的键时默认使用 Encoding.UTF8 编码。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="value">元素的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public bool TryGetValue(string key, out BEncodeList value)
+        {
+            var k = new BEncodeString(key, Encoding.UTF8);
+            return TryGetValue(k, out value);
+        }
+
+        /// <summary>
+        /// 获取与指定键关联的元素的值。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="keyEncoding">比较元素的键时使用的字符编码。</param>
+        /// <param name="value">元素的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public bool TryGetValue(string key, Encoding keyEncoding, out BEncodeList value)
+        {
+            var k = new BEncodeString(key, keyEncoding);
+            return TryGetValue(k, out value);
+        }
+
+        /// <summary>
+        /// 获取与指定键关联的元素的值。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="value">元素的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public bool TryGetValue(BEncodeString key, out BEncodeInteger value)
+        {
+            if (_elements.TryGetValue(key, out BEncodeValue val))
+            {
+                value = (BEncodeInteger)val;
+                return true;
+            }
+            else
+            {
+                value = null;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 获取与指定键关联的元素的值。比较元素的键时默认使用 Encoding.UTF8 编码。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="value">元素的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public bool TryGetValue(string key, out BEncodeInteger value)
+        {
+            var k = new BEncodeString(key, Encoding.UTF8);
+            return TryGetValue(k, out value);
+        }
+
+        /// <summary>
+        /// 获取与指定键关联的元素的值。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="keyEncoding">比较元素的键时使用的字符编码。</param>
+        /// <param name="value">元素的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public bool TryGetValue(string key, Encoding keyEncoding, out BEncodeInteger value)
+        {
+            var k = new BEncodeString(key, keyEncoding);
+            return TryGetValue(k, out value);
+        }
+
+        /// <summary>
+        /// 获取与指定键关联的元素的值。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="value">元素的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public bool TryGetValue(BEncodeString key, out BEncodeString value)
+        {
+            if (_elements.TryGetValue(key, out BEncodeValue val))
+            {
+                value = (BEncodeString)val;
+                return true;
+            }
+            else
+            {
+                value = null;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 获取与指定键关联的元素的值。比较元素的键时默认使用 Encoding.UTF8 编码。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="value">元素的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public bool TryGetValue(string key, out BEncodeString value)
+        {
+            var k = new BEncodeString(key, Encoding.UTF8);
+            return TryGetValue(k, out value);
+        }
+
+        /// <summary>
+        /// 获取与指定键关联的元素的值。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="keyEncoding">比较元素的键时使用的字符编码。</param>
+        /// <param name="value">元素的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public bool TryGetValue(string key, Encoding keyEncoding, out BEncodeString value)
+        {
+            var k = new BEncodeString(key, keyEncoding);
+            return TryGetValue(k, out value);
+        }
+
+        /// <summary>
+        /// 获取与指定键关联的元素的值。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="value">元素的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public bool TryGetValue(BEncodeString key, out BEncodeValue value)
+        {
+            return _elements.TryGetValue(key, out value);
+        }
+
+        /// <summary>
+        /// 获取与指定键关联的元素的值。比较元素的键时默认使用 Encoding.UTF8 编码。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="value">元素的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public bool TryGetValue(string key, out BEncodeValue value)
+        {
+            var k = new BEncodeString(key, Encoding.UTF8);
+            return TryGetValue(k, out value);
+        }
+
+        /// <summary>
+        /// 获取与指定键关联的元素的值。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="keyEncoding">比较元素的键时使用的字符编码。</param>
+        /// <param name="value">元素的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public bool TryGetValue(string key, Encoding keyEncoding, out BEncodeValue value)
+        {
+            var k = new BEncodeString(key, keyEncoding);
+            return TryGetValue(k, out value);
+        }
+
+        #endregion TryGetValue
+
+        #region GetValue
+
+        /// <summary>
+        /// 获取与指定键关联的元素的值。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public BEncodeValue GetValue(BEncodeString key)
+        {
+            return TryGetValue(key, out BEncodeValue value) ? value : null;
+        }
+
+        /// <summary>
+        /// 获取与指定键关联的元素的值。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public BEncodeValue GetValue(string key)
+        {
+            return TryGetValue(key, out BEncodeValue value) ? value : null;
+        }
+
+        /// <summary>
+        /// 获取与指定键关联的元素的值。
+        /// </summary>
+        /// <param name="key">元素的键。</param>
+        /// <param name="keyEncoding">比较元素的键时使用的字符编码。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public BEncodeValue GetValue(string key, Encoding keyEncoding)
+        {
+            return TryGetValue(key, keyEncoding, out BEncodeValue value) ? value : null;
+        }
+
+        #endregion GetValue
 
         /// <summary>
         /// 从元素集合中移除所有元素。
@@ -459,309 +774,6 @@ namespace Honoo.Text.BEncode
                 enumerator.Current.Value.Save(stream);
             }
             stream.WriteByte(101);  // 'e'
-        }
-
-        /// <summary>
-        /// 获取与指定键关联的元素的值。
-        /// </summary>
-        /// <param name="key">元素的键。</param>
-        /// <param name="value">元素的值。</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"/>
-        public bool TryGetValue(BEncodeString key, out BEncodeDictionary value)
-        {
-            if (_elements.TryGetValue(key, out BEncodeValue val))
-            {
-                value = (BEncodeDictionary)val;
-                return true;
-            }
-            else
-            {
-                value = null;
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// 获取与指定键关联的元素的值。比较元素的键时默认使用 Encoding.UTF8 编码。
-        /// </summary>
-        /// <param name="key">元素的键。</param>
-        /// <param name="value">元素的值。</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"/>
-        public bool TryGetValue(string key, out BEncodeDictionary value)
-        {
-            var k = new BEncodeString(key, Encoding.UTF8);
-            if (_elements.TryGetValue(k, out BEncodeValue val))
-            {
-                value = (BEncodeDictionary)val;
-                return true;
-            }
-            else
-            {
-                value = null;
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// 获取与指定键关联的元素的值。
-        /// </summary>
-        /// <param name="key">元素的键。</param>
-        /// <param name="keyEncoding">比较元素的键时使用的字符编码。</param>
-        /// <param name="value">元素的值。</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"/>
-        public bool TryGetValue(string key, Encoding keyEncoding, out BEncodeDictionary value)
-        {
-            var k = new BEncodeString(key, keyEncoding);
-            if (_elements.TryGetValue(k, out BEncodeValue val))
-            {
-                value = (BEncodeDictionary)val;
-                return true;
-            }
-            else
-            {
-                value = null;
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// 获取与指定键关联的元素的值。
-        /// </summary>
-        /// <param name="key">元素的键。</param>
-        /// <param name="value">元素的值。</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"/>
-        public bool TryGetValue(BEncodeString key, out BEncodeList value)
-        {
-            if (_elements.TryGetValue(key, out BEncodeValue val))
-            {
-                value = (BEncodeList)val;
-                return true;
-            }
-            else
-            {
-                value = null;
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// 获取与指定键关联的元素的值。比较元素的键时默认使用 Encoding.UTF8 编码。
-        /// </summary>
-        /// <param name="key">元素的键。</param>
-        /// <param name="value">元素的值。</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"/>
-        public bool TryGetValue(string key, out BEncodeList value)
-        {
-            var k = new BEncodeString(key, Encoding.UTF8);
-            if (_elements.TryGetValue(k, out BEncodeValue val))
-            {
-                value = (BEncodeList)val;
-                return true;
-            }
-            else
-            {
-                value = null;
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// 获取与指定键关联的元素的值。
-        /// </summary>
-        /// <param name="key">元素的键。</param>
-        /// <param name="keyEncoding">比较元素的键时使用的字符编码。</param>
-        /// <param name="value">元素的值。</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"/>
-        public bool TryGetValue(string key, Encoding keyEncoding, out BEncodeList value)
-        {
-            var k = new BEncodeString(key, keyEncoding);
-            if (_elements.TryGetValue(k, out BEncodeValue val))
-            {
-                value = (BEncodeList)val;
-                return true;
-            }
-            else
-            {
-                value = null;
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// 获取与指定键关联的元素的值。
-        /// </summary>
-        /// <param name="key">元素的键。</param>
-        /// <param name="value">元素的值。</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"/>
-        public bool TryGetValue(BEncodeString key, out BEncodeInteger value)
-        {
-            if (_elements.TryGetValue(key, out BEncodeValue val))
-            {
-                value = (BEncodeInteger)val;
-                return true;
-            }
-            else
-            {
-                value = null;
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// 获取与指定键关联的元素的值。比较元素的键时默认使用 Encoding.UTF8 编码。
-        /// </summary>
-        /// <param name="key">元素的键。</param>
-        /// <param name="value">元素的值。</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"/>
-        public bool TryGetValue(string key, out BEncodeInteger value)
-        {
-            var k = new BEncodeString(key, Encoding.UTF8);
-            if (_elements.TryGetValue(k, out BEncodeValue val))
-            {
-                value = (BEncodeInteger)val;
-                return true;
-            }
-            else
-            {
-                value = null;
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// 获取与指定键关联的元素的值。
-        /// </summary>
-        /// <param name="key">元素的键。</param>
-        /// <param name="keyEncoding">比较元素的键时使用的字符编码。</param>
-        /// <param name="value">元素的值。</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"/>
-        public bool TryGetValue(string key, Encoding keyEncoding, out BEncodeInteger value)
-        {
-            var k = new BEncodeString(key, keyEncoding);
-            if (_elements.TryGetValue(k, out BEncodeValue val))
-            {
-                value = (BEncodeInteger)val;
-                return true;
-            }
-            else
-            {
-                value = null;
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// 获取与指定键关联的元素的值。
-        /// </summary>
-        /// <param name="key">元素的键。</param>
-        /// <param name="value">元素的值。</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"/>
-        public bool TryGetValue(BEncodeString key, out BEncodeString value)
-        {
-            if (_elements.TryGetValue(key, out BEncodeValue val))
-            {
-                value = (BEncodeString)val;
-                return true;
-            }
-            else
-            {
-                value = null;
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// 获取与指定键关联的元素的值。比较元素的键时默认使用 Encoding.UTF8 编码。
-        /// </summary>
-        /// <param name="key">元素的键。</param>
-        /// <param name="value">元素的值。</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"/>
-        public bool TryGetValue(string key, out BEncodeString value)
-        {
-            var k = new BEncodeString(key, Encoding.UTF8);
-            if (_elements.TryGetValue(k, out BEncodeValue val))
-            {
-                value = (BEncodeString)val;
-                return true;
-            }
-            else
-            {
-                value = null;
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// 获取与指定键关联的元素的值。
-        /// </summary>
-        /// <param name="key">元素的键。</param>
-        /// <param name="keyEncoding">比较元素的键时使用的字符编码。</param>
-        /// <param name="value">元素的值。</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"/>
-        public bool TryGetValue(string key, Encoding keyEncoding, out BEncodeString value)
-        {
-            var k = new BEncodeString(key, keyEncoding);
-            if (_elements.TryGetValue(k, out BEncodeValue val))
-            {
-                value = (BEncodeString)val;
-                return true;
-            }
-            else
-            {
-                value = null;
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// 获取与指定键关联的元素的值。
-        /// </summary>
-        /// <param name="key">元素的键。</param>
-        /// <param name="value">元素的值。</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"/>
-        public bool TryGetValue(BEncodeString key, out BEncodeValue value)
-        {
-            return _elements.TryGetValue(key, out value);
-        }
-
-        /// <summary>
-        /// 获取与指定键关联的元素的值。比较元素的键时默认使用 Encoding.UTF8 编码。
-        /// </summary>
-        /// <param name="key">元素的键。</param>
-        /// <param name="value">元素的值。</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"/>
-        public bool TryGetValue(string key, out BEncodeValue value)
-        {
-            var k = new BEncodeString(key, Encoding.UTF8);
-            return _elements.TryGetValue(k, out value);
-        }
-
-        /// <summary>
-        /// 获取与指定键关联的元素的值。
-        /// </summary>
-        /// <param name="key">元素的键。</param>
-        /// <param name="keyEncoding">比较元素的键时使用的字符编码。</param>
-        /// <param name="value">元素的值。</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"/>
-        public bool TryGetValue(string key, Encoding keyEncoding, out BEncodeValue value)
-        {
-            var k = new BEncodeString(key, keyEncoding);
-            return _elements.TryGetValue(k, out value);
         }
     }
 }

@@ -7,11 +7,13 @@
 - [Honoo.Text.BEncode](#honootextbencode)
   - [INTRODUCTION](#introduction)
   - [CHANGELOG](#changelog)
+    - [1.0.4](#104)
     - [1.0.3](#103)
     - [1.0.2](#102)
     - [1.0.1](#101)
     - [1.0.0](#100)
   - [USAGE](#usage)
+    - [Github](#github)
     - [NuGet](#nuget)
     - [Namespace](#namespace)
     - [Example](#example)
@@ -24,6 +26,10 @@
 读写 BEncode 编码格式，例如 torrent 文件。
 
 ## CHANGELOG
+
+### 1.0.4
+
+**Features* 新增部分方法的多个重载。
 
 ### 1.0.3
 
@@ -48,6 +54,10 @@
 *初始版本。
 
 ## USAGE
+
+### Github
+
+<https://github.com/LokiHonoo/Honoo.Text.BEncode/>
 
 ### NuGet
 
@@ -133,7 +143,7 @@ private static void Main()
         {
             Console.WriteLine(file.Path[^1] + "     " + Honoo.Numeric.GetSize(file.Length, Numeric.Size1024.Auto, 2, out string unit) + unit);
         }
-        var magnet = torrent.GetMagnet(Encoding.UTF8, true, true, true);
+        var magnet = torrent.GetMagnet();
         Console.WriteLine(magnet);
     }
     Console.WriteLine();
@@ -143,4 +153,5 @@ private static void Main()
 ```
 ## LICENSE
 
-MIT 协议。
+This project based on [MIT](LICENSE) license.
+

@@ -15,19 +15,37 @@ namespace Honoo.TorrentAnalysis
             using (var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read))
             {
                 var torrent = new Honoo.Text.BEncode.TorrentAnalysis(stream);
+                string encodingString = torrent.GetEncoding();
+                Encoding encoding = Encoding.UTF8;
+                if (!string.IsNullOrEmpty(encodingString))
+                {
+                    try
+                    {
+                        encoding = Encoding.GetEncoding(encodingString);
+                    }
+                    catch
+                    {
+                        try
+                        {
+                            encoding = Encoding.GetEncoding(int.Parse(encodingString));
+                        }
+                        catch { }
+                    }
+                }
                 Console.WriteLine(torrent.GetCreatedBy());
                 Console.WriteLine(torrent.GetCreationDate());
                 Console.WriteLine(torrent.GetAnnounce());
                 Console.WriteLine(torrent.GetName());
                 Console.WriteLine(torrent.GetPieceLength());
                 Console.WriteLine(torrent.GetComment());
-                var files = torrent.GetFiles(Encoding.UTF8, "", 0, long.MaxValue);
+
+                var files = torrent.GetFiles(encoding, "", 0, long.MaxValue);
                 files.Sort((x, y) => { return x.Length < y.Length ? 1 : -1; });
                 foreach (var file in files)
                 {
                     Console.WriteLine(file.Path[^1] + "     " + Numeric.GetSize(file.Length, Numeric.SizeKilo.Auto, 2, out string unit) + unit);
                 }
-                var magnet = torrent.GetMagnet(Encoding.UTF8, true, true, true);
+                var magnet = torrent.GetMagnet();
                 Console.WriteLine(magnet);
             }
             Console.WriteLine();
