@@ -7,7 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Honoo.Text.BEncode", "Honoo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", "{FA4910AA-6DBB-42C1-BE4A-10550499CA20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Torrent Analysis", "Torrent Analysis\Torrent Analysis.csproj", "{3896AB71-3F37-4AF7-AEE4-167369E11184}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Torrent Analysis", "Torrent Analysis\Torrent Analysis.csproj", "{3896AB71-3F37-4AF7-AEE4-167369E11184}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "解决方案项", "解决方案项", "{F0B70EB6-FF7C-4E4C-B1DD-0FEA9B0DC991}"
+	ProjectSection(SolutionItems) = preProject
+		README-NuGet.md = README-NuGet.md
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

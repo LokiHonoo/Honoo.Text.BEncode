@@ -6,17 +6,15 @@
 
 - [Honoo.Text.BEncode](#honootextbencode)
   - [INTRODUCTION](#introduction)
+  - [USAGE](#usage)
+    - [NuGet](#nuget)
+  - [DEMO](#demo)
   - [CHANGELOG](#changelog)
     - [1.0.4](#104)
     - [1.0.3](#103)
     - [1.0.2](#102)
     - [1.0.1](#101)
     - [1.0.0](#100)
-  - [USAGE](#usage)
-    - [Github](#github)
-    - [NuGet](#nuget)
-    - [Namespace](#namespace)
-    - [Example](#example)
   - [LICENSE](#license)
 
 <!-- /code_chunk_output -->
@@ -25,53 +23,19 @@
 
 读写 BEncode 编码格式，例如 torrent 文件。
 
-## CHANGELOG
-
-### 1.0.4
-
-**Features* 新增部分方法的多个重载。
-
-### 1.0.3
-
-**Refactored* 涉及文本编码的字段以原始值存储，不再自动转换。在取出时由使用者指定文本编码。
-
-**Features* 新增 BEncodeDictionary 的 AddOrUpdate() 方法的多个重载。
-
-**Features* 新增 TorrentAnalysis 类，从 BEncodeDictionary 继承，提供一些 Torrent 文件的相关方法。
-
-### 1.0.2
-
-**Refactored* BEncodeDictionary 的 AddOrUpdate() 方法可直接返回添加的值，并且支持泛型。
-
-**Refactored* BEncodeList 的 Add() AddRange() 方法可直接返回添加的值，并且支持泛型。
-
-### 1.0.1
-
-**Refactored* BEncodeList 公开所有 IList 的方法。
-
-### 1.0.0
-
-*初始版本。
-
 ## USAGE
-
-### Github
-
-<https://github.com/LokiHonoo/Honoo.Text.BEncode/>
 
 ### NuGet
 
 <https://www.nuget.org/packages/Honoo.Text.BEncode/>
 
-### Namespace
+## DEMO
 
 ```c#
 
 using Honoo.Text.BEncode;
 
 ```
-
-### Example
 
 ```c#
 
@@ -151,7 +115,36 @@ private static void Main()
 }
 
 ```
+
+## CHANGELOG
+
+### 1.0.4
+
+**Features* 新增部分方法的多个重载。
+
+### 1.0.3
+
+**Refactored* 涉及文本编码的字段以原始值存储，不再自动转换。在取出时由使用者指定文本编码。
+
+**Features* 新增 BEncodeDictionary 的 AddOrUpdate() 方法的多个重载。
+
+**Features* 新增 TorrentAnalysis 类，从 BEncodeDictionary 继承，提供一些 Torrent 文件的相关方法。
+
+### 1.0.2
+
+**Refactored* BEncodeDictionary 的 AddOrUpdate() 方法可直接返回添加的值，并且支持泛型。
+
+**Refactored* BEncodeList 的 Add() AddRange() 方法可直接返回添加的值，并且支持泛型。
+
+### 1.0.1
+
+**Refactored* BEncodeList 公开所有 IList 的方法。
+
+### 1.0.0
+
+*初始版本。
+
 ## LICENSE
 
-This project based on [MIT](LICENSE) license.
+[MIT](LICENSE) license.
 
