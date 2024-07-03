@@ -33,7 +33,7 @@ namespace Honoo.Text.BEncode
         /// <summary>
         /// 初始化 BEncodeList 类的新实例。
         /// </summary>
-        public BEncodeList() : base(BEncodeValueKind.List)
+        public BEncodeList() : base(BEncodeValueKind.BEncodeList)
         {
         }
 
@@ -42,12 +42,12 @@ namespace Honoo.Text.BEncode
         /// </summary>
         /// <param name="content">指定从中读取的流。</param>
         /// <exception cref="Exception"></exception>
-        public BEncodeList(Stream content) : base(BEncodeValueKind.List)
+        public BEncodeList(Stream content) : base(BEncodeValueKind.BEncodeList)
         {
             int kc = content.ReadByte();
             if (kc != 108)  // 'l'
             {
-                throw new Exception($"The header char is not a list identification char 'l'. Stop at position: {content.Position}.");
+                throw new ArgumentException($"The header char is not a list identification char 'l'. Stop at position: {content.Position}.");
             }
             kc = content.ReadByte();
             while (true)
@@ -73,7 +73,7 @@ namespace Honoo.Text.BEncode
                         case 55:                                                                                                            // '7'
                         case 56:                                                                                                            // '8'
                         case 57: content.Seek(-1, SeekOrigin.Current); _elements.Add(new BEncodeString(content)); break;                    // '9'
-                        default: throw new Exception($"The incorrect identification char '{kc}'. Stop at position: {content.Position}.");
+                        default: throw new ArgumentException($"The incorrect identification char '{kc}'. Stop at position: {content.Position}.");
                     }
                     kc = content.ReadByte();
                 }

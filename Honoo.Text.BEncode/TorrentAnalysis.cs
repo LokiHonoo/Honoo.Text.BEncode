@@ -306,6 +306,7 @@ namespace Honoo.Text.BEncode
         /// 获取 BTIH 特征码。
         /// </summary>
         /// <returns></returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5350:不要使用弱加密算法", Justification = "<挂起>")]
         public byte[] GetHash()
         {
             BEncodeDictionary info = (BEncodeDictionary)this["info"];
@@ -340,21 +341,12 @@ namespace Honoo.Text.BEncode
         public string GetMagnet(Encoding encoding, bool dn, bool tr, bool trs)
         {
             StringBuilder result = new StringBuilder();
-            result.Append("magnet:?");
-            BEncodeDictionary info = (BEncodeDictionary)this["info"];
-            using (MemoryStream stream = new MemoryStream())
-            {
-                info.Save(stream);
-                using (SHA1 hash = new SHA1Managed())
-                {
-                    stream.Seek(0, SeekOrigin.Begin);
-                    byte[] checksum = hash.ComputeHash(stream);
-                    result.Append("xt=urn:btih:");
-                    result.Append(BitConverter.ToString(checksum, 0, checksum.Length).Replace("-", null));
-                }
-            }
+            result.Append("magnet:?xt=urn:btih:");
+            byte[] checksum = GetHash();
+            result.Append(BitConverter.ToString(checksum, 0, checksum.Length).Replace("-", null));
             if (dn)
             {
+                BEncodeDictionary info = (BEncodeDictionary)this["info"];
                 string name = ((BEncodeString)info["name"]).GetStringValue(encoding);
                 string encoded = Uri.EscapeDataString(name);
                 result.Append("&dn=");

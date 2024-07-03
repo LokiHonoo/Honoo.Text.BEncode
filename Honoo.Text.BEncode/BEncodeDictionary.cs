@@ -9,6 +9,7 @@ namespace Honoo.Text.BEncode
     /// <summary>
     /// BEncode 字典类型。
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1711:标识符应采用正确的后缀", Justification = "<挂起>")]
     public class BEncodeDictionary : BEncodeValue, IEnumerable<KeyValuePair<BEncodeString, BEncodeValue>>
     {
         #region Class
@@ -212,7 +213,7 @@ namespace Honoo.Text.BEncode
         /// <summary>
         /// 初始化 BEncodeDictionary 类的新实例。
         /// </summary>
-        public BEncodeDictionary() : base(BEncodeValueKind.Dictionary)
+        public BEncodeDictionary() : base(BEncodeValueKind.BEncodeDictionary)
         {
             _keyExhibits = new KeyCollection(_elements);
             _valueExhibits = new ValueCollection(_elements);
@@ -223,12 +224,12 @@ namespace Honoo.Text.BEncode
         /// </summary>
         /// <param name="content">指定从中读取的流。</param>
         /// <exception cref="Exception"></exception>
-        public BEncodeDictionary(Stream content) : base(BEncodeValueKind.Dictionary)
+        public BEncodeDictionary(Stream content) : base(BEncodeValueKind.BEncodeDictionary)
         {
             int kc = content.ReadByte();
             if (kc != 100)  // 'd'
             {
-                throw new Exception($"The header char is not a dictionary identification char 'd'. Stop at position: {content.Position}.");
+                throw new ArgumentException($"The header char is not a dictionary identification char 'd'. Stop at position: {content.Position}.");
             }
             kc = content.ReadByte();
             while (true)
@@ -257,7 +258,7 @@ namespace Honoo.Text.BEncode
                         case 55:                                                                                                                 // '7'
                         case 56:                                                                                                                 // '8'
                         case 57: content.Seek(-1, SeekOrigin.Current); _elements.Add(key, new BEncodeString(content)); break;                    // '9'
-                        default: throw new Exception($"The incorrect identification char '{kc}'. Stop at position: {content.Position}.");
+                        default: throw new ArgumentException($"The incorrect identification char '{kc}'. Stop at position: {content.Position}.");
                     }
                     kc = content.ReadByte();
                 }

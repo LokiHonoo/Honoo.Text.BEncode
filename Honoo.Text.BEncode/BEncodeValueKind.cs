@@ -6,23 +6,23 @@
     public enum BEncodeValueKind
     {
         /// <summary>
-        /// BEncode 串行数据类型。
+        /// BEncode 字典类型。
         /// </summary>
-        String = 1,
-
-        /// <summary>
-        /// BEncode 数值类型。
-        /// </summary>
-        Integer,
+        BEncodeDictionary = 1,
 
         /// <summary>
         /// BEncode 列表类型。
         /// </summary>
-        List,
+        BEncodeList,
 
         /// <summary>
-        /// BEncode 字典类型。
+        /// BEncode 数值类型。
         /// </summary>
-        Dictionary,
+        BEncodeInteger,
+
+        /// <summary>
+        /// BEncode 串行数据类型。
+        /// </summary>
+        BEncodeString,
     }
 }

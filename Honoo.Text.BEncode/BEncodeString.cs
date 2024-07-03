@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -8,13 +9,13 @@ namespace Honoo.Text.BEncode
     /// <summary>
     /// BEncode 串行数据类型。
     /// </summary>
-    public class BEncodeString : BEncodeValue, IEquatable<BEncodeString>, IComparable, IComparer<BEncodeString>
+    public class BEncodeString : BEncodeValue, IEquatable<BEncodeString>, IComparer<BEncodeString>, IComparable
     {
         private readonly string _hexValue;
 #if DEBUG
         private readonly string _utf8Value;
-#endif
         private readonly byte[] _value;
+#endif
 
         /// <summary>
         /// 获取原始格式的数据值。
@@ -34,7 +35,7 @@ namespace Honoo.Text.BEncode
         /// </summary>
         /// <param name="value">字节数据类型的值。</param>
         /// <exception cref="Exception"></exception>
-        public BEncodeString(IList<byte> value) : base(BEncodeValueKind.String)
+        public BEncodeString(IList<byte> value) : base(BEncodeValueKind.BEncodeString)
         {
             if (value == null)
             {
@@ -63,7 +64,7 @@ namespace Honoo.Text.BEncode
         /// <param name="value">文本类型的值。</param>
         /// <param name="encoding">用于转换的字符编码。</param>
         /// <exception cref="Exception"></exception>
-        public BEncodeString(string value, Encoding encoding) : base(BEncodeValueKind.String)
+        public BEncodeString(string value, Encoding encoding) : base(BEncodeValueKind.BEncodeString)
         {
             if (value == null)
             {
@@ -85,13 +86,13 @@ namespace Honoo.Text.BEncode
         /// </summary>
         /// <param name="content">指定从中读取的流。</param>
         /// <exception cref="Exception"></exception>
-        public BEncodeString(Stream content) : base(BEncodeValueKind.String)
+        public BEncodeString(Stream content) : base(BEncodeValueKind.BEncodeString)
         {
             var lenString = new StringBuilder();
             int kc = content.ReadByte();
             if (kc < 48 || kc > 57)  // '0'-'9'
             {
-                throw new Exception($"The header char is not a single identification char '0'-'9'. Stop at position: {content.Position}.");
+                throw new ArgumentException($"The header char is not a single identification char '0'-'9'. Stop at position: {content.Position}.");
             }
             while (true)
             {
@@ -105,7 +106,7 @@ namespace Honoo.Text.BEncode
                     kc = content.ReadByte();
                 }
             }
-            int valueLen = int.Parse(lenString.ToString());
+            int valueLen = int.Parse(lenString.ToString(), CultureInfo.InvariantCulture);
             _value = new byte[valueLen];
             content.Read(_value, 0, _value.Length);
             _hexValue = BitConverter.ToString(_value).Replace("-", null);
@@ -123,9 +124,91 @@ namespace Honoo.Text.BEncode
         /// <param name="y">要比较的第二个对象。</param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public int Compare(BEncodeString x, BEncodeString y)
+        public static int Compare(BEncodeString x, BEncodeString y)
         {
-            return x._hexValue.CompareTo(y._hexValue);
+            return string.Compare(x._hexValue, y._hexValue, StringComparison.Ordinal);
+        }
+
+        /// <summary>
+        /// 比较。
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static bool operator !=(BEncodeString left, BEncodeString right)
+        {
+            return !(left == right);
+        }
+
+        /// <summary>
+        /// 比较。
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static bool operator <(BEncodeString left, BEncodeString right)
+        {
+            return (Compare(left, right) < 0);
+        }
+
+        /// <summary>
+        /// 比较。
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static bool operator <=(BEncodeString left, BEncodeString right)
+        {
+            return (Compare(left, right) <= 0);
+        }
+
+        /// <summary>
+        /// 比较。
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static bool operator ==(BEncodeString left, BEncodeString right)
+        {
+            if (left is null)
+            {
+                return right is null;
+            }
+            return left.Equals(right);
+        }
+
+        /// <summary>
+        /// 比较。
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static bool operator >(BEncodeString left, BEncodeString right)
+        {
+            return (Compare(left, right) > 0);
+        }
+
+        /// <summary>
+        /// 比较。
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public static bool operator >=(BEncodeString left, BEncodeString right)
+        {
+            return (Compare(left, right) >= 0);
+        }
+
+        /// <summary>
+        /// 比较两个对象并返回一个值。该值指示一个对象是小于、等于还是大于另一个对象。
+        /// </summary>
+        /// <param name="x">要比较的第一个对象。</param>
+        /// <param name="y">要比较的第二个对象。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        int IComparer<BEncodeString>.Compare(BEncodeString x, BEncodeString y)
+        {
+            return string.Compare(x._hexValue, y._hexValue, StringComparison.Ordinal);
         }
 
         /// <summary>
@@ -136,7 +219,18 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"></exception>
         public int CompareTo(object obj)
         {
-            return _hexValue.CompareTo((obj as BEncodeString)._hexValue);
+            return string.Compare(_hexValue, (obj as BEncodeString)._hexValue, StringComparison.Ordinal);
+        }
+
+        /// <summary>
+        /// 将当前实例与另一个对象比较并返回一个值。该值指示当前实例在排序位置是小于、等于还是大于另一个对象。
+        /// </summary>
+        /// <param name="obj">要比较的对象。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public int CompareTo(BEncodeString other)
+        {
+            return string.Compare(_hexValue, other._hexValue, StringComparison.Ordinal);
         }
 
         /// <summary>
@@ -207,7 +301,7 @@ namespace Honoo.Text.BEncode
             {
                 throw new ArgumentNullException(nameof(stream));
             }
-            byte[] length = Encoding.ASCII.GetBytes(_value.Length.ToString());
+            byte[] length = Encoding.ASCII.GetBytes(_value.Length.ToString(CultureInfo.InvariantCulture));
             stream.Write(length, 0, length.Length);
             stream.WriteByte(58);  // ':'
             stream.Write(_value, 0, _value.Length);
