@@ -9,7 +9,7 @@ namespace Honoo.TorrentAnalysis
     {
         #region Main
 
-        private static void Main(string[] args)
+        private static void Main()
         {
             string fileName = "[kisssub.org][VCB-Studio] 街角魔族 二丁目  Machikado Mazoku 2-Choume  まちカドまぞく 2丁目 [S2 Fin].torrent";
             using (var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read))
@@ -39,13 +39,13 @@ namespace Honoo.TorrentAnalysis
                 Console.WriteLine(torrent.GetPieceLength());
                 Console.WriteLine(torrent.GetComment());
 
-                var files = torrent.GetFiles(encoding, "", 0, long.MaxValue);
+                var files = torrent.SearchFiles(encoding, "", 0, long.MaxValue);
                 files.Sort((x, y) => { return x.Length < y.Length ? 1 : -1; });
                 foreach (var file in files)
                 {
-                    Console.WriteLine(file.Path[^1] + "     " + Numeric.GetSize(file.Length, Numeric.SizeKilo.Auto, 2, out string unit) + unit);
+                    Console.WriteLine(file.Path[file.Path.Length - 1] + "     " + Numeric.GetSize(file.Length, Numeric.SizeKilo.Auto, 2, out string unit) + unit);
                 }
-                var magnet = torrent.GetMagnet();
+                var magnet = torrent.ComputeMagnet();
                 Console.WriteLine(magnet);
             }
             Console.WriteLine();

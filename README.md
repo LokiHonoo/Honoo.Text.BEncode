@@ -10,6 +10,7 @@
     - [NuGet](#nuget)
   - [DEMO](#demo)
   - [CHANGELOG](#changelog)
+    - [1.0.5](#105)
     - [1.0.4](#104)
     - [1.0.3](#103)
     - [1.0.2](#102)
@@ -101,13 +102,13 @@ private static void Main()
         Console.WriteLine(torrent.GetName());
         Console.WriteLine(torrent.GetPieceLength());
         Console.WriteLine(torrent.GetComment());
-        var files = torrent.GetFiles(Encoding.UTF8, "", 0, long.MaxValue);
+        var files = torrent.SearchFiles(Encoding.UTF8, "", 0, long.MaxValue);
         files.Sort((x, y) => { return x.Length < y.Length ? 1 : -1; });
         foreach (var file in files)
         {
             Console.WriteLine(file.Path[^1] + "     " + Honoo.Numeric.GetSize(file.Length, Numeric.Size1024.Auto, 2, out string unit) + unit);
         }
-        var magnet = torrent.GetMagnet();
+        var magnet = torrent.ComputeMagnet();
         Console.WriteLine(magnet);
     }
     Console.WriteLine();
@@ -117,6 +118,10 @@ private static void Main()
 ```
 
 ## CHANGELOG
+
+### 1.0.5
+
+**Features* 重命名 TorrentAnalysis 的部分方法。GetXXX() 表示获取字段属性，ComputeMagnet()，SearchFiles() 表示实时计算。
 
 ### 1.0.4
 

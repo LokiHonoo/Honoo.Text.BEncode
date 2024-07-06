@@ -190,7 +190,7 @@ namespace Honoo.Text.BEncode
         /// <summary>
         /// 将当前实例与另一个对象比较并返回一个值。该值指示当前实例在排序位置是小于、等于还是大于另一个对象。
         /// </summary>
-        /// <param name="obj">要比较的对象。</param>
+        /// <param name="other">要比较的对象。</param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         public int CompareTo(BEncodeInteger other)

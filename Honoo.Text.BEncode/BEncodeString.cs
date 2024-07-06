@@ -12,10 +12,7 @@ namespace Honoo.Text.BEncode
     public class BEncodeString : BEncodeValue, IEquatable<BEncodeString>, IComparer<BEncodeString>, IComparable
     {
         private readonly string _hexValue;
-#if DEBUG
-        private readonly string _utf8Value;
         private readonly byte[] _value;
-#endif
 
         /// <summary>
         /// 获取原始格式的数据值。
@@ -44,9 +41,6 @@ namespace Honoo.Text.BEncode
             _value = new byte[value.Count];
             value.CopyTo(_value, 0);
             _hexValue = BitConverter.ToString(_value).Replace("-", null);
-#if DEBUG
-            _utf8Value = Encoding.UTF8.GetString(_value);
-#endif
         }
 
         /// <summary>
@@ -76,9 +70,6 @@ namespace Honoo.Text.BEncode
             }
             _value = encoding.GetBytes(value);
             _hexValue = BitConverter.ToString(_value).Replace("-", null);
-#if DEBUG
-            _utf8Value = Encoding.UTF8.GetString(_value);
-#endif
         }
 
         /// <summary>
@@ -110,9 +101,6 @@ namespace Honoo.Text.BEncode
             _value = new byte[valueLen];
             content.Read(_value, 0, _value.Length);
             _hexValue = BitConverter.ToString(_value).Replace("-", null);
-#if DEBUG
-            _utf8Value = Encoding.UTF8.GetString(_value);
-#endif
         }
 
         #endregion Construction
@@ -225,7 +213,7 @@ namespace Honoo.Text.BEncode
         /// <summary>
         /// 将当前实例与另一个对象比较并返回一个值。该值指示当前实例在排序位置是小于、等于还是大于另一个对象。
         /// </summary>
-        /// <param name="obj">要比较的对象。</param>
+        /// <param name="other">要比较的对象。</param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
         public int CompareTo(BEncodeString other)

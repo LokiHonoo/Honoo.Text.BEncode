@@ -21,7 +21,7 @@ namespace Honoo.Text.BEncode
         private readonly DateTime _start = DateTime.FromBinary(621355968000000000L);
 
         /// <summary>
-        /// 获取一个值，指示此 Torrent 文件是否包含多个文件。
+        /// 获取一个值，指示此 Torrent 文件是否是多文件格式。
         /// </summary>
         public bool Multiple => _multiple;
 
@@ -53,6 +53,79 @@ namespace Honoo.Text.BEncode
         }
 
         #endregion Construction
+
+        /// <summary>
+        /// 实时计算 BTIH 特征码。
+        /// </summary>
+        /// <returns></returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5350:不要使用弱加密算法", Justification = "<挂起>")]
+        public byte[] ComputeHash()
+        {
+            BEncodeDictionary info = (BEncodeDictionary)this["info"];
+            using (MemoryStream stream = new MemoryStream())
+            {
+                info.Save(stream);
+                using (SHA1 hash = new SHA1Managed())
+                {
+                    stream.Seek(0, SeekOrigin.Begin);
+                    return hash.ComputeHash(stream);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 实时计算 BTIH 特征码标识的磁力链接。
+        /// </summary>
+        /// <returns></returns>
+        public string ComputeMagnet()
+        {
+            return ComputeMagnet(Encoding.UTF8, false, false, false);
+        }
+
+        /// <summary>
+        /// 实时计算 BTIH 特征码标识的磁力链接。
+        /// </summary>
+        /// <param name="encoding">用于转换的字符编码。</param>
+        /// <param name="dn">是否携带显示名称。</param>
+        /// <param name="tr">是否携带主要 Tracker 服务器。</param>
+        /// <param name="trs">是否携带备用 Tracker 服务器列表。</param>
+        /// <returns></returns>
+        public string ComputeMagnet(Encoding encoding, bool dn, bool tr, bool trs)
+        {
+            StringBuilder result = new StringBuilder();
+            result.Append("magnet:?xt=urn:btih:");
+            byte[] checksum = ComputeHash();
+            result.Append(BitConverter.ToString(checksum, 0, checksum.Length).Replace("-", null));
+            if (dn)
+            {
+                BEncodeDictionary info = (BEncodeDictionary)this["info"];
+                string name = ((BEncodeString)info["name"]).GetStringValue(encoding);
+                string encoded = Uri.EscapeDataString(name);
+                result.Append("&dn=");
+                result.Append(encoded);
+            }
+            if (tr && TryGetValue("announce", out BEncodeString announce))
+            {
+                result.Append("&tr=");
+                result.Append(announce.GetStringValue(encoding));
+            }
+            if (trs && TryGetValue("announce-list", out BEncodeList list))
+            {
+                foreach (BEncodeList list2 in list.Cast<BEncodeList>())
+                {
+                    foreach (BEncodeString entry in list2.Cast<BEncodeString>())
+                    {
+                        //result.Append("&tr=");
+                        //string a = entry.GetStringValue(encoding);
+                        //string encoded = Uri.EscapeDataString(a);
+                        //result.Append(encoded);
+                        result.Append("&tr=");
+                        result.Append(entry.GetStringValue(encoding));
+                    }
+                }
+            }
+            return result.ToString();
+        }
 
         /// <summary>
         /// 获取主要 Tracker 服务器。默认使用 Encoding.UTF8 编码。
@@ -182,200 +255,6 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 获取所包含文件的信息。默认使用 Encoding.UTF8 编码。
-        /// </summary>
-        /// <returns></returns>
-        public List<TorrentFileInfo> GetFiles()
-        {
-            return GetFiles(Encoding.UTF8, string.Empty, 0, long.MaxValue);
-        }
-
-        /// <summary>
-        /// 获取所包含文件的信息。
-        /// </summary>
-        /// <param name="encoding">用于转换的字符编码。</param>
-        /// <returns></returns>
-        public List<TorrentFileInfo> GetFiles(Encoding encoding)
-        {
-            return GetFiles(encoding, string.Empty, 0, long.MaxValue);
-        }
-
-        /// <summary>
-        /// 获取所包含文件的信息。
-        /// </summary>
-        /// <param name="encoding">用于转换的字符编码。</param>
-        /// <param name="searchPattern">检索条件。使用正则表达式。</param>
-        /// <returns></returns>
-        public List<TorrentFileInfo> GetFiles(Encoding encoding, string searchPattern)
-        {
-            return GetFiles(encoding, searchPattern, 0, long.MaxValue);
-        }
-
-        /// <summary>
-        /// 获取所包含文件的信息。
-        /// </summary>
-        /// <param name="encoding">用于转换的字符编码。</param>
-        /// <param name="searchPattern">检索条件。使用正则表达式。</param>
-        /// <param name="minSize">匹配最小文件大小。</param>
-        /// <param name="maxSize">匹配最大文件大小。</param>
-        /// <returns></returns>
-        public List<TorrentFileInfo> GetFiles(Encoding encoding, string searchPattern, long minSize, long maxSize)
-        {
-            List<TorrentFileInfo> result = new List<TorrentFileInfo>();
-            BEncodeDictionary info = (BEncodeDictionary)this["info"];
-            if (info.TryGetValue("files", out BEncodeList files))
-            {
-                foreach (BEncodeDictionary file in files.Cast<BEncodeDictionary>())
-                {
-                    bool matched = false;
-                    List<string> paths = new List<string>();
-                    long length = -1;
-                    byte[] md5sum = null;
-                    foreach (BEncodeString path in ((BEncodeList)file["path"]).Cast<BEncodeString>())
-                    {
-                        paths.Add(path.GetStringValue(encoding));
-                    }
-                    if (!string.IsNullOrWhiteSpace(searchPattern))
-                    {
-                        foreach (string path in paths)
-                        {
-                            Match match = Regex.Match(path, searchPattern);
-                            matched |= match.Success;
-                        }
-                    }
-                    else
-                    {
-                        matched = true;
-                    }
-                    if (matched)
-                    {
-                        length = ((BEncodeInteger)file["length"]).GetInt64Value();
-                        if (length >= minSize && length <= maxSize)
-                        {
-                            if (info.TryGetValue("md5sum", out BEncodeString md5))
-                            {
-                                md5sum = md5.Value;
-                            }
-                        }
-                        else
-                        {
-                            matched = false;
-                        }
-                    }
-                    if (matched)
-                    {
-                        result.Add(new TorrentFileInfo(paths.ToArray(), length, md5sum));
-                    }
-                }
-            }
-            else
-            {
-                bool matched = true;
-                string path = ((BEncodeString)info["name"]).GetStringValue(encoding);
-                long length = -1;
-                byte[] md5sum = null;
-                if (!string.IsNullOrWhiteSpace(searchPattern))
-                {
-                    Match match = Regex.Match(path, searchPattern);
-                    matched = match.Success;
-                }
-                if (matched)
-                {
-                    length = ((BEncodeInteger)info["length"]).GetInt64Value();
-                    if (length >= minSize && length <= maxSize)
-                    {
-                        if (info.TryGetValue("md5sum", out BEncodeString md5))
-                        {
-                            md5sum = md5.Value;
-                        }
-                    }
-                    else
-                    {
-                        matched = false;
-                    }
-                }
-                if (matched)
-                {
-                    result.Add(new TorrentFileInfo(new string[] { path }, length, md5sum));
-                }
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// 获取 BTIH 特征码。
-        /// </summary>
-        /// <returns></returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5350:不要使用弱加密算法", Justification = "<挂起>")]
-        public byte[] GetHash()
-        {
-            BEncodeDictionary info = (BEncodeDictionary)this["info"];
-            using (MemoryStream stream = new MemoryStream())
-            {
-                info.Save(stream);
-                using (SHA1 hash = new SHA1Managed())
-                {
-                    stream.Seek(0, SeekOrigin.Begin);
-                    return hash.ComputeHash(stream);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 获取 BTIH 特征码标识的磁力链接。
-        /// </summary>
-        /// <returns></returns>
-        public string GetMagnet()
-        {
-            return GetMagnet(Encoding.UTF8, false, false, false);
-        }
-
-        /// <summary>
-        /// 获取 BTIH 特征码标识的磁力链接。
-        /// </summary>
-        /// <param name="encoding">用于转换的字符编码。</param>
-        /// <param name="dn">是否携带显示名称。</param>
-        /// <param name="tr">是否携带主要 Tracker 服务器。</param>
-        /// <param name="trs">是否携带备用 Tracker 服务器列表。</param>
-        /// <returns></returns>
-        public string GetMagnet(Encoding encoding, bool dn, bool tr, bool trs)
-        {
-            StringBuilder result = new StringBuilder();
-            result.Append("magnet:?xt=urn:btih:");
-            byte[] checksum = GetHash();
-            result.Append(BitConverter.ToString(checksum, 0, checksum.Length).Replace("-", null));
-            if (dn)
-            {
-                BEncodeDictionary info = (BEncodeDictionary)this["info"];
-                string name = ((BEncodeString)info["name"]).GetStringValue(encoding);
-                string encoded = Uri.EscapeDataString(name);
-                result.Append("&dn=");
-                result.Append(encoded);
-            }
-            if (tr && TryGetValue("announce", out BEncodeString announce))
-            {
-                result.Append("&tr=");
-                result.Append(announce.GetStringValue(encoding));
-            }
-            if (trs && TryGetValue("announce-list", out BEncodeList list))
-            {
-                foreach (BEncodeList list2 in list.Cast<BEncodeList>())
-                {
-                    foreach (BEncodeString entry in list2.Cast<BEncodeString>())
-                    {
-                        //result.Append("&tr=");
-                        //string a = entry.GetStringValue(encoding);
-                        //string encoded = Uri.EscapeDataString(a);
-                        //result.Append(encoded);
-                        result.Append("&tr=");
-                        result.Append(entry.GetStringValue(encoding));
-                    }
-                }
-            }
-            return result.ToString();
-        }
-
-        /// <summary>
         /// 获取 BT 种子文件的文件名。默认使用 Encoding.UTF8 编码。
         /// </summary>
         /// <returns></returns>
@@ -481,6 +360,127 @@ namespace Honoo.Text.BEncode
                 return value.GetStringValue(encoding);
             }
             return null;
+        }
+
+        /// <summary>
+        /// 获取所包含文件的信息。默认使用 Encoding.UTF8 编码。
+        /// </summary>
+        /// <returns></returns>
+        public List<TorrentFileInfo> SearchFiles()
+        {
+            return SearchFiles(Encoding.UTF8, string.Empty, 0, long.MaxValue);
+        }
+
+        /// <summary>
+        /// 获取所包含文件的信息。
+        /// </summary>
+        /// <param name="encoding">用于转换的字符编码。</param>
+        /// <returns></returns>
+        public List<TorrentFileInfo> SearchFiles(Encoding encoding)
+        {
+            return SearchFiles(encoding, string.Empty, 0, long.MaxValue);
+        }
+
+        /// <summary>
+        /// 获取所包含文件的信息。
+        /// </summary>
+        /// <param name="encoding">用于转换的字符编码。</param>
+        /// <param name="searchPattern">检索条件。使用正则表达式。</param>
+        /// <returns></returns>
+        public List<TorrentFileInfo> SearchFiles(Encoding encoding, string searchPattern)
+        {
+            return SearchFiles(encoding, searchPattern, 0, long.MaxValue);
+        }
+
+        /// <summary>
+        /// 获取所包含文件的信息。
+        /// </summary>
+        /// <param name="encoding">用于转换的字符编码。</param>
+        /// <param name="searchPattern">检索条件。使用正则表达式。</param>
+        /// <param name="minSize">匹配最小文件大小。</param>
+        /// <param name="maxSize">匹配最大文件大小。</param>
+        /// <returns></returns>
+        public List<TorrentFileInfo> SearchFiles(Encoding encoding, string searchPattern, long minSize, long maxSize)
+        {
+            List<TorrentFileInfo> result = new List<TorrentFileInfo>();
+            BEncodeDictionary info = (BEncodeDictionary)this["info"];
+            if (info.TryGetValue("files", out BEncodeList files))
+            {
+                foreach (BEncodeDictionary file in files.Cast<BEncodeDictionary>())
+                {
+                    bool matched = false;
+                    List<string> paths = new List<string>();
+                    long length = -1;
+                    byte[] md5sum = null;
+                    foreach (BEncodeString path in ((BEncodeList)file["path"]).Cast<BEncodeString>())
+                    {
+                        paths.Add(path.GetStringValue(encoding));
+                    }
+                    if (!string.IsNullOrWhiteSpace(searchPattern))
+                    {
+                        foreach (string path in paths)
+                        {
+                            Match match = Regex.Match(path, searchPattern);
+                            matched |= match.Success;
+                        }
+                    }
+                    else
+                    {
+                        matched = true;
+                    }
+                    if (matched)
+                    {
+                        length = ((BEncodeInteger)file["length"]).GetInt64Value();
+                        if (length >= minSize && length <= maxSize)
+                        {
+                            if (info.TryGetValue("md5sum", out BEncodeString md5))
+                            {
+                                md5sum = md5.Value;
+                            }
+                        }
+                        else
+                        {
+                            matched = false;
+                        }
+                    }
+                    if (matched)
+                    {
+                        result.Add(new TorrentFileInfo(paths.ToArray(), length, md5sum));
+                    }
+                }
+            }
+            else
+            {
+                bool matched = true;
+                string path = ((BEncodeString)info["name"]).GetStringValue(encoding);
+                long length = -1;
+                byte[] md5sum = null;
+                if (!string.IsNullOrWhiteSpace(searchPattern))
+                {
+                    Match match = Regex.Match(path, searchPattern);
+                    matched = match.Success;
+                }
+                if (matched)
+                {
+                    length = ((BEncodeInteger)info["length"]).GetInt64Value();
+                    if (length >= minSize && length <= maxSize)
+                    {
+                        if (info.TryGetValue("md5sum", out BEncodeString md5))
+                        {
+                            md5sum = md5.Value;
+                        }
+                    }
+                    else
+                    {
+                        matched = false;
+                    }
+                }
+                if (matched)
+                {
+                    result.Add(new TorrentFileInfo(new string[] { path }, length, md5sum));
+                }
+            }
+            return result;
         }
     }
 }
