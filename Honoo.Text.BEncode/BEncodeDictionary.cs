@@ -17,6 +17,7 @@ namespace Honoo.Text.BEncode
         /// <summary>
         /// 代表此元素集合的键的集合。
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:嵌套类型应不可见", Justification = "<挂起>")]
         public sealed class KeyCollection : IEnumerable<BEncodeString>
         {
             #region Properties
@@ -64,6 +65,10 @@ namespace Honoo.Text.BEncode
 
             public void CopyTo(string[] array, int arrayIndex, Encoding encoding)
             {
+                if (array == null)
+                {
+                    throw new ArgumentNullException(nameof(array));
+                }
                 foreach (var key in _elements.Keys)
                 {
                     array[arrayIndex] = key.GetStringValue(encoding);
@@ -89,6 +94,7 @@ namespace Honoo.Text.BEncode
         /// <summary>
         /// 代表此元素集合的值的集合。
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:嵌套类型应不可见", Justification = "<挂起>")]
         public sealed class ValueCollection : IEnumerable<BEncodeValue>
         {
             #region Properties
@@ -161,6 +167,7 @@ namespace Honoo.Text.BEncode
         /// <param name="key">元素的键。</param>
         /// <returns></returns>
         /// <exception cref="Exception"/>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1043:将整型或字符串参数用于索引器", Justification = "<挂起>")]
         public BEncodeValue this[BEncodeString key]
         {
             get => _elements.TryGetValue(key, out BEncodeValue value) ? value : null;
@@ -226,6 +233,10 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"></exception>
         public BEncodeDictionary(Stream content) : base(BEncodeValueKind.BEncodeDictionary)
         {
+            if (content == null)
+            {
+                throw new ArgumentNullException(nameof(content));
+            }
             int kc = content.ReadByte();
             if (kc != 100)  // 'd'
             {

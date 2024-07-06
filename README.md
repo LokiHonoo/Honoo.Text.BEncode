@@ -10,7 +10,7 @@
     - [NuGet](#nuget)
   - [DEMO](#demo)
   - [CHANGELOG](#changelog)
-    - [1.0.5](#105)
+    - [1.0.6](#106)
     - [1.0.4](#104)
     - [1.0.3](#103)
     - [1.0.2](#102)
@@ -119,9 +119,9 @@ private static void Main()
 
 ## CHANGELOG
 
-### 1.0.5
+### 1.0.6
 
-**Features* 重命名 TorrentAnalysis 的部分方法。GetXXX() 表示获取字段属性，ComputeMagnet()，SearchFiles() 表示实时计算。
+**Fix* 代码检查。
 
 ### 1.0.4
 

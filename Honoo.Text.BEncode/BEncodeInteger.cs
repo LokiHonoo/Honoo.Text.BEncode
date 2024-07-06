@@ -57,6 +57,10 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"></exception>
         public BEncodeInteger(Stream content) : base(BEncodeValueKind.BEncodeInteger)
         {
+            if (content == null)
+            {
+                throw new ArgumentNullException(nameof(content));
+            }
             int kc = content.ReadByte();
             if (kc != 105)  // 'i'
             {
@@ -91,6 +95,14 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"></exception>
         public static int Compare(BEncodeInteger x, BEncodeInteger y)
         {
+            if (x is null)
+            {
+                throw new ArgumentNullException(nameof(x));
+            }
+            if (y is null)
+            {
+                throw new ArgumentNullException(nameof(y));
+            }
             return BigInteger.Compare(x._numericValue, y._numericValue);
         }
 
@@ -113,7 +125,7 @@ namespace Honoo.Text.BEncode
         /// <returns></returns>
         public static bool operator <(BEncodeInteger left, BEncodeInteger right)
         {
-            return (Compare(left, right) < 0);
+            return Compare(left, right) < 0;
         }
 
         /// <summary>
@@ -124,7 +136,7 @@ namespace Honoo.Text.BEncode
         /// <returns></returns>
         public static bool operator <=(BEncodeInteger left, BEncodeInteger right)
         {
-            return (Compare(left, right) <= 0);
+            return Compare(left, right) <= 0;
         }
 
         /// <summary>
@@ -150,7 +162,7 @@ namespace Honoo.Text.BEncode
         /// <returns></returns>
         public static bool operator >(BEncodeInteger left, BEncodeInteger right)
         {
-            return (Compare(left, right) > 0);
+            return Compare(left, right) > 0;
         }
 
         /// <summary>
@@ -161,7 +173,7 @@ namespace Honoo.Text.BEncode
         /// <returns></returns>
         public static bool operator >=(BEncodeInteger left, BEncodeInteger right)
         {
-            return (Compare(left, right) >= 0);
+            return Compare(left, right) >= 0;
         }
 
         /// <summary>
@@ -184,7 +196,11 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"></exception>
         public int CompareTo(object obj)
         {
-            return _numericValue.CompareTo((obj as BEncodeInteger)._numericValue);
+            if (obj is BEncodeInteger other)
+            {
+                return CompareTo(other);
+            }
+            throw new ArgumentException($"{nameof(obj)} is not a BEncodeInteger.");
         }
 
         /// <summary>
@@ -195,6 +211,10 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"></exception>
         public int CompareTo(BEncodeInteger other)
         {
+            if (other is null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
             return _numericValue.CompareTo(other._numericValue);
         }
 
@@ -231,7 +251,8 @@ namespace Honoo.Text.BEncode
         /// 获取转换为 Int32 格式的数据值。
         /// </summary>
         /// <returns></returns>
-        /// <exception cref="Exception"></exception>
+        /// <exception cref="Exception"/>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1024:在适用处使用属性", Justification = "<挂起>")]
         public int GetInt32Value()
         {
             return (int)_numericValue;
@@ -241,7 +262,8 @@ namespace Honoo.Text.BEncode
         /// 获取转换为 Int64 格式的数据值。
         /// </summary>
         /// <returns></returns>
-        /// <exception cref="Exception"></exception>
+        /// <exception cref="Exception"/>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1024:在适用处使用属性", Justification = "<挂起>")]
         public long GetInt64Value()
         {
             return (long)_numericValue;

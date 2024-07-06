@@ -44,6 +44,10 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"></exception>
         public BEncodeList(Stream content) : base(BEncodeValueKind.BEncodeList)
         {
+            if (content == null)
+            {
+                throw new ArgumentNullException(nameof(content));
+            }
             int kc = content.ReadByte();
             if (kc != 108)  // 'l'
             {

@@ -17,13 +17,8 @@ namespace Honoo.Text.BEncode
         /// <summary>
         /// 获取原始格式的数据值。
         /// </summary>
-        public byte[] Value
-        {
-            get
-            {
-                return (byte[])_value.Clone();
-            }
-        }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1819:属性不应返回数组", Justification = "<挂起>")]
+        public byte[] Value => _value;
 
         #region Construction
 
@@ -79,6 +74,10 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"></exception>
         public BEncodeString(Stream content) : base(BEncodeValueKind.BEncodeString)
         {
+            if (content == null)
+            {
+                throw new ArgumentNullException(nameof(content));
+            }
             var lenString = new StringBuilder();
             int kc = content.ReadByte();
             if (kc < 48 || kc > 57)  // '0'-'9'
@@ -114,6 +113,14 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"></exception>
         public static int Compare(BEncodeString x, BEncodeString y)
         {
+            if (x is null)
+            {
+                throw new ArgumentNullException(nameof(x));
+            }
+            if (y is null)
+            {
+                throw new ArgumentNullException(nameof(y));
+            }
             return string.Compare(x._hexValue, y._hexValue, StringComparison.Ordinal);
         }
 
@@ -207,7 +214,11 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"></exception>
         public int CompareTo(object obj)
         {
-            return string.Compare(_hexValue, (obj as BEncodeString)._hexValue, StringComparison.Ordinal);
+            if (obj is BEncodeString other)
+            {
+                return CompareTo(other);
+            }
+            throw new ArgumentException($"{nameof(obj)} is not a BEncodeString.");
         }
 
         /// <summary>
@@ -218,6 +229,10 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"></exception>
         public int CompareTo(BEncodeString other)
         {
+            if (other is null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
             return string.Compare(_hexValue, other._hexValue, StringComparison.Ordinal);
         }
 
@@ -254,6 +269,7 @@ namespace Honoo.Text.BEncode
         /// 获取转换为十六进制字符串格式的数据值。
         /// </summary>
         /// <returns></returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1024:在适用处使用属性", Justification = "<挂起>")]
         public string GetHexValue()
         {
             return _hexValue;
@@ -263,6 +279,7 @@ namespace Honoo.Text.BEncode
         /// 获取转换为 String 格式的数据值。默认使用 Encoding.UTF8 编码。
         /// </summary>
         /// <returns></returns>
+        /// <exception cref="Exception"/>
         public string GetStringValue()
         {
             return Encoding.UTF8.GetString(_value);
@@ -273,8 +290,13 @@ namespace Honoo.Text.BEncode
         /// </summary>
         /// <param name="encoding">用于转换的字符编码。</param>
         /// <returns></returns>
+        /// <exception cref="Exception"/>
         public string GetStringValue(Encoding encoding)
         {
+            if (encoding is null)
+            {
+                throw new ArgumentNullException(nameof(encoding));
+            }
             return encoding.GetString(_value);
         }
 

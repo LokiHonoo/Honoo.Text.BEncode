@@ -3,6 +3,7 @@
     /// <summary>
     /// BEncode 值的类型。
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1008:枚举应具有零值", Justification = "<挂起>")]
     public enum BEncodeValueKind
     {
         /// <summary>

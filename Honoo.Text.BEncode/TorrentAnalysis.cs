@@ -74,60 +74,6 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 实时计算 BTIH 特征码标识的磁力链接。
-        /// </summary>
-        /// <returns></returns>
-        public string ComputeMagnet()
-        {
-            return ComputeMagnet(Encoding.UTF8, false, false, false);
-        }
-
-        /// <summary>
-        /// 实时计算 BTIH 特征码标识的磁力链接。
-        /// </summary>
-        /// <param name="encoding">用于转换的字符编码。</param>
-        /// <param name="dn">是否携带显示名称。</param>
-        /// <param name="tr">是否携带主要 Tracker 服务器。</param>
-        /// <param name="trs">是否携带备用 Tracker 服务器列表。</param>
-        /// <returns></returns>
-        public string ComputeMagnet(Encoding encoding, bool dn, bool tr, bool trs)
-        {
-            StringBuilder result = new StringBuilder();
-            result.Append("magnet:?xt=urn:btih:");
-            byte[] checksum = ComputeHash();
-            result.Append(BitConverter.ToString(checksum, 0, checksum.Length).Replace("-", null));
-            if (dn)
-            {
-                BEncodeDictionary info = (BEncodeDictionary)this["info"];
-                string name = ((BEncodeString)info["name"]).GetStringValue(encoding);
-                string encoded = Uri.EscapeDataString(name);
-                result.Append("&dn=");
-                result.Append(encoded);
-            }
-            if (tr && TryGetValue("announce", out BEncodeString announce))
-            {
-                result.Append("&tr=");
-                result.Append(announce.GetStringValue(encoding));
-            }
-            if (trs && TryGetValue("announce-list", out BEncodeList list))
-            {
-                foreach (BEncodeList list2 in list.Cast<BEncodeList>())
-                {
-                    foreach (BEncodeString entry in list2.Cast<BEncodeString>())
-                    {
-                        //result.Append("&tr=");
-                        //string a = entry.GetStringValue(encoding);
-                        //string encoded = Uri.EscapeDataString(a);
-                        //result.Append(encoded);
-                        result.Append("&tr=");
-                        result.Append(entry.GetStringValue(encoding));
-                    }
-                }
-            }
-            return result.ToString();
-        }
-
-        /// <summary>
         /// 获取主要 Tracker 服务器。默认使用 Encoding.UTF8 编码。
         /// </summary>
         /// <returns></returns>
@@ -154,7 +100,7 @@ namespace Honoo.Text.BEncode
         /// 获取备用 Tracker 服务器列表。默认使用 Encoding.UTF8 编码。
         /// </summary>
         /// <returns></returns>
-        public List<List<string>> GetAnnounceList()
+        public string[][] GetAnnounceList()
         {
             return GetAnnounceList(Encoding.UTF8);
         }
@@ -164,9 +110,9 @@ namespace Honoo.Text.BEncode
         /// </summary>
         /// <param name="encoding">用于转换的字符编码。</param>
         /// <returns></returns>
-        public List<List<string>> GetAnnounceList(Encoding encoding)
+        public string[][] GetAnnounceList(Encoding encoding)
         {
-            List<List<string>> result = new List<List<string>>();
+            List<string[]> result = new List<string[]>();
             if (TryGetValue("announce-list", out BEncodeList list))
             {
                 foreach (BEncodeList list2 in list.Cast<BEncodeList>())
@@ -176,10 +122,10 @@ namespace Honoo.Text.BEncode
                     {
                         al.Add(entry.GetStringValue(encoding));
                     }
-                    result.Add(al);
+                    result.Add(al.ToArray());
                 }
             }
-            return result;
+            return result.ToArray();
         }
 
         /// <summary>
@@ -255,120 +201,13 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 获取 BT 种子文件的文件名。默认使用 Encoding.UTF8 编码。
-        /// </summary>
-        /// <returns></returns>
-        public string GetName()
-        {
-            return GetName(Encoding.UTF8);
-        }
-
-        /// <summary>
-        /// 获取 BT 种子文件的文件名。
-        /// </summary>
-        /// <param name="encoding">用于转换的字符编码。</param>
-        /// <returns></returns>
-        public string GetName(Encoding encoding)
-        {
-            BEncodeDictionary info = (BEncodeDictionary)this["info"];
-            return ((BEncodeString)info["name"]).GetStringValue(encoding);
-        }
-
-        /// <summary>
-        /// 获取 DHT 初始节点。
-        /// </summary>
-        /// <returns></returns>
-        public List<IPEndPoint> GetNodes()
-        {
-            List<IPEndPoint> result = new List<IPEndPoint>();
-            if (TryGetValue("nodes", out BEncodeList list))
-            {
-                foreach (BEncodeList list2 in list.Cast<BEncodeList>())
-                {
-                    IPAddress ip = IPAddress.Parse(((BEncodeString)list2[0]).GetStringValue());
-                    int port = ((BEncodeInteger)list2[1]).GetInt32Value();
-                    IPEndPoint ep = new IPEndPoint(ip, port);
-                    result.Add(ep);
-                }
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// 获取分块大小。
-        /// </summary>
-        /// <returns></returns>
-        public long GetPieceLength()
-        {
-            BEncodeDictionary info = (BEncodeDictionary)this["info"];
-            return ((BEncodeInteger)info["piece length"]).GetInt64Value();
-        }
-
-        /// <summary>
-        /// 获取分块的集成 Hash。
-        /// </summary>
-        ///         /// <returns></returns>
-        public byte[] GetPieces()
-        {
-            BEncodeDictionary info = (BEncodeDictionary)this["info"];
-            return ((BEncodeString)info["pieces"]).Value;
-        }
-
-        /// <summary>
-        /// 获取发布者。默认使用 Encoding.UTF8 编码。
-        /// </summary>
-        /// <returns></returns>
-        public string GetPublisher()
-        {
-            return GetPublisher(Encoding.UTF8);
-        }
-
-        /// <summary>
-        /// 获取发布者。
-        /// </summary>
-        /// <param name="encoding">用于转换的字符编码。</param>
-        /// <returns></returns>
-        public string GetPublisher(Encoding encoding)
-        {
-            BEncodeDictionary info = (BEncodeDictionary)this["info"];
-            if (info.TryGetValue("publisher", out BEncodeString value))
-            {
-                return value.GetStringValue(encoding);
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// 获取发布者 Url。默认使用 Encoding.UTF8 编码。
-        /// </summary>
-        /// <returns></returns>
-        public string GetPublisherUrl()
-        {
-            return GetPublisherUrl(Encoding.UTF8);
-        }
-
-        /// <summary>
-        /// 获取发布者 Url。
-        /// </summary>
-        /// <param name="encoding">用于转换的字符编码。</param>
-        /// <returns></returns>
-        public string GetPublisherUrl(Encoding encoding)
-        {
-            BEncodeDictionary info = (BEncodeDictionary)this["info"];
-            if (info.TryGetValue("publisher-url", out BEncodeString value))
-            {
-                return value.GetStringValue(encoding);
-            }
-            return null;
-        }
-
-        /// <summary>
         /// 获取所包含文件的信息。默认使用 Encoding.UTF8 编码。
         /// </summary>
         /// <returns></returns>
-        public List<TorrentFileInfo> SearchFiles()
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1002:不要公开泛型列表", Justification = "<挂起>")]
+        public List<TorrentFileInfo> GetFiles()
         {
-            return SearchFiles(Encoding.UTF8, string.Empty, 0, long.MaxValue);
+            return GetFiles(Encoding.UTF8, string.Empty, 0, long.MaxValue);
         }
 
         /// <summary>
@@ -376,9 +215,10 @@ namespace Honoo.Text.BEncode
         /// </summary>
         /// <param name="encoding">用于转换的字符编码。</param>
         /// <returns></returns>
-        public List<TorrentFileInfo> SearchFiles(Encoding encoding)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1002:不要公开泛型列表", Justification = "<挂起>")]
+        public List<TorrentFileInfo> GetFiles(Encoding encoding)
         {
-            return SearchFiles(encoding, string.Empty, 0, long.MaxValue);
+            return GetFiles(encoding, string.Empty, 0, long.MaxValue);
         }
 
         /// <summary>
@@ -387,9 +227,10 @@ namespace Honoo.Text.BEncode
         /// <param name="encoding">用于转换的字符编码。</param>
         /// <param name="searchPattern">检索条件。使用正则表达式。</param>
         /// <returns></returns>
-        public List<TorrentFileInfo> SearchFiles(Encoding encoding, string searchPattern)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1002:不要公开泛型列表", Justification = "<挂起>")]
+        public List<TorrentFileInfo> GetFiles(Encoding encoding, string searchPattern)
         {
-            return SearchFiles(encoding, searchPattern, 0, long.MaxValue);
+            return GetFiles(encoding, searchPattern, 0, long.MaxValue);
         }
 
         /// <summary>
@@ -400,7 +241,8 @@ namespace Honoo.Text.BEncode
         /// <param name="minSize">匹配最小文件大小。</param>
         /// <param name="maxSize">匹配最大文件大小。</param>
         /// <returns></returns>
-        public List<TorrentFileInfo> SearchFiles(Encoding encoding, string searchPattern, long minSize, long maxSize)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1002:不要公开泛型列表", Justification = "<挂起>")]
+        public List<TorrentFileInfo> GetFiles(Encoding encoding, string searchPattern, long minSize, long maxSize)
         {
             List<TorrentFileInfo> result = new List<TorrentFileInfo>();
             BEncodeDictionary info = (BEncodeDictionary)this["info"];
@@ -481,6 +323,170 @@ namespace Honoo.Text.BEncode
                 }
             }
             return result;
+        }
+
+        /// <summary>
+        /// 实时计算 BTIH 特征码标识的磁力链接。
+        /// </summary>
+        /// <returns></returns>
+        public string GetMagnet()
+        {
+            return GetMagnet(Encoding.UTF8, false, false, false);
+        }
+
+        /// <summary>
+        /// 实时计算 BTIH 特征码标识的磁力链接。
+        /// </summary>
+        /// <param name="encoding">用于转换的字符编码。</param>
+        /// <param name="dn">是否携带显示名称。</param>
+        /// <param name="tr">是否携带主要 Tracker 服务器。</param>
+        /// <param name="trs">是否携带备用 Tracker 服务器列表。</param>
+        /// <returns></returns>
+        public string GetMagnet(Encoding encoding, bool dn, bool tr, bool trs)
+        {
+            StringBuilder result = new StringBuilder();
+            result.Append("magnet:?xt=urn:btih:");
+            byte[] checksum = ComputeHash();
+            result.Append(BitConverter.ToString(checksum, 0, checksum.Length).Replace("-", null));
+            if (dn)
+            {
+                BEncodeDictionary info = (BEncodeDictionary)this["info"];
+                string name = ((BEncodeString)info["name"]).GetStringValue(encoding);
+                string encoded = Uri.EscapeDataString(name);
+                result.Append("&dn=");
+                result.Append(encoded);
+            }
+            if (tr && TryGetValue("announce", out BEncodeString announce))
+            {
+                result.Append("&tr=");
+                result.Append(announce.GetStringValue(encoding));
+            }
+            if (trs && TryGetValue("announce-list", out BEncodeList list))
+            {
+                foreach (BEncodeList list2 in list.Cast<BEncodeList>())
+                {
+                    foreach (BEncodeString entry in list2.Cast<BEncodeString>())
+                    {
+                        //result.Append("&tr=");
+                        //string a = entry.GetStringValue(encoding);
+                        //string encoded = Uri.EscapeDataString(a);
+                        //result.Append(encoded);
+                        result.Append("&tr=");
+                        result.Append(entry.GetStringValue(encoding));
+                    }
+                }
+            }
+            return result.ToString();
+        }
+
+        /// <summary>
+        /// 获取 BT 种子文件的文件名。默认使用 Encoding.UTF8 编码。
+        /// </summary>
+        /// <returns></returns>
+        public string GetName()
+        {
+            return GetName(Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// 获取 BT 种子文件的文件名。
+        /// </summary>
+        /// <param name="encoding">用于转换的字符编码。</param>
+        /// <returns></returns>
+        public string GetName(Encoding encoding)
+        {
+            BEncodeDictionary info = (BEncodeDictionary)this["info"];
+            return ((BEncodeString)info["name"]).GetStringValue(encoding);
+        }
+
+        /// <summary>
+        /// 获取 DHT 初始节点。
+        /// </summary>
+        /// <returns></returns>
+        public IPEndPoint[] GetNodes()
+        {
+            List<IPEndPoint> result = new List<IPEndPoint>();
+            if (TryGetValue("nodes", out BEncodeList list))
+            {
+                foreach (BEncodeList list2 in list.Cast<BEncodeList>())
+                {
+                    IPAddress ip = IPAddress.Parse(((BEncodeString)list2[0]).GetStringValue());
+                    int port = ((BEncodeInteger)list2[1]).GetInt32Value();
+                    IPEndPoint ep = new IPEndPoint(ip, port);
+                    result.Add(ep);
+                }
+            }
+            return result.ToArray();
+        }
+
+        /// <summary>
+        /// 获取分块大小。
+        /// </summary>
+        /// <returns></returns>
+        public long GetPieceLength()
+        {
+            BEncodeDictionary info = (BEncodeDictionary)this["info"];
+            return ((BEncodeInteger)info["piece length"]).GetInt64Value();
+        }
+
+        /// <summary>
+        /// 获取分块的集成 Hash。
+        /// </summary>
+        ///         /// <returns></returns>
+        public byte[] GetPieces()
+        {
+            BEncodeDictionary info = (BEncodeDictionary)this["info"];
+            return ((BEncodeString)info["pieces"]).Value;
+        }
+
+        /// <summary>
+        /// 获取发布者。默认使用 Encoding.UTF8 编码。
+        /// </summary>
+        /// <returns></returns>
+        public string GetPublisher()
+        {
+            return GetPublisher(Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// 获取发布者。
+        /// </summary>
+        /// <param name="encoding">用于转换的字符编码。</param>
+        /// <returns></returns>
+        public string GetPublisher(Encoding encoding)
+        {
+            BEncodeDictionary info = (BEncodeDictionary)this["info"];
+            if (info.TryGetValue("publisher", out BEncodeString value))
+            {
+                return value.GetStringValue(encoding);
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 获取发布者 Url。默认使用 Encoding.UTF8 编码。
+        /// </summary>
+        /// <returns></returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1055:类 URI 返回值不应是字符串", Justification = "<挂起>")]
+        public string GetPublisherUrl()
+        {
+            return GetPublisherUrl(Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// 获取发布者 Url。
+        /// </summary>
+        /// <param name="encoding">用于转换的字符编码。</param>
+        /// <returns></returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1055:类 URI 返回值不应是字符串", Justification = "<挂起>")]
+        public string GetPublisherUrl(Encoding encoding)
+        {
+            BEncodeDictionary info = (BEncodeDictionary)this["info"];
+            if (info.TryGetValue("publisher-url", out BEncodeString value))
+            {
+                return value.GetStringValue(encoding);
+            }
+            return null;
         }
     }
 }

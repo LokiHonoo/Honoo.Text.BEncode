@@ -17,11 +17,13 @@
         /// <summary>
         /// 获取文件的 MD5。
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1819:属性不应返回数组", Justification = "<挂起>")]
         public byte[] Md5Sum => _md5Sum;
 
         /// <summary>
         /// 获取文件的路径。
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1819:属性不应返回数组", Justification = "<挂起>")]
         public string[] Path => _path;
 
         #region Construction

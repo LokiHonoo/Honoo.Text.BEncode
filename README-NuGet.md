@@ -7,7 +7,7 @@
 - [Honoo.Text.BEncode](#honootextbencode)
   - [INTRODUCTION](#introduction)
   - [USAGE](#usage)
-    - [Github](#github)
+    - [GitHub](#github)
   - [LICENSE](#license)
 
 <!-- /code_chunk_output -->
@@ -18,7 +18,7 @@
 
 ## USAGE
 
-### Github
+### GitHub
 
 <https://github.com/LokiHonoo/Honoo.Text.BEncode/>
 
