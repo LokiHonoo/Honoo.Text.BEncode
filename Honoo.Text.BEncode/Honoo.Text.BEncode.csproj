@@ -17,7 +17,7 @@
     <AssemblyName>Honoo.Text.BEncode</AssemblyName>
     <RootNamespace>Honoo.Text</RootNamespace>
     <Version>1.0.6</Version>
-    <PackageReadmeFile>README-NuGet.md</PackageReadmeFile>
+    <PackageReadmeFile>Honoo.Text.BEncode.md</PackageReadmeFile>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
     <AnalysisLevel>latest-all</AnalysisLevel>
@@ -34,7 +34,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\README-NuGet.md">
+    <None Include="Honoo.Text.BEncode.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>

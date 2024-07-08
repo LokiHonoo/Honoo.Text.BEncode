@@ -6,7 +6,7 @@
 
 - [Honoo.Text.BEncode](#honootextbencode)
   - [INTRODUCTION](#introduction)
-  - [USAGE](#usage)
+  - [GUIDE](#guide)
     - [GitHub](#github)
   - [LICENSE](#license)
 
@@ -16,7 +16,7 @@
 
 读写 BEncode 编码格式，例如 torrent 文件。
 
-## USAGE
+## GUIDE
 
 ### GitHub
 
@@ -25,4 +25,3 @@
 ## LICENSE
 
 [MIT](LICENSE) license.
-

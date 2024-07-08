@@ -11,7 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Torrent Analysis", "Torrent
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "解决方案项", "解决方案项", "{F0B70EB6-FF7C-4E4C-B1DD-0FEA9B0DC991}"
 	ProjectSection(SolutionItems) = preProject
-		README-NuGet.md = README-NuGet.md
 		README.md = README.md
 	EndProjectSection
 EndProject

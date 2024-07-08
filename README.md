@@ -6,9 +6,9 @@
 
 - [Honoo.Text.BEncode](#honootextbencode)
   - [INTRODUCTION](#introduction)
-  - [USAGE](#usage)
+  - [GUIDE](#guide)
     - [NuGet](#nuget)
-  - [DEMO](#demo)
+  - [USAGE](#usage)
   - [CHANGELOG](#changelog)
     - [1.0.6](#106)
     - [1.0.4](#104)
@@ -24,13 +24,13 @@
 
 读写 BEncode 编码格式，例如 torrent 文件。
 
-## USAGE
+## GUIDE
 
 ### NuGet
 
 <https://www.nuget.org/packages/Honoo.Text.BEncode/>
 
-## DEMO
+## USAGE
 
 ```c#
 
