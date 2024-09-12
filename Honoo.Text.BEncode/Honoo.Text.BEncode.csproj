@@ -1,27 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net40;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net40;net462;netstandard2.0</TargetFrameworks>
     <PackageId>Honoo.Text.BEncode</PackageId>
-    <Company>Loki Honoo</Company>
+	<Authors>LokiHonoo</Authors>
+	<Company>LokiHonoo</Company>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 	<Copyright>Copyright (C) Loki Honoo 2022. All rights reserved.</Copyright>
 	<SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Honoo.Text.BEncode.snk</AssemblyOriginatorKeyFile>
-    <Authors>Loki Honoo</Authors>
-    <Description>BEncode Analysis. Read/modify BEncode content (e.g. BT torrent file).</Description>
+    <Description>BEncode Analysis. Edit BEncode content (e.g. BT torrent file).</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/LokiHonoo/Honoo.Text.BEncode</PackageProjectUrl>
     <RepositoryUrl>https://github.com/LokiHonoo/Honoo.Text.BEncode</RepositoryUrl>
     <PackageTags>Honoo BEncode Torrent</PackageTags>
     <AssemblyName>Honoo.Text.BEncode</AssemblyName>
-    <RootNamespace>Honoo.Text</RootNamespace>
-    <Version>1.0.6</Version>
+    <RootNamespace>Honoo.Text.BEncode</RootNamespace>
+    <Version>1.0.7</Version>
     <PackageReadmeFile>Honoo.Text.BEncode.md</PackageReadmeFile>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
     <AnalysisLevel>latest-all</AnalysisLevel>
-    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 	<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	<BaseOutputPath>..\bin\</BaseOutputPath>
   </PropertyGroup>

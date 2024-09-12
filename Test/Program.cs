@@ -16,25 +16,25 @@ namespace Test
                 // Write
                 //
                 var dict = root.AddOrUpdate("dict", new BEncodeDictionary());
-                dict.AddOrUpdate("key3", new BEncodeString("key3sorted"));
-                dict.AddOrUpdate("key2", new BEncodeString("key2sorted"));
-                dict.AddOrUpdate("key4", new BEncodeString("key4sorted"));
+                dict.AddOrUpdate("key3", new BEncodeString("key3"));
+                dict.AddOrUpdate("key2", new BEncodeString("key2"));
+                dict.AddOrUpdate("key4", new BEncodeString("key4"));
                 dict.AddOrUpdate("key2", new BEncodeString("key2reset"));
                 var list = dict.AddOrUpdate("key1", new BEncodeList());
+                list.Add(new BEncodeInteger(333));
                 list.Add(new BEncodeInteger(111));
                 list.Add(new BEncodeInteger(222));
-                list.Add(new BEncodeInteger(333));
                 //
                 // Read
                 //
-                root.TryGetValue("dict", out BEncodeDictionary dict1);
-                dict1.TryGetValue("key2", out BEncodeString string1);
+                dict = root.GetValue<BEncodeDictionary>("dict");
+                dict.TryGetValue("key2", out BEncodeString string1);
                 Console.WriteLine(string1.GetStringValue());
-                dict1.TryGetValue("key3", out string1);
+                dict.TryGetValue("key3", out string1);
                 Console.WriteLine(string1.GetStringValue());
-                dict1.TryGetValue("key4", out string1);
+                dict.TryGetValue("key4", out string1);
                 Console.WriteLine(string1.GetStringValue());
-                var list1 = (BEncodeList)dict1["key1"];
+                var list1 = (BEncodeList)dict["key1"];
                 Console.WriteLine(((BEncodeInteger)list1[0]).Value);
                 Console.WriteLine(((BEncodeInteger)list1[1]).GetInt32Value());
                 Console.WriteLine(((BEncodeInteger)list1[2]).GetInt64Value());

@@ -11,6 +11,16 @@ namespace Honoo.Text.BEncode
     /// </summary>
     public class BEncodeString : BEncodeValue, IEquatable<BEncodeString>, IComparer<BEncodeString>, IComparable
     {
+        #region DEBUG
+
+#if DEBUG
+        private readonly string _utf8;
+
+        internal string Utf8 => _utf8;
+#endif
+
+        #endregion DEBUG
+
         private readonly string _hexValue;
         private readonly byte[] _value;
 
@@ -18,7 +28,7 @@ namespace Honoo.Text.BEncode
         /// 获取原始格式的数据值。
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1819:属性不应返回数组", Justification = "<挂起>")]
-        public byte[] Value => _value;
+        public byte[] Value => (byte[])_value.Clone();
 
         #region Construction
 
@@ -26,23 +36,25 @@ namespace Honoo.Text.BEncode
         /// 初始化 BEncodeString 类的新实例。
         /// </summary>
         /// <param name="value">字节数据类型的值。</param>
-        /// <exception cref="Exception"></exception>
-        public BEncodeString(IList<byte> value) : base(BEncodeValueKind.BEncodeString)
+        /// <exception cref="Exception"/>
+        public BEncodeString(byte[] value) : base(BEncodeValueKind.BEncodeString)
         {
             if (value == null)
             {
                 throw new ArgumentNullException(nameof(value));
             }
-            _value = new byte[value.Count];
-            value.CopyTo(_value, 0);
-            _hexValue = BitConverter.ToString(_value).Replace("-", null);
+            _value = (byte[])value.Clone();
+            _hexValue = BitConverter.ToString(value).Replace("-", null);
+#if DEBUG
+            _utf8 = Encoding.UTF8.GetString(value);
+#endif
         }
 
         /// <summary>
-        /// 初始化 BEncodeString 类的新实例。默认使用 Encoding.UTF8 编码。
+        /// 初始化 BEncodeString 类的新实例。转换时默认使用 <see cref="Encoding.UTF8"/> 编码。
         /// </summary>
         /// <param name="value">文本类型的值。</param>
-        /// <exception cref="Exception"></exception>
+        /// <exception cref="Exception"/>
         public BEncodeString(string value) : this(value, Encoding.UTF8)
         {
         }
@@ -52,7 +64,7 @@ namespace Honoo.Text.BEncode
         /// </summary>
         /// <param name="value">文本类型的值。</param>
         /// <param name="encoding">用于转换的字符编码。</param>
-        /// <exception cref="Exception"></exception>
+        /// <exception cref="Exception"/>
         public BEncodeString(string value, Encoding encoding) : base(BEncodeValueKind.BEncodeString)
         {
             if (value == null)
@@ -63,15 +75,19 @@ namespace Honoo.Text.BEncode
             {
                 throw new ArgumentNullException(nameof(encoding));
             }
-            _value = encoding.GetBytes(value);
-            _hexValue = BitConverter.ToString(_value).Replace("-", null);
+            byte[] bytes = encoding.GetBytes(value);
+            _value = bytes;
+            _hexValue = BitConverter.ToString(bytes).Replace("-", null);
+#if DEBUG
+            _utf8 = value;
+#endif
         }
 
         /// <summary>
         /// 初始化 BEncodeString 类的新实例。
         /// </summary>
-        /// <param name="content">指定从中读取的流。</param>
-        /// <exception cref="Exception"></exception>
+        /// <param name="content">指定从中读取的流。定位必须在编码标记（0-9）处。</param>
+        /// <exception cref="Exception"/>
         public BEncodeString(Stream content) : base(BEncodeValueKind.BEncodeString)
         {
             if (content == null)
@@ -97,9 +113,13 @@ namespace Honoo.Text.BEncode
                 }
             }
             int valueLen = int.Parse(lenString.ToString(), CultureInfo.InvariantCulture);
-            _value = new byte[valueLen];
-            content.Read(_value, 0, _value.Length);
-            _hexValue = BitConverter.ToString(_value).Replace("-", null);
+            byte[] bytes = new byte[valueLen];
+            content.Read(bytes, 0, bytes.Length);
+            _value = bytes;
+            _hexValue = BitConverter.ToString(bytes).Replace("-", null);
+#if DEBUG
+            _utf8 = Encoding.UTF8.GetString(bytes);
+#endif
         }
 
         #endregion Construction
@@ -110,7 +130,7 @@ namespace Honoo.Text.BEncode
         /// <param name="x">要比较的第一个对象。</param>
         /// <param name="y">要比较的第二个对象。</param>
         /// <returns></returns>
-        /// <exception cref="Exception"></exception>
+        /// <exception cref="Exception"/>
         public static int Compare(BEncodeString x, BEncodeString y)
         {
             if (x is null)
@@ -200,7 +220,6 @@ namespace Honoo.Text.BEncode
         /// <param name="x">要比较的第一个对象。</param>
         /// <param name="y">要比较的第二个对象。</param>
         /// <returns></returns>
-        /// <exception cref="Exception"></exception>
         int IComparer<BEncodeString>.Compare(BEncodeString x, BEncodeString y)
         {
             return string.Compare(x._hexValue, y._hexValue, StringComparison.Ordinal);
@@ -211,7 +230,7 @@ namespace Honoo.Text.BEncode
         /// </summary>
         /// <param name="obj">要比较的对象。</param>
         /// <returns></returns>
-        /// <exception cref="Exception"></exception>
+        /// <exception cref="Exception"/>
         public int CompareTo(object obj)
         {
             if (obj is BEncodeString other)
@@ -226,7 +245,7 @@ namespace Honoo.Text.BEncode
         /// </summary>
         /// <param name="other">要比较的对象。</param>
         /// <returns></returns>
-        /// <exception cref="Exception"></exception>
+        /// <exception cref="Exception"/>
         public int CompareTo(BEncodeString other)
         {
             if (other is null)
@@ -262,7 +281,7 @@ namespace Honoo.Text.BEncode
         /// <returns></returns>
         public override int GetHashCode()
         {
-            return -1939223833 + EqualityComparer<byte[]>.Default.GetHashCode(_value);
+            return -1939223833 + EqualityComparer<string>.Default.GetHashCode(_hexValue);
         }
 
         /// <summary>
@@ -276,13 +295,13 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 获取转换为 String 格式的数据值。默认使用 Encoding.UTF8 编码。
+        /// 获取转换为 String 格式的数据值。转换时默认使用 <see cref="Encoding.UTF8"/> 编码。
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"/>
         public string GetStringValue()
         {
-            return Encoding.UTF8.GetString(_value);
+            return GetStringValue(Encoding.UTF8);
         }
 
         /// <summary>
@@ -318,12 +337,27 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 方法已重写。获取转换为十六进制字符串格式的数据值。
+        /// 方法已重写。获取字符串表示形式的数据值。转换时默认使用 <see cref="Encoding.UTF8"/> 编码。
         /// </summary>
         /// <returns></returns>
         public override string ToString()
         {
-            return _hexValue;
+            return ToString(Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// 获取字符串表示形式的数据值。
+        /// </summary>
+        /// <param name="encoding">用于转换的字符编码。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public string ToString(Encoding encoding)
+        {
+            if (encoding == null)
+            {
+                throw new ArgumentNullException(nameof(encoding));
+            }
+            return encoding.GetString(_value);
         }
     }
 }

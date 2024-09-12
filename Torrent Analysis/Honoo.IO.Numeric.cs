@@ -7,7 +7,9 @@
 
 using System;
 
+#pragma warning disable IDE0130 // 命名空间与文件夹结构不匹配
 namespace Honoo.IO
+#pragma warning restore IDE0130 // 命名空间与文件夹结构不匹配
 {
     /// <summary>
     /// I/O 数值对象辅助。
@@ -210,17 +212,17 @@ namespace Honoo.IO
                     unitIndex++;
                 }
             }
-            switch (unitIndex)
+            unit = unitIndex switch
             {
-                case 7: unit = "BiB"; break;
-                case 6: unit = "EiB"; break;
-                case 5: unit = "PiB"; break;
-                case 4: unit = "TiB"; break;
-                case 3: unit = "GiB"; break;
-                case 2: unit = "MiB"; break;
-                case 1: unit = "KiB"; break;
-                case 0: default: unit = "B"; break;
-            }
+                7 => "BiB",
+                6 => "EiB",
+                5 => "PiB",
+                4 => "TiB",
+                3 => "GiB",
+                2 => "MiB",
+                1 => "KiB",
+                _ => "B",
+            };
             return Math.Round(value, places);
         }
 
@@ -253,17 +255,17 @@ namespace Honoo.IO
                     unitIndex++;
                 }
             }
-            switch (unitIndex)
+            unit = unitIndex switch
             {
-                case 7: unit = "BB"; break;
-                case 6: unit = "EB"; break;
-                case 5: unit = "PB"; break;
-                case 4: unit = "TB"; break;
-                case 3: unit = "GB"; break;
-                case 2: unit = "MB"; break;
-                case 1: unit = "KB"; break;
-                case 0: default: unit = "B"; break;
-            }
+                7 => "BB",
+                6 => "EB",
+                5 => "PB",
+                4 => "TB",
+                3 => "GB",
+                2 => "MB",
+                1 => "KB",
+                _ => "B",
+            };
             return Math.Round(value, places);
         }
 
@@ -295,17 +297,17 @@ namespace Honoo.IO
                     unitIndex++;
                 }
             }
-            switch (unitIndex)
+            unit = unitIndex switch
             {
-                case 7: unit = "Bbps"; break;
-                case 6: unit = "Ebps"; break;
-                case 5: unit = "Pbps"; break;
-                case 4: unit = "Tbps"; break;
-                case 3: unit = "Gbps"; break;
-                case 2: unit = "Mbps"; break;
-                case 1: unit = "Kbps"; break;
-                case 0: default: unit = "bps"; break;
-            }
+                7 => "Bbps",
+                6 => "Ebps",
+                5 => "Pbps",
+                4 => "Tbps",
+                3 => "Gbps",
+                2 => "Mbps",
+                1 => "Kbps",
+                _ => "bps",
+            };
             return Math.Round(value, places);
         }
 
@@ -337,17 +339,17 @@ namespace Honoo.IO
                     unitIndex++;
                 }
             }
-            switch (unitIndex)
+            unit = unitIndex switch
             {
-                case 7: unit = "BiB/s"; break;
-                case 6: unit = "EiB/s"; break;
-                case 5: unit = "PiB/s"; break;
-                case 4: unit = "TiB/s"; break;
-                case 3: unit = "GiB/s"; break;
-                case 2: unit = "MiB/s"; break;
-                case 1: unit = "KiB/s"; break;
-                case 0: default: unit = "B/s"; break;
-            }
+                7 => "BiB/s",
+                6 => "EiB/s",
+                5 => "PiB/s",
+                4 => "TiB/s",
+                3 => "GiB/s",
+                2 => "MiB/s",
+                1 => "KiB/s",
+                _ => "B/s",
+            };
             return Math.Round(value, places);
         }
 
@@ -379,17 +381,17 @@ namespace Honoo.IO
                     unitIndex++;
                 }
             }
-            switch (unitIndex)
+            unit = unitIndex switch
             {
-                case 7: unit = "BB/s"; break;
-                case 6: unit = "EB/s"; break;
-                case 5: unit = "PB/s"; break;
-                case 4: unit = "TB/s"; break;
-                case 3: unit = "GB/s"; break;
-                case 2: unit = "MB/s"; break;
-                case 1: unit = "KB/s"; break;
-                case 0: default: unit = "B/s"; break;
-            }
+                7 => "BB/s",
+                6 => "EB/s",
+                5 => "PB/s",
+                4 => "TB/s",
+                3 => "GB/s",
+                2 => "MB/s",
+                1 => "KB/s",
+                _ => "B/s",
+            };
             return Math.Round(value, places);
         }
 

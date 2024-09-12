@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace Honoo.Text.BEncode
 {
@@ -31,6 +32,7 @@ namespace Honoo.Text.BEncode
         /// 保存到指定的流。
         /// </summary>
         /// <param name="stream">指定保存的目标流。</param>
+        /// <exception cref="Exception"/>
         public abstract void Save(Stream stream);
     }
 }

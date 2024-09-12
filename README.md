@@ -9,8 +9,10 @@
   - [GUIDE](#guide)
     - [NuGet](#nuget)
   - [USAGE](#usage)
+    - [Basic](#basic)
+    - [Torrent](#torrent)
   - [CHANGELOG](#changelog)
-    - [1.0.6](#106)
+    - [1.0.7](#107)
     - [1.0.4](#104)
     - [1.0.3](#103)
     - [1.0.2](#102)
@@ -38,6 +40,8 @@ using Honoo.Text.BEncode;
 
 ```
 
+### Basic
+
 ```c#
 
 private static void Main()
@@ -49,25 +53,26 @@ private static void Main()
         // Write
         //
         var dict = root.AddOrUpdate("dict", new BEncodeDictionary());
-        dict.AddOrUpdate("key3", new BEncodeString("key3sorted"));
-        dict.AddOrUpdate("key2", new BEncodeString("key2sorted"));
-        dict.AddOrUpdate("key4", new BEncodeString("key4sorted"));
+        dict.AddOrUpdate("key3", new BEncodeString("key3"));
+        dict.AddOrUpdate("key2", new BEncodeString("key2"));
+        dict.AddOrUpdate("key4", new BEncodeString("key4"));
         dict.AddOrUpdate("key2", new BEncodeString("key2reset"));
         var list = dict.AddOrUpdate("key1", new BEncodeList());
+        list.Add(new BEncodeInteger(333));
         list.Add(new BEncodeInteger(111));
         list.Add(new BEncodeInteger(222));
-        list.Add(new BEncodeInteger(333));
+        var a = list.AsReadOnly();
         //
         // Read
         //
-        root.TryGetValue("dict", out BEncodeDictionary dict1);
-        dict1.TryGetValue("key2", out BEncodeString string1);
+        dict = root.GetValue<BEncodeDictionary>("dict");
+        dict.TryGetValue("key2", out BEncodeString string1);
         Console.WriteLine(string1.GetStringValue());
-        dict1.TryGetValue("key3", out string1);
+        dict.TryGetValue("key3", out string1);
         Console.WriteLine(string1.GetStringValue());
-        dict1.TryGetValue("key4", out string1);
+        dict.TryGetValue("key4", out string1);
         Console.WriteLine(string1.GetStringValue());
-        var list1 = (BEncodeList)dict1["key1"];
+        var list1 = (BEncodeList)dict["key1"];
         Console.WriteLine(((BEncodeInteger)list1[0]).Value);
         Console.WriteLine(((BEncodeInteger)list1[1]).GetInt32Value());
         Console.WriteLine(((BEncodeInteger)list1[2]).GetInt64Value());
@@ -88,40 +93,82 @@ private static void Main()
 
 ```
 
+### Torrent
+
 ```c#
 
-private static void Main()
+private static void ReadTorrent()
 {
-    string fileName = "4.torrent";
+    string fileName = "葬送的芙莉莲 Sousou no Frieren [WebRip 1080p HEVC-10bit AAC][Fin].torrent";
     using (var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read))
     {
-        var torrent = new Honoo.Text.BEncode.TorrentAnalysis(stream);
-        Console.WriteLine(torrent.GetCreatedBy());
-        Console.WriteLine(torrent.GetCreationDate());
-        Console.WriteLine(torrent.GetAnnounce());
-        Console.WriteLine(torrent.GetName());
-        Console.WriteLine(torrent.GetPieceLength());
-        Console.WriteLine(torrent.GetComment());
-        var files = torrent.SearchFiles(Encoding.UTF8, "", 0, long.MaxValue);
-        files.Sort((x, y) => { return x.Length < y.Length ? 1 : -1; });
-        foreach (var file in files)
+        var torrent = new Honoo.Text.BEncode.TorrentAnalysis(stream, true);
+        Console.WriteLine("created by    :" + torrent.GetCreatedBy());
+        Console.WriteLine("creation date :" + torrent.GetCreationDate());
+        Console.WriteLine("announce      :" + torrent.GetAnnounce());
+        Console.WriteLine("name          :" + torrent.GetName());
+        Console.WriteLine("piece length  :" + torrent.GetPieceLength());
+        Console.WriteLine("comment       :" + torrent.GetComment());
+        Console.WriteLine("hash          :" + torrent.GetHash());
+
+        var files = torrent.GetFiles("Frieren - 17 [WebRip", 0, long.MaxValue, null);
+        Console.WriteLine($"Search - \"Frieren - 17 [WebRip\" - count:{files.Count}");
+        files = torrent.GetFiles("10bit AAC ASSx2].mkv", 0, long.MaxValue, null);
+        Console.WriteLine($"Search - \"10bit AAC ASSx2].mkv\" - count:{files.Count}");
+        Console.WriteLine("Search - \"*.*\"");
+        files = torrent.GetFiles("*.*", 0, long.MaxValue, null);
+        foreach (var file in files.OrderByDescending(entry => entry.Length))
         {
-            Console.WriteLine(file.Path[^1] + "     " + Honoo.Numeric.GetSize(file.Length, Numeric.Size1024.Auto, 2, out string unit) + unit);
+            Console.WriteLine(file.Paths[^1] + "    " + Numeric.GetSize(file.Length, Numeric.SizeKilo.Auto, 2, out string unit) + unit);
         }
-        var magnet = torrent.ComputeMagnet();
+        Console.WriteLine();
+
+        var magnet = torrent.GetMagnet(true, true, true, false);
         Console.WriteLine(magnet);
     }
+}
+
+```
+
+```c#
+
+private static void CreateTorrent()
+{
+    string fileName = "test_create_" + Path.GetRandomFileName() + ".torrent";
+
+    var torrent = new Honoo.Text.BEncode.TorrentAnalysis();
+    torrent.SetAnnounce("http://tracker1.itzmx.com:8080/announce");
+    torrent.SetAnnounceList([
+        ["http://tracker2.itzmx.com:6961/announce", "http://tracker2.itzmx.com:6961/announce"],
+        ["http://open.acgtracker.com:1096/announce", "http://open.acgtracker.com:1096/announce"]
+    ]);
+    torrent.SetCreatedBy("LokiHonoo");
+    torrent.SetComment("Comment!!!!!!!!!!!!!");
+    torrent.SetPublisherUrl("https://github.com/LokiHonoo/Honoo.Text.BEncode");
+    torrent.SetNodes([new IPEndPoint(IPAddress.Parse("111.111.111.111"), 7777)]);
+    torrent.SetPieceLength(16 * 1024 * 1024); 
+    // Set single file.
+    //torrent.SetFile("TestItems\\(pid-48674501)デウス.jpg");
+    // Set multiple file.
+    torrent.SetFiles(AppDomain.CurrentDomain.BaseDirectory); // folder
+
+    using (var stream = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write))
+    {
+        torrent.Save(stream);
+    }
+
     Console.WriteLine();
-    Console.ReadKey(true);
+    var magnet = torrent.GetMagnet(true, true, false, false);
+    Console.WriteLine(magnet);
 }
 
 ```
 
 ## CHANGELOG
 
-### 1.0.6
+### 1.0.7
 
-**Fix* 代码检查。
+**Features* TorrentAnalysis 类新增一些 Torrent 文件标准节点的编辑方法。
 
 ### 1.0.4
 
@@ -133,7 +180,7 @@ private static void Main()
 
 **Features* 新增 BEncodeDictionary 的 AddOrUpdate() 方法的多个重载。
 
-**Features* 新增 TorrentAnalysis 类，从 BEncodeDictionary 继承，提供一些 Torrent 文件的相关方法。
+**Features* 新增 TorrentAnalysis 类，从 BEncodeDictionary 继承，提供一些 Torrent 文件标准节点的读取方法。
 
 ### 1.0.2
 
@@ -152,4 +199,3 @@ private static void Main()
 ## LICENSE
 
 [MIT](LICENSE) license.
-

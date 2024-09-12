@@ -28,33 +28,42 @@ namespace Honoo.Text.BEncode
         /// 初始化 BEncodeInteger 类的新实例。
         /// </summary>
         /// <param name="value">十进制文本表示的长数值类型的值。</param>
-        /// <exception cref="Exception"></exception>
+        /// <exception cref="Exception"/>
         public BEncodeInteger(string value) : base(BEncodeValueKind.BEncodeInteger)
         {
             if (string.IsNullOrWhiteSpace(value))
             {
                 throw new ArgumentNullException(nameof(value));
             }
-            _value = value;
             _numericValue = BigInteger.Parse(value, NumberStyles.Number, CultureInfo.InvariantCulture);
+            _value = _numericValue.ToString(CultureInfo.InvariantCulture);
+        }
+
+        /// <summary>
+        /// 初始化 BEncodeInteger 类的新实例。
+        /// </summary>
+        /// <param name="value">Int32 类型的值。</param>
+        public BEncodeInteger(int value) : base(BEncodeValueKind.BEncodeInteger)
+        {
+            _numericValue = value;
+            _value = value.ToString(CultureInfo.InvariantCulture);
         }
 
         /// <summary>
         /// 初始化 BEncodeInteger 类的新实例。
         /// </summary>
         /// <param name="value">Int64 类型的值。</param>
-        /// <exception cref="Exception"></exception>
         public BEncodeInteger(long value) : base(BEncodeValueKind.BEncodeInteger)
         {
-            _value = value.ToString(CultureInfo.InvariantCulture);
             _numericValue = value;
+            _value = value.ToString(CultureInfo.InvariantCulture);
         }
 
         /// <summary>
         /// 初始化 BEncodeInteger 类的新实例。
         /// </summary>
-        /// <param name="content">指定从中读取的流。</param>
-        /// <exception cref="Exception"></exception>
+        /// <param name="content">指定从中读取的流。定位必须在编码标记（i）处。</param>
+        /// <exception cref="Exception"/>
         public BEncodeInteger(Stream content) : base(BEncodeValueKind.BEncodeInteger)
         {
             if (content == null)
@@ -80,8 +89,8 @@ namespace Honoo.Text.BEncode
                     kc = content.ReadByte();
                 }
             }
-            _value = valueString.ToString();
-            _numericValue = BigInteger.Parse(_value, NumberStyles.Number, CultureInfo.InvariantCulture);
+            _numericValue = BigInteger.Parse(valueString.ToString(), NumberStyles.Number, CultureInfo.InvariantCulture);
+            _value = _numericValue.ToString(CultureInfo.InvariantCulture);
         }
 
         #endregion Construction
@@ -92,7 +101,6 @@ namespace Honoo.Text.BEncode
         /// <param name="x">要比较的第一个对象。</param>
         /// <param name="y">要比较的第二个对象。</param>
         /// <returns></returns>
-        /// <exception cref="Exception"></exception>
         public static int Compare(BEncodeInteger x, BEncodeInteger y)
         {
             if (x is null)
@@ -182,7 +190,6 @@ namespace Honoo.Text.BEncode
         /// <param name="x">要比较的第一个对象。</param>
         /// <param name="y">要比较的第二个对象。</param>
         /// <returns></returns>
-        /// <exception cref="Exception"></exception>
         int IComparer<BEncodeInteger>.Compare(BEncodeInteger x, BEncodeInteger y)
         {
             return BigInteger.Compare(x._numericValue, y._numericValue);
@@ -193,7 +200,7 @@ namespace Honoo.Text.BEncode
         /// </summary>
         /// <param name="obj">要比较的对象。</param>
         /// <returns></returns>
-        /// <exception cref="Exception"></exception>
+        /// <exception cref="Exception"/>
         public int CompareTo(object obj)
         {
             if (obj is BEncodeInteger other)
@@ -208,7 +215,7 @@ namespace Honoo.Text.BEncode
         /// </summary>
         /// <param name="other">要比较的对象。</param>
         /// <returns></returns>
-        /// <exception cref="Exception"></exception>
+        /// <exception cref="Exception"/>
         public int CompareTo(BEncodeInteger other)
         {
             if (other is null)
@@ -251,7 +258,6 @@ namespace Honoo.Text.BEncode
         /// 获取转换为 Int32 格式的数据值。
         /// </summary>
         /// <returns></returns>
-        /// <exception cref="Exception"/>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1024:在适用处使用属性", Justification = "<挂起>")]
         public int GetInt32Value()
         {
@@ -262,7 +268,6 @@ namespace Honoo.Text.BEncode
         /// 获取转换为 Int64 格式的数据值。
         /// </summary>
         /// <returns></returns>
-        /// <exception cref="Exception"/>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1024:在适用处使用属性", Justification = "<挂起>")]
         public long GetInt64Value()
         {
@@ -287,7 +292,7 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 方法已重写。获取原始格式的数据值。
+        /// 方法已重写。获取字符串表示形式的数据值。
         /// </summary>
         /// <returns></returns>
         public override string ToString()
