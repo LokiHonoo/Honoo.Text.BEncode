@@ -9,14 +9,7 @@
 		<Copyright>Copyright (C) Loki Honoo 2020. All rights reserved.</Copyright>
 		<Company>Loki Honoo</Company>
 		<Authors>Loki Honoo</Authors>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<OutputPath>..\bin\Debug</OutputPath>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<OutputPath>..\bin\Release</OutputPath>
+		<BaseOutputPath>..\bin\</BaseOutputPath>
 	</PropertyGroup>
 
   <ItemGroup>

@@ -22,15 +22,8 @@
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
     <AnalysisLevel>latest-all</AnalysisLevel>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\bin\Debug</OutputPath>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>..\bin\Release</OutputPath>
-    <DocumentationFile>..\bin\Release\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
+	<GenerateDocumentationFile>True</GenerateDocumentationFile>
+	<BaseOutputPath>..\bin\</BaseOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
