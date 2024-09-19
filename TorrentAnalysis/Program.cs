@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 
-namespace Honoo.TorrentAnalysis
+namespace TorrentAnalysis
 {
     internal class Program
     {
@@ -75,14 +75,15 @@ namespace Honoo.TorrentAnalysis
 
             using (var stream = new FileStream(bc, FileMode.Open, FileAccess.Read))
             {
-                var torrent = (new Honoo.Text.BEncode.TorrentAnalysis(stream, true));
+                var torrent = new Honoo.Text.BEncode.TorrentAnalysis(stream, true);
                 Console.WriteLine("created by    :" + torrent.GetCreatedBy());
                 Console.WriteLine("creation date :" + torrent.GetCreationDate());
                 Console.WriteLine("announce      :" + torrent.GetAnnounce());
-                Console.WriteLine("name          :" + torrent.GetName());
-                Console.WriteLine("piece length  :" + torrent.GetPieceLength());
                 Console.WriteLine("comment       :" + torrent.GetComment());
                 Console.WriteLine("hash          :" + torrent.GetHash());
+                Console.WriteLine("nodes         :" + torrent.GetNodes());
+                Console.WriteLine("name          :" + torrent.GetName());
+                Console.WriteLine("piece length  :" + torrent.GetPieceLength());
                 Console.WriteLine("pieces        :" + BitConverter.ToString(torrent.GetPieces()).Replace("-", ""));
                 var files = torrent.GetFiles("", 0, long.MaxValue, null);
                 foreach (var file in files)
@@ -93,14 +94,15 @@ namespace Honoo.TorrentAnalysis
             Console.WriteLine();
             using (var stream = new FileStream(cre, FileMode.Open, FileAccess.Read))
             {
-                var torrent = (new Honoo.Text.BEncode.TorrentAnalysis(stream, true));
+                var torrent = new Honoo.Text.BEncode.TorrentAnalysis(stream, true);
                 Console.WriteLine("created by    :" + torrent.GetCreatedBy());
                 Console.WriteLine("creation date :" + torrent.GetCreationDate());
                 Console.WriteLine("announce      :" + torrent.GetAnnounce());
-                Console.WriteLine("name          :" + torrent.GetName());
-                Console.WriteLine("piece length  :" + torrent.GetPieceLength());
                 Console.WriteLine("comment       :" + torrent.GetComment());
                 Console.WriteLine("hash          :" + torrent.GetHash());
+                Console.WriteLine("nodes         :" + torrent.GetNodes());
+                Console.WriteLine("name          :" + torrent.GetName());
+                Console.WriteLine("piece length  :" + torrent.GetPieceLength());
                 Console.WriteLine("pieces        :" + BitConverter.ToString(torrent.GetPieces()).Replace("-", ""));
                 var files = torrent.GetFiles("", 0, long.MaxValue, null);
                 foreach (var file in files)
@@ -122,23 +124,23 @@ namespace Honoo.TorrentAnalysis
                 ["http://open.acgtracker.com:1096/announce", "http://open.acgtracker.com:1096/announce"]
             ]);
             //torrent.SetCreatedBy("LokiHonoo");
+            torrent.SetComment("https://github.com/LokiHonoo/Honoo.Text.BEncode");
             torrent.SetEncoding("UTF-8");
-            torrent.SetComment("Comment!!!!!!!!!!!!!");
-            torrent.SetPublisherUrl("https://github.com/LokiHonoo/Honoo.Text.BEncode");
             torrent.SetNodes([new IPEndPoint(IPAddress.Parse("111.111.111.111"), 7777)]);
             torrent.SetFiles(dst);
 
-            using (var stream = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write))
+            using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
             {
                 torrent.Save(stream);
             }
             Console.WriteLine("created by    :" + torrent.GetCreatedBy());
             Console.WriteLine("creation date :" + torrent.GetCreationDate());
             Console.WriteLine("announce      :" + torrent.GetAnnounce());
-            Console.WriteLine("name          :" + torrent.GetName());
-            Console.WriteLine("piece length  :" + torrent.GetPieceLength());
             Console.WriteLine("comment       :" + torrent.GetComment());
             Console.WriteLine("hash          :" + torrent.GetHash());
+            Console.WriteLine("nodes         :" + torrent.GetNodes());
+            Console.WriteLine("name          :" + torrent.GetName());
+            Console.WriteLine("piece length  :" + torrent.GetPieceLength());
 
             Console.WriteLine();
             var magnet = torrent.GetMagnet(true, true, false, false);
@@ -157,23 +159,23 @@ namespace Honoo.TorrentAnalysis
                 ["http://open.acgtracker.com:1096/announce", "http://open.acgtracker.com:1096/announce"]
             ]);
             torrent.SetCreatedBy("LokiHonoo");
+            torrent.SetComment("https://github.com/LokiHonoo/Honoo.Text.BEncode");
             torrent.SetEncoding("UTF-8");
-            torrent.SetComment("Comment!!!!!!!!!!!!!");
-            torrent.SetPublisherUrl("https://github.com/LokiHonoo/Honoo.Text.BEncode");
             torrent.SetNodes([new IPEndPoint(IPAddress.Parse("111.111.111.111"), 7777)]);
             torrent.SetFile(dst);
 
-            using (var stream = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write))
+            using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
             {
                 torrent.Save(stream);
             }
             Console.WriteLine("created by    :" + torrent.GetCreatedBy());
             Console.WriteLine("creation date :" + torrent.GetCreationDate());
             Console.WriteLine("announce      :" + torrent.GetAnnounce());
-            Console.WriteLine("name          :" + torrent.GetName());
-            Console.WriteLine("piece length  :" + torrent.GetPieceLength());
             Console.WriteLine("comment       :" + torrent.GetComment());
             Console.WriteLine("hash          :" + torrent.GetHash());
+            Console.WriteLine("nodes         :" + torrent.GetNodes());
+            Console.WriteLine("name          :" + torrent.GetName());
+            Console.WriteLine("piece length  :" + torrent.GetPieceLength());
 
             Console.WriteLine();
             var magnet = torrent.GetMagnet(true, true, false, false);
@@ -192,24 +194,24 @@ namespace Honoo.TorrentAnalysis
                 ["http://open.acgtracker.com:1096/announce", "http://open.acgtracker.com:1096/announce"]
             ]);
             //torrent.SetCreatedBy("LokiHonoo");
+            torrent.SetComment("https://github.com/LokiHonoo/Honoo.Text.BEncode");
             torrent.SetEncoding("UTF-8");
-            torrent.SetComment("Comment!!!!!!!!!!!!!");
-            torrent.SetPublisherUrl("https://github.com/LokiHonoo/Honoo.Text.BEncode");
             torrent.SetNodes([new IPEndPoint(IPAddress.Parse("111.111.111.111"), 7777)]);
             torrent.SetPieceLength(256 * 1024);
             torrent.SetFiles(dst);
 
-            using (var stream = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write))
+            using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
             {
                 torrent.Save(stream);
             }
             Console.WriteLine("created by    :" + torrent.GetCreatedBy());
             Console.WriteLine("creation date :" + torrent.GetCreationDate());
             Console.WriteLine("announce      :" + torrent.GetAnnounce());
-            Console.WriteLine("name          :" + torrent.GetName());
-            Console.WriteLine("piece length  :" + torrent.GetPieceLength());
             Console.WriteLine("comment       :" + torrent.GetComment());
             Console.WriteLine("hash          :" + torrent.GetHash());
+            Console.WriteLine("nodes         :" + torrent.GetNodes());
+            Console.WriteLine("name          :" + torrent.GetName());
+            Console.WriteLine("piece length  :" + torrent.GetPieceLength());
 
             Console.WriteLine();
             var magnet = torrent.GetMagnet(true, true, false, false);
@@ -228,24 +230,24 @@ namespace Honoo.TorrentAnalysis
                 ["http://open.acgtracker.com:1096/announce", "http://open.acgtracker.com:1096/announce"]
             ]);
             torrent.SetCreatedBy("LokiHonoo");
+            torrent.SetComment("https://github.com/LokiHonoo/Honoo.Text.BEncode");
             torrent.SetEncoding("UTF-8");
-            torrent.SetComment("Comment!!!!!!!!!!!!!");
-            torrent.SetPublisherUrl("https://github.com/LokiHonoo/Honoo.Text.BEncode");
             torrent.SetNodes([new IPEndPoint(IPAddress.Parse("111.111.111.111"), 7777)]);
             torrent.SetPieceLength(256 * 1024);
             torrent.SetFile(dst);
 
-            using (var stream = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write))
+            using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
             {
                 torrent.Save(stream);
             }
             Console.WriteLine("created by    :" + torrent.GetCreatedBy());
             Console.WriteLine("creation date :" + torrent.GetCreationDate());
             Console.WriteLine("announce      :" + torrent.GetAnnounce());
-            Console.WriteLine("name          :" + torrent.GetName());
-            Console.WriteLine("piece length  :" + torrent.GetPieceLength());
             Console.WriteLine("comment       :" + torrent.GetComment());
             Console.WriteLine("hash          :" + torrent.GetHash());
+            Console.WriteLine("nodes         :" + torrent.GetNodes());
+            Console.WriteLine("name          :" + torrent.GetName());
+            Console.WriteLine("piece length  :" + torrent.GetPieceLength());
 
             Console.WriteLine();
             var magnet = torrent.GetMagnet(true, true, false, false);
@@ -263,10 +265,11 @@ namespace Honoo.TorrentAnalysis
                 Console.WriteLine("created by    :" + torrent.GetCreatedBy());
                 Console.WriteLine("creation date :" + torrent.GetCreationDate());
                 Console.WriteLine("announce      :" + torrent.GetAnnounce());
-                Console.WriteLine("name          :" + torrent.GetName());
-                Console.WriteLine("piece length  :" + torrent.GetPieceLength());
                 Console.WriteLine("comment       :" + torrent.GetComment());
                 Console.WriteLine("hash          :" + torrent.GetHash());
+                Console.WriteLine("nodes         :" + torrent.GetNodes());
+                Console.WriteLine("name          :" + torrent.GetName());
+                Console.WriteLine("piece length  :" + torrent.GetPieceLength());
 
                 var files = torrent.GetFiles("Frieren - 17 [WebRip", 0, long.MaxValue, null);
                 Console.WriteLine($"Search - \"Frieren - 17 [WebRip\" - count:{files.Count}");

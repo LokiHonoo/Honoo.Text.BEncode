@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Text;
 
@@ -9,12 +8,14 @@ namespace Honoo.Text.BEncode
     /// <summary>
     /// TorrentAnalysis 类型只读接口。
     /// </summary>
-    public interface IReadOnlyTorrentAnalysis
+    public interface IReadOnlyTorrentAnalysis : IReadOnlyBEncodeDictionary
     {
         /// <summary>
         /// 获取一个值，指示此 Torrent 文件是否是多文件格式。
         /// </summary>
         bool Multiple { get; }
+
+        #region Announce
 
         /// <summary>
         /// 获取主要 Tracker 服务器。如果节点不存在，返回 <see langword="null"/>。转换元素的键时默认使用 <see cref="Encoding.UTF8"/> 编码。
@@ -30,6 +31,10 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"/>
         string GetAnnounce(Encoding valueEncoding);
 
+        #endregion Announce
+
+        #region Announce-List
+
         /// <summary>
         /// 获取备用 Tracker 服务器列表。如果节点不存在，返回 <see langword="null"/>。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
         /// </summary>
@@ -44,19 +49,9 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"/>
         string[][] GetAnnounceList(Encoding valueEncoding);
 
-        /// <summary>
-        /// 获取注释。如果节点不存在，返回 <see langword="null"/>。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
-        /// </summary>
-        /// <returns></returns>
-        string GetComment();
+        #endregion Announce-List
 
-        /// <summary>
-        /// 获取注释。如果节点不存在，返回 <see langword="null"/>。
-        /// </summary>
-        /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"/>
-        string GetComment(Encoding valueEncoding);
+        #region CreatedBy
 
         /// <summary>
         /// 获取创建者名称。如果节点不存在，返回 <see langword="null"/>。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
@@ -72,11 +67,19 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"/>
         string GetCreatedBy(Encoding valueEncoding);
 
+        #endregion CreatedBy
+
+        #region CreationDate
+
         /// <summary>
         /// 获取创建时间。如果节点不存在，返回 <see langword="null"/>。
         /// </summary>
         /// <returns></returns>
         DateTime? GetCreationDate();
+
+        #endregion CreationDate
+
+        #region Encoding
 
         /// <summary>
         /// 获取编码标识。如果节点不存在，返回 <see langword="null"/>。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
@@ -91,6 +94,86 @@ namespace Honoo.Text.BEncode
         /// <returns></returns>
         /// <exception cref="Exception"/>
         string GetEncoding(Encoding valueEncoding);
+
+        #endregion Encoding
+
+        #region Comment
+
+        /// <summary>
+        /// 获取注释。如果节点不存在，返回 <see langword="null"/>。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
+        /// </summary>
+        /// <returns></returns>
+        string GetComment();
+
+        /// <summary>
+        /// 获取注释。如果节点不存在，返回 <see langword="null"/>。
+        /// </summary>
+        /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        string GetComment(Encoding valueEncoding);
+
+        #endregion Comment
+
+        #region Nodes
+
+        /// <summary>
+        /// 获取 DHT 初始节点。如果节点不存在，返回 <see langword="null"/>。
+        /// </summary>
+        /// <returns></returns>
+        IPEndPoint[] GetNodes();
+
+        #endregion Nodes
+
+        #region Name
+
+        /// <summary>
+        /// 获取推荐文件名。如果节点不存在，返回 <see langword="null"/>。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
+        /// </summary>
+        /// <returns></returns>
+        string GetName();
+
+        /// <summary>
+        /// 获取推荐文件名。如果节点不存在，返回 <see langword="null"/>。
+        /// </summary>
+        /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        string GetName(Encoding valueEncoding);
+
+        #endregion Name
+
+        #region Private
+
+        /// <summary>
+        /// 获取私有标记。如果节点不存在，返回 <see langword="null"/>。
+        /// </summary>
+        /// <returns></returns>
+        bool? GetPrivate();
+
+        #endregion Private
+
+        #region PieceLength
+
+        /// <summary>
+        /// 获取分块大小。如果节点不存在，返回 <see langword="null"/>。
+        /// </summary>
+        /// <returns></returns>
+        long? GetPieceLength();
+
+        #endregion PieceLength
+
+        #region Pieces
+
+        /// <summary>
+        /// 获取分块的集成特征码。如果节点不存在，返回 <see langword="null"/>。
+        /// </summary>
+        /// <returns></returns>
+        byte[] GetPieces();
+
+        #endregion Pieces
+
+        #region Files
 
         /// <summary>
         /// 获取所包含文件的信息。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
@@ -129,11 +212,19 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"/>
         ICollection<TorrentFileEntry> GetFiles(string searchPattern, long minSize, long maxSize, HashSet<BEncodeString> customKeys, Encoding valueEncoding);
 
+        #endregion Files
+
+        #region Hash
+
         /// <summary>
         /// 获取特征码。如果节点不存在，返回 <see langword="null"/>。
         /// </summary>
         /// <returns></returns>
         string GetHash();
+
+        #endregion Hash
+
+        #region Magnet
 
         /// <summary>
         /// 实时计算 BTIH 特征码标识的磁力链接。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
@@ -164,79 +255,6 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"/>
         string GetMagnet(bool dn, bool xl, bool tr, bool trs, Encoding valueEncoding);
 
-        /// <summary>
-        /// 获取推荐文件名。如果节点不存在，返回 <see langword="null"/>。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
-        /// </summary>
-        /// <returns></returns>
-        string GetName();
-
-        /// <summary>
-        /// 获取推荐文件名。如果节点不存在，返回 <see langword="null"/>。
-        /// </summary>
-        /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"/>
-        string GetName(Encoding valueEncoding);
-
-        /// <summary>
-        /// 获取 DHT 初始节点。如果节点不存在，返回 <see langword="null"/>。
-        /// </summary>
-        /// <returns></returns>
-        IPEndPoint[] GetNodes();
-
-        /// <summary>
-        /// 获取分块大小。如果节点不存在，返回 <see langword="null"/>。
-        /// </summary>
-        /// <returns></returns>
-        long? GetPieceLength();
-
-        /// <summary>
-        /// 获取分块的集成特征码。如果节点不存在，返回 <see langword="null"/>。
-        /// </summary>
-        /// <returns></returns>
-        byte[] GetPieces();
-
-        /// <summary>
-        /// 获取私有标记。如果节点不存在，返回 <see langword="null"/>。
-        /// </summary>
-        /// <returns></returns>
-        bool? GetPrivate();
-
-        /// <summary>
-        /// 获取发布者名称。如果节点不存在，返回 <see langword="null"/>。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
-        /// </summary>
-        /// <returns></returns>
-        string GetPublisher();
-
-        /// <summary>
-        /// 获取发布者名称。如果节点不存在，返回 <see langword="null"/>。
-        /// </summary>
-        /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"/>
-        string GetPublisher(Encoding valueEncoding);
-
-        /// <summary>
-        /// 获取发布者 Url。如果节点不存在，返回 <see langword="null"/>。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
-        /// </summary>
-        /// <returns></returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1055:类 URI 返回值不应是字符串", Justification = "<挂起>")]
-        string GetPublisherUrl();
-
-        /// <summary>
-        /// 获取发布者 Url。如果节点不存在，返回 <see langword="null"/>。
-        /// </summary>
-        /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"/>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1055:类 URI 返回值不应是字符串", Justification = "<挂起>")]
-        string GetPublisherUrl(Encoding valueEncoding);
-
-        /// <summary>
-        /// 保存到指定的流。如果 <see cref="TorrentAnalysis"/> 不是只读的，添加或更新必要元素。
-        /// </summary>
-        /// <param name="stream">指定保存的目标流。</param>
-        /// <exception cref="Exception"/>
-        void Save(Stream stream);
+        #endregion Magnet
     }
 }

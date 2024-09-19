@@ -12,7 +12,7 @@
     - [Basic](#basic)
     - [Torrent](#torrent)
   - [CHANGELOG](#changelog)
-    - [1.0.7](#107)
+    - [1.0.8](#108)
     - [1.0.4](#104)
     - [1.0.3](#103)
     - [1.0.2](#102)
@@ -152,7 +152,7 @@ private static void CreateTorrent()
     // Set multiple file.
     torrent.SetFiles(AppDomain.CurrentDomain.BaseDirectory); // folder
 
-    using (var stream = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write))
+    using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
     {
         torrent.Save(stream);
     }
@@ -166,7 +166,7 @@ private static void CreateTorrent()
 
 ## CHANGELOG
 
-### 1.0.7
+### 1.0.8
 
 **Features* TorrentAnalysis 类新增一些 Torrent 文件标准节点的编辑方法。
 

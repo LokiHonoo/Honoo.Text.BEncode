@@ -19,7 +19,7 @@ namespace Test
                 dict.AddOrUpdate("key3", new BEncodeString("key3"));
                 dict.AddOrUpdate("key2", new BEncodeString("key2"));
                 dict.AddOrUpdate("key4", new BEncodeString("key4"));
-                dict.AddOrUpdate("key2", new BEncodeString("key2reset"));
+                dict.AddOrUpdate("key2", new BEncodeString("key2update"));
                 var list = dict.AddOrUpdate("key1", new BEncodeList());
                 list.Add(new BEncodeInteger(333));
                 list.Add(new BEncodeInteger(111));

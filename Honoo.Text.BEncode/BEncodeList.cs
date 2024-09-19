@@ -8,10 +8,10 @@ namespace Honoo.Text.BEncode
     /// <summary>
     /// BEncode 列表类型。
     /// </summary>
-    public class BEncodeList : BEncodeValue, IEnumerable<BEncodeValue>, IBEncodeReadOnlyList
+    public class BEncodeList : BEncodeValue, IEnumerable<BEncodeValue>, IReadOnlyBEncodeList
     {
         private readonly List<BEncodeValue> _elements = new List<BEncodeValue>();
-        private readonly bool _isReadOnly;
+        private bool _isReadOnly;
 
         /// <summary>
         /// 获取元素集合中包含的元素数。
@@ -32,7 +32,7 @@ namespace Honoo.Text.BEncode
         public BEncodeValue this[int index]
         {
             get => index < _elements.Count ? _elements[index] : null;
-            set => _elements[index] = value;
+            set { Insert(index, value); }
         }
 
         #region Construction
@@ -57,7 +57,7 @@ namespace Honoo.Text.BEncode
         /// 初始化 BEncodeList 类的新实例。
         /// </summary>
         /// <param name="content">指定从中读取的流。定位必须在编码标记（l）处。</param>
-        /// <param name="readOnly">指定此 <see cref="BEncodeList"/> 是只读实例。</param>
+        /// <param name="readOnly">指定此 <see cref="BEncodeList"/> 及子元素是只读的。</param>
         /// <exception cref="Exception"/>
         public BEncodeList(Stream content, bool readOnly) : base(BEncodeValueKind.BEncodeList)
         {
@@ -147,7 +147,7 @@ namespace Honoo.Text.BEncode
         /// <summary>
         /// 获取此实例的只读接口。
         /// </summary>
-        public IBEncodeReadOnlyList AsReadOnly()
+        public IReadOnlyBEncodeList AsReadOnly()
         {
             return this;
         }
@@ -277,6 +277,23 @@ namespace Honoo.Text.BEncode
                 enumerator.Current.Save(stream);
             }
             stream.WriteByte(101);  // 'e'
+        }
+
+        internal void ChangeReadOnly(bool isReadOnly)
+        {
+            var enumerator = _elements.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                if (enumerator.Current is BEncodeDictionary dict)
+                {
+                    dict.ChangeReadOnly(isReadOnly);
+                }
+                else if (enumerator.Current is BEncodeList list)
+                {
+                    list.ChangeReadOnly(isReadOnly);
+                }
+            }
+            _isReadOnly = isReadOnly;
         }
     }
 }

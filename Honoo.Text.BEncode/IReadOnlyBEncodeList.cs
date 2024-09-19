@@ -7,7 +7,7 @@ namespace Honoo.Text.BEncode
     /// <summary>
     /// BEncode 列表类型只读接口。
     /// </summary>
-    public interface IBEncodeReadOnlyList
+    public interface IReadOnlyBEncodeList
     {
         /// <summary>
         /// 获取元素集合中包含的元素数。

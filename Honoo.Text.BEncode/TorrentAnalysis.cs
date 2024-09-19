@@ -608,139 +608,22 @@ namespace Honoo.Text.BEncode
 
         #endregion PieceLength
 
-        #region Publisher
+        #region Hash
 
         /// <summary>
-        /// 获取发布者名称。如果节点不存在，返回 <see langword="null"/>。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
+        /// 获取特征码。如果节点不存在，返回 <see langword="null"/>。
         /// </summary>
         /// <returns></returns>
-        public string GetPublisher()
+        public string GetHash()
         {
-            return GetPublisher(Encoding.UTF8);
-        }
-
-        /// <summary>
-        /// 获取发布者名称。如果节点不存在，返回 <see langword="null"/>。
-        /// </summary>
-        /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"/>
-        public string GetPublisher(Encoding valueEncoding)
-        {
-            if (base.TryGetValue("info", out BEncodeDictionary info))
+            if (base.TryGetValue("hash", out BEncodeString hash))
             {
-                if (info.TryGetValue("publisher", out BEncodeString value))
-                {
-                    return value.GetStringValue(valueEncoding);
-                }
+                return hash.GetStringValue();
             }
             return null;
         }
 
-        /// <summary>
-        /// 设置发布者名称。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
-        /// </summary>
-        /// <param name="publisher">发布者名称。</param>
-        public void SetPublisher(string publisher)
-        {
-            SetPublisher(publisher, Encoding.UTF8);
-        }
-
-        /// <summary>
-        /// 设置发布者名称。
-        /// </summary>
-        /// <param name="publisher">发布者名称。</param>
-        /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
-        /// <exception cref="Exception"/>
-        public void SetPublisher(string publisher, Encoding valueEncoding)
-        {
-            if (publisher == null)
-            {
-                if (base.TryGetValue("info", out BEncodeDictionary info))
-                {
-                    info.Remove("publisher");
-                }
-            }
-            else
-            {
-                if (!base.TryGetValue("info", out BEncodeDictionary info))
-                {
-                    info = base.Add("info", new BEncodeDictionary());
-                }
-                info.AddOrUpdate("publisher", new BEncodeString(publisher, valueEncoding));
-            }
-        }
-
-        #endregion Publisher
-
-        #region PublisherUrl
-
-        /// <summary>
-        /// 获取发布者 Url。如果节点不存在，返回 <see langword="null"/>。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
-        /// </summary>
-        /// <returns></returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1055:类 URI 返回值不应是字符串", Justification = "<挂起>")]
-        public string GetPublisherUrl()
-        {
-            return GetPublisherUrl(Encoding.UTF8);
-        }
-
-        /// <summary>
-        /// 获取发布者 Url。如果节点不存在，返回 <see langword="null"/>。
-        /// </summary>
-        /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"/>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1055:类 URI 返回值不应是字符串", Justification = "<挂起>")]
-        public string GetPublisherUrl(Encoding valueEncoding)
-        {
-            if (base.TryGetValue("info", out BEncodeDictionary info))
-            {
-                if (info.TryGetValue("publisher-url", out BEncodeString value))
-                {
-                    return value.GetStringValue(valueEncoding);
-                }
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// 设置发布者 Url。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
-        /// </summary>
-        /// <param name="publisherUrl">发布者 Url。</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1054:类 URI 参数不应为字符串", Justification = "<挂起>")]
-        public void SetPublisherUrl(string publisherUrl)
-        {
-            SetPublisherUrl(publisherUrl, Encoding.UTF8);
-        }
-
-        /// <summary>
-        /// 设置发布者 Url。
-        /// </summary>
-        /// <param name="publisherUrl">发布者 Url。</param>
-        /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
-        /// <exception cref="Exception"/>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1054:类 URI 参数不应为字符串", Justification = "<挂起>")]
-        public void SetPublisherUrl(string publisherUrl, Encoding valueEncoding)
-        {
-            if (publisherUrl == null)
-            {
-                if (base.TryGetValue("info", out BEncodeDictionary info))
-                {
-                    info.Remove("publisher-url");
-                }
-            }
-            else
-            {
-                if (!base.TryGetValue("info", out BEncodeDictionary info))
-                {
-                    info = base.Add("info", new BEncodeDictionary());
-                }
-                info.AddOrUpdate("publisher-url", new BEncodeString(publisherUrl, valueEncoding));
-            }
-        }
-
-        #endregion PublisherUrl
+        #endregion Hash
 
         #region Files
 
@@ -797,7 +680,7 @@ namespace Honoo.Text.BEncode
                     .Replace("^", "\\^").Replace("+", "\\+").Replace("|", "\\|").Replace("$", "\\$")
                     .Replace(".", "\\.").Replace("*", ".*").Replace("?", ".?");
             }
-            List<TorrentFileEntry> result = new List<TorrentFileEntry>(); 
+            List<TorrentFileEntry> result = new List<TorrentFileEntry>();
             if (base.TryGetValue("info", out BEncodeDictionary info))
             {
                 if (info.TryGetValue("files", out BEncodeList files))
@@ -835,6 +718,7 @@ namespace Honoo.Text.BEncode
                         }
                         if (matched)
                         {
+                            customs.ChangeReadOnly(true);
                             result.Add(new TorrentFileEntry(paths.ToArray(), len, customs));
                         }
                     }
@@ -866,6 +750,7 @@ namespace Honoo.Text.BEncode
                     }
                     if (matched)
                     {
+                        customs.ChangeReadOnly(true);
                         result.Add(new TorrentFileEntry(new string[] { p }, len, customs));
                     }
                 }
@@ -1063,23 +948,6 @@ namespace Honoo.Text.BEncode
 
         #endregion Files
 
-        #region Hash
-
-        /// <summary>
-        /// 获取特征码。如果节点不存在，返回 <see langword="null"/>。
-        /// </summary>
-        /// <returns></returns>
-        public string GetHash()
-        {
-            if (base.TryGetValue("hash", out BEncodeString hash))
-            {
-                return hash.GetStringValue();
-            }
-            return null;
-        }
-
-        #endregion Hash
-
         #region Magnet
 
         /// <summary>
@@ -1181,10 +1049,10 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 保存到指定的流。如果 <see cref="TorrentAnalysis"/> 不是只读的，添加或更新以下必要元素
+        /// 保存到指定的流。如果 <see cref="TorrentAnalysis"/> 不是只读的，添加或更新以下元素
         /// <br/>"created by" 如果不存在此元素添加 <see href="https://github.com/LokiHonoo/Honoo.Text.BEncode"/> 为 "created by"。
         /// <br/>"creation date" 更新为 UTC 现在时间。
-        /// <br/>"hash" 重新计算 BTIH 特征码。
+        /// <br/>"hash" 实时计算 BTIH 特征码。
         /// </summary>
         /// <param name="stream">指定保存的目标流。</param>
         /// <exception cref="Exception"/>

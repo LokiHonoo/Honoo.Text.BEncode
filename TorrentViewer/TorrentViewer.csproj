@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+	  <PublishAot>true</PublishAot>
+	  <!--<InvariantGlobalization>true</InvariantGlobalization>-->
+	  <!--<StackTraceSupport>false</StackTraceSupport>-->
+	  <BaseOutputPath>..\bin\</BaseOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Honoo.Text.BEncode\Honoo.Text.BEncode.csproj" />
+	</ItemGroup>
+	
+</Project>

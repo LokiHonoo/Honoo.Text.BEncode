@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
 
@@ -11,7 +10,7 @@ namespace Honoo.Text.BEncode
     /// BEncode 字典类型。
     /// </summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1711:标识符应采用正确的后缀", Justification = "<挂起>")]
-    public class BEncodeDictionary : BEncodeValue, IEnumerable<KeyValuePair<BEncodeString, BEncodeValue>>, IBEncodeReadOnlyDictionary
+    public class BEncodeDictionary : BEncodeValue, IEnumerable<KeyValuePair<BEncodeString, BEncodeValue>>, IReadOnlyBEncodeDictionary
     {
         #region Class
 
@@ -145,9 +144,9 @@ namespace Honoo.Text.BEncode
         #region Properties
 
         private readonly Dictionary<BEncodeString, BEncodeValue> _elements = new Dictionary<BEncodeString, BEncodeValue>();
-        private readonly bool _isReadOnly;
         private readonly KeyCollection _keyExhibits;
         private readonly ValueCollection _valueExhibits;
+        private bool _isReadOnly;
 
         /// <summary>
         /// 获取元素集合中包含的元素数。
@@ -177,7 +176,7 @@ namespace Honoo.Text.BEncode
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1043:将整型或字符串参数用于索引器", Justification = "<挂起>")]
         public BEncodeValue this[BEncodeString key]
         {
-            get { return _elements.TryGetValue(key, out BEncodeValue value) ? value : null; }
+            get { return TryGetValue(key, out BEncodeValue value) ? value : null; }
             set { AddOrUpdate(key, value); }
         }
 
@@ -189,15 +188,8 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"/>
         public BEncodeValue this[string key]
         {
-            get
-            {
-                var k = new BEncodeString(key, Encoding.UTF8);
-                return _elements.TryGetValue(k, out BEncodeValue value) ? value : null;
-            }
-            set
-            {
-                AddOrUpdate(key, value);
-            }
+            get { return TryGetValue(new BEncodeString(key, Encoding.UTF8), out BEncodeValue value) ? value : null; }
+            set { AddOrUpdate(key, value); }
         }
 
         /// <summary>
@@ -209,15 +201,8 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"/>
         public BEncodeValue this[string key, Encoding keyEncoding]
         {
-            get
-            {
-                var k = new BEncodeString(key, keyEncoding);
-                return _elements.TryGetValue(k, out BEncodeValue value) ? value : null;
-            }
-            set
-            {
-                AddOrUpdate(key, value);
-            }
+            get { return TryGetValue(new BEncodeString(key, keyEncoding), out BEncodeValue value) ? value : null; }
+            set { AddOrUpdate(key, value); }
         }
 
         #endregion Properties
@@ -246,7 +231,7 @@ namespace Honoo.Text.BEncode
         /// 初始化 BEncodeDictionary 类的新实例。
         /// </summary>
         /// <param name="content">指定从中读取的流。定位必须在编码标记（d）处。</param>
-        /// <param name="readOnly">指定此 <see cref="BEncodeDictionary"/> 是只读实例。</param>
+        /// <param name="readOnly">指定此 <see cref="BEncodeDictionary"/> 及子元素是只读的。</param>
         /// <exception cref="Exception"/>
         public BEncodeDictionary(Stream content, bool readOnly) : base(BEncodeValueKind.BEncodeDictionary)
         {
@@ -301,7 +286,7 @@ namespace Honoo.Text.BEncode
         #region Add
 
         /// <summary>
-        /// 添加一个元素。
+        /// 添加一个元素。不能添加只读字典元素或列表元素。
         /// </summary>
         /// <typeparam name="T">指定元素类型。</typeparam>
         /// <param name="key">元素的键。</param>
@@ -460,8 +445,14 @@ namespace Honoo.Text.BEncode
             {
                 throw new ArgumentNullException(nameof(value));
             }
-            Remove(key);
-            Add(key, value);
+            if (ContainsKey(key))
+            {
+                _elements[key] = value;
+            }
+            else
+            {
+                Add(key, value);
+            }
             return value;
         }
 
@@ -651,7 +642,7 @@ namespace Honoo.Text.BEncode
         /// <summary>
         /// 获取此实例的只读接口。
         /// </summary>
-        public IBEncodeReadOnlyDictionary AsReadOnly()
+        public IReadOnlyBEncodeDictionary AsReadOnly()
         {
             return this;
         }
@@ -780,6 +771,23 @@ namespace Honoo.Text.BEncode
                 enumerator.Current.Value.Save(stream);
             }
             stream.WriteByte(101);  // 'e'
+        }
+
+        internal void ChangeReadOnly(bool isReadOnly)
+        {
+            var enumerator = _elements.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                if (enumerator.Current.Value is BEncodeDictionary dict)
+                {
+                    dict.ChangeReadOnly(isReadOnly);
+                }
+                else if (enumerator.Current.Value is BEncodeList list)
+                {
+                    list.ChangeReadOnly(isReadOnly);
+                }
+            }
+            _isReadOnly = isReadOnly;
         }
     }
 }

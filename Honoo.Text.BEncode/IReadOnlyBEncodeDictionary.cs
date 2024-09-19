@@ -9,7 +9,7 @@ namespace Honoo.Text.BEncode
     /// BEncode 字典类型只读接口。
     /// </summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1711:标识符应采用正确的后缀", Justification = "<挂起>")]
-    public interface IBEncodeReadOnlyDictionary
+    public interface IReadOnlyBEncodeDictionary
     {
         /// <summary>
         /// 获取元素集合中包含的元素数。

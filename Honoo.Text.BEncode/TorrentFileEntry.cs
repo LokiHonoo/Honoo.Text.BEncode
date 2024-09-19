@@ -5,14 +5,14 @@
     /// </summary>
     public class TorrentFileEntry
     {
-        private readonly BEncodeDictionary _customs;
+        private readonly IReadOnlyBEncodeDictionary _customs;
         private readonly long _length;
         private readonly string[] _paths;
 
         /// <summary>
         /// 获取读取时设置的自定义元素。
         /// </summary>
-        public BEncodeDictionary Customs => _customs;
+        public IReadOnlyBEncodeDictionary Customs => _customs;
 
         /// <summary>
         /// 获取文件的字节大小。
@@ -27,7 +27,7 @@
 
         #region Construction
 
-        internal TorrentFileEntry(string[] paths, long length, BEncodeDictionary customs)
+        internal TorrentFileEntry(string[] paths, long length, IReadOnlyBEncodeDictionary customs)
         {
             _paths = paths;
             _length = length;
