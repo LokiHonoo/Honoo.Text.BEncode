@@ -44,50 +44,52 @@ using Honoo.Text.BEncode;
 
 ```c#
 
-private static void Main()
+internal class Program
 {
-    BEncodeDictionary root = new BEncodeDictionary();
-    while (true)
+    private static void Main()
     {
-        //
-        // Write
-        //
-        var dict = root.AddOrUpdate("dict", new BEncodeDictionary());
-        dict.AddOrUpdate("key3", new BEncodeString("key3"));
-        dict.AddOrUpdate("key2", new BEncodeString("key2"));
-        dict.AddOrUpdate("key4", new BEncodeString("key4"));
-        dict.AddOrUpdate("key2", new BEncodeString("key2reset"));
-        var list = dict.AddOrUpdate("key1", new BEncodeList());
-        list.Add(new BEncodeInteger(333));
-        list.Add(new BEncodeInteger(111));
-        list.Add(new BEncodeInteger(222));
-        var a = list.AsReadOnly();
-        //
-        // Read
-        //
-        dict = root.GetValue<BEncodeDictionary>("dict");
-        dict.TryGetValue("key2", out BEncodeString string1);
-        Console.WriteLine(string1.GetStringValue());
-        dict.TryGetValue("key3", out string1);
-        Console.WriteLine(string1.GetStringValue());
-        dict.TryGetValue("key4", out string1);
-        Console.WriteLine(string1.GetStringValue());
-        var list1 = (BEncodeList)dict["key1"];
-        Console.WriteLine(((BEncodeInteger)list1[0]).Value);
-        Console.WriteLine(((BEncodeInteger)list1[1]).GetInt32Value());
-        Console.WriteLine(((BEncodeInteger)list1[2]).GetInt64Value());
-        //
-        // Save
-        //
-        using (MemoryStream stream = new MemoryStream())
+        BEncodeDictionary root = new BEncodeDictionary();
+        while (true)
         {
-            root.Save(stream);
-            string content = Encoding.UTF8.GetString(stream.ToArray());
-            Console.WriteLine(content);
-            stream.Seek(0, SeekOrigin.Begin);
-            root = new BEncodeDictionary(stream);
+            //
+            // Write
+            //
+            var dict = root.AddOrUpdate("dict", new BEncodeDictionary());
+            dict.AddOrUpdate("key3", new BEncodeString("key3"));
+            dict.AddOrUpdate("key2", new BEncodeString("key2"));
+            dict.AddOrUpdate("key4", new BEncodeString("key4"));
+            dict.AddOrUpdate("key2", new BEncodeString("key2update"));
+            var list = dict.AddOrUpdate("key1", new BEncodeList());
+            list.Add(new BEncodeInteger(333));
+            list.Add(new BEncodeInteger(111));
+            list.Add(new BEncodeInteger(222));
+            //
+            // Read
+            //
+            dict = root.GetValue<BEncodeDictionary>("dict");
+            dict.TryGetValue("key2", out BEncodeString string1);
+            Console.WriteLine(string1.GetStringValue());
+            dict.TryGetValue("key3", out string1);
+            Console.WriteLine(string1.GetStringValue());
+            dict.TryGetValue("key4", out string1);
+            Console.WriteLine(string1.GetStringValue());
+            var list1 = (BEncodeList)dict["key1"];
+            Console.WriteLine(((BEncodeInteger)list1[0]).Value);
+            Console.WriteLine(((BEncodeInteger)list1[1]).GetInt32Value());
+            Console.WriteLine(((BEncodeInteger)list1[2]).GetInt64Value());
+            //
+            // Save
+            //
+            using (MemoryStream stream = new MemoryStream())
+            {
+                root.Save(stream);
+                string content = Encoding.UTF8.GetString(stream.ToArray());
+                Console.WriteLine(content);
+                stream.Seek(0, SeekOrigin.Begin);
+                root = new BEncodeDictionary(stream);
+            }
+            Console.ReadKey(true);
         }
-        Console.ReadKey(true);
     }
 }
 
@@ -132,7 +134,7 @@ private static void ReadTorrent()
 
 ```c#
 
-private static void CreateTorrent()
+private static void CreateTorrent256K()
 {
     string fileName = "test_create_" + Path.GetRandomFileName() + ".torrent";
 
@@ -143,10 +145,10 @@ private static void CreateTorrent()
         ["http://open.acgtracker.com:1096/announce", "http://open.acgtracker.com:1096/announce"]
     ]);
     torrent.SetCreatedBy("LokiHonoo");
-    torrent.SetComment("Comment!!!!!!!!!!!!!");
-    torrent.SetPublisherUrl("https://github.com/LokiHonoo/Honoo.Text.BEncode");
+    torrent.SetComment("https://github.com/LokiHonoo/Honoo.Text.BEncode");
+    torrent.SetEncoding("UTF-8");
     torrent.SetNodes([new IPEndPoint(IPAddress.Parse("111.111.111.111"), 7777)]);
-    torrent.SetPieceLength(16 * 1024 * 1024); 
+    torrent.SetPieceLength(256 * 1024);
     // Set single file.
     //torrent.SetFile("TestItems\\(pid-48674501)デウス.jpg");
     // Set multiple file.
@@ -156,8 +158,7 @@ private static void CreateTorrent()
     {
         torrent.Save(stream);
     }
-
-    Console.WriteLine();
+  
     var magnet = torrent.GetMagnet(true, true, false, false);
     Console.WriteLine(magnet);
 }
