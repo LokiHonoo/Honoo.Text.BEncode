@@ -15,7 +15,7 @@ namespace Honoo.IO
     /// <summary>
     /// I/O 数值对象辅助。
     /// </summary>
-    public static class Numeric
+    public static class Numerics
     {
         #region 转换
 
