@@ -6,7 +6,7 @@
 	<Authors>LokiHonoo</Authors>
 	<Company>LokiHonoo</Company>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-	<Copyright>Copyright (C) Loki Honoo 2022. All rights reserved.</Copyright>
+	<Copyright>Copyright (C) LokiHonoo 2022. All rights reserved.</Copyright>
 	<SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Honoo.Text.BEncode.snk</AssemblyOriginatorKeyFile>
     <Description>BEncode Analysis. Edit BEncode content (e.g. BT torrent file).</Description>

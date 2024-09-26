@@ -6,7 +6,7 @@
 		<ImplicitUsings>disable</ImplicitUsings>
 		<Nullable>disable</Nullable>
 		<RootNamespace>TorrentAnalysis</RootNamespace>
-		<Copyright>Copyright (C) Loki Honoo 2020. All rights reserved.</Copyright>
+		<Copyright>Copyright (C) LokiHonoo 2020. All rights reserved.</Copyright>
 		<Company>LokiHonoo</Company>
 		<Authors>LokiHonoo</Authors>
 		<BaseOutputPath>..\bin\</BaseOutputPath>
