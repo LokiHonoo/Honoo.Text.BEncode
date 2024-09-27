@@ -3,10 +3,10 @@
   <PropertyGroup>
     <TargetFrameworks>net40;net462;netstandard2.0</TargetFrameworks>
     <PackageId>Honoo.Text.BEncode</PackageId>
-	<Authors>LokiHonoo</Authors>
-	<Company>LokiHonoo</Company>
+	<Authors>Loki Honoo</Authors>
+	<Company>Loki Honoo</Company>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-	<Copyright>Copyright (C) LokiHonoo 2022. All rights reserved.</Copyright>
+	<Copyright>Copyright (C) Loki Honoo 2022. All rights reserved.</Copyright>
 	<SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Honoo.Text.BEncode.snk</AssemblyOriginatorKeyFile>
     <Description>BEncode Analysis. Edit BEncode content (e.g. BT torrent file).</Description>

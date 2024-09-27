@@ -5,9 +5,9 @@
 		<TargetFrameworks>net40</TargetFrameworks>
 		<ImplicitUsings>disable</ImplicitUsings>
 		<Nullable>disable</Nullable>
-		<Copyright>Copyright (C) LokiHonoo 2020. All rights reserved.</Copyright>
-		<Company>LokiHonoo</Company>
-		<Authors>LokiHonoo</Authors>
+		<Copyright>Copyright (C) Loki Honoo 2020. All rights reserved.</Copyright>
+		<Company>Loki Honoo</Company>
+		<Authors>Loki Honoo</Authors>
 		<AnalysisLevel>none</AnalysisLevel>
 		<BaseOutputPath>..\bin\</BaseOutputPath>
 	</PropertyGroup>
