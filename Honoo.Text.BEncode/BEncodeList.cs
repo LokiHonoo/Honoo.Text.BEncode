@@ -47,7 +47,7 @@ namespace Honoo.Text.BEncode
         /// <summary>
         /// 初始化 BEncodeList 类的新实例。
         /// </summary>
-        /// <param name="content">指定从中读取的流。定位必须在编码标记（l）处。</param>
+        /// <param name="content">指定从中读取的流。定位必须在编码标记 <see langword="l"/> 处。</param>
         /// <exception cref="Exception"/>
         public BEncodeList(Stream content) : this(content, false)
         {
@@ -56,7 +56,7 @@ namespace Honoo.Text.BEncode
         /// <summary>
         /// 初始化 BEncodeList 类的新实例。
         /// </summary>
-        /// <param name="content">指定从中读取的流。定位必须在编码标记（l）处。</param>
+        /// <param name="content">指定从中读取的流。定位必须在编码标记 <see langword="l"/> 处。</param>
         /// <param name="readOnly">指定此 <see cref="BEncodeList"/> 及子元素是只读的。</param>
         /// <exception cref="Exception"/>
         public BEncodeList(Stream content, bool readOnly) : base(BEncodeValueKind.BEncodeList)
@@ -83,7 +83,7 @@ namespace Honoo.Text.BEncode
                     {
                         case 100: content.Seek(-1, SeekOrigin.Current); _elements.Add(new BEncodeDictionary(content, readOnly)); break;// 'd'
                         case 108: content.Seek(-1, SeekOrigin.Current); _elements.Add(new BEncodeList(content, readOnly)); break;      // 'l'
-                        case 105: content.Seek(-1, SeekOrigin.Current); _elements.Add(new BEncodeInteger(content)); break;             // 'i'
+                        case 105: content.Seek(-1, SeekOrigin.Current); _elements.Add(new BEncodeInteger(content, readOnly)); break;   // 'i'
                         case 48:                                                                                                       // '0'
                         case 49:                                                                                                       // '1'
                         case 50:                                                                                                       // '2'
@@ -93,7 +93,7 @@ namespace Honoo.Text.BEncode
                         case 54:                                                                                                       // '6'
                         case 55:                                                                                                       // '7'
                         case 56:                                                                                                       // '8'
-                        case 57: content.Seek(-1, SeekOrigin.Current); _elements.Add(new BEncodeString(content)); break;               // '9'
+                        case 57: content.Seek(-1, SeekOrigin.Current); _elements.Add(new BEncodeString(content, readOnly)); break;     // '9'
                         default: throw new ArgumentException($"The incorrect identification char '{kc}'. Stop at position: {content.Position}.");
                     }
                     kc = content.ReadByte();
@@ -279,19 +279,12 @@ namespace Honoo.Text.BEncode
             stream.WriteByte(101);  // 'e'
         }
 
-        internal void ChangeReadOnly(bool isReadOnly)
+        internal override void ChangeReadOnly(bool isReadOnly)
         {
             var enumerator = _elements.GetEnumerator();
             while (enumerator.MoveNext())
             {
-                if (enumerator.Current is BEncodeDictionary dict)
-                {
-                    dict.ChangeReadOnly(isReadOnly);
-                }
-                else if (enumerator.Current is BEncodeList list)
-                {
-                    list.ChangeReadOnly(isReadOnly);
-                }
+                enumerator.Current.ChangeReadOnly(isReadOnly);
             }
             _isReadOnly = isReadOnly;
         }

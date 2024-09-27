@@ -18,13 +18,13 @@ namespace Honoo.Text.BEncode
         #region Announce
 
         /// <summary>
-        /// 获取主要 Tracker 服务器。如果节点不存在，返回 <see langword="null"/>。转换元素的键时默认使用 <see cref="Encoding.UTF8"/> 编码。
+        /// 获取主要 Tracker 服务器。如果元素不存在，返回 <see langword="null"/>。转换元素的键时默认使用 <see cref="Encoding.UTF8"/> 编码。
         /// </summary>
         /// <returns></returns>
         string GetAnnounce();
 
         /// <summary>
-        /// 获取主要 Tracker 服务器。如果节点不存在，返回 <see langword="null"/>。
+        /// 获取主要 Tracker 服务器。如果元素不存在，返回 <see langword="null"/>。
         /// </summary>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
         /// <returns></returns>
@@ -36,13 +36,13 @@ namespace Honoo.Text.BEncode
         #region Announce-List
 
         /// <summary>
-        /// 获取备用 Tracker 服务器列表。如果节点不存在，返回 <see langword="null"/>。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
+        /// 获取备用 Tracker 服务器列表。如果元素不存在，返回 <see langword="null"/>。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
         /// </summary>
         /// <returns></returns>
         string[][] GetAnnounceList();
 
         /// <summary>
-        /// 获取备用 Tracker 服务器列表。如果节点不存在，返回 <see langword="null"/>。
+        /// 获取备用 Tracker 服务器列表。如果元素不存在，返回 <see langword="null"/>。
         /// </summary>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
         /// <returns></returns>
@@ -54,13 +54,13 @@ namespace Honoo.Text.BEncode
         #region CreatedBy
 
         /// <summary>
-        /// 获取创建者名称。如果节点不存在，返回 <see langword="null"/>。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
+        /// 获取创建者名称。如果元素不存在，返回 <see langword="null"/>。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
         /// </summary>
         /// <returns></returns>
         string GetCreatedBy();
 
         /// <summary>
-        /// 获取创建者名称。如果节点不存在，返回 <see langword="null"/>。
+        /// 获取创建者名称。如果元素不存在，返回 <see langword="null"/>。
         /// </summary>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
         /// <returns></returns>
@@ -72,7 +72,7 @@ namespace Honoo.Text.BEncode
         #region CreationDate
 
         /// <summary>
-        /// 获取创建时间。如果节点不存在，返回 <see langword="null"/>。
+        /// 获取创建时间。如果元素不存在，返回 <see langword="null"/>。
         /// </summary>
         /// <returns></returns>
         DateTime? GetCreationDate();
@@ -82,13 +82,13 @@ namespace Honoo.Text.BEncode
         #region Encoding
 
         /// <summary>
-        /// 获取编码标识。如果节点不存在，返回 <see langword="null"/>。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
+        /// 获取编码标识。如果元素不存在，返回 <see langword="null"/>。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
         /// </summary>
         /// <returns></returns>
         string GetEncoding();
 
         /// <summary>
-        /// 获取编码标识。如果节点不存在，返回 <see langword="null"/>。
+        /// 获取编码标识。如果元素不存在，返回 <see langword="null"/>。
         /// </summary>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
         /// <returns></returns>
@@ -100,13 +100,13 @@ namespace Honoo.Text.BEncode
         #region Comment
 
         /// <summary>
-        /// 获取注释。如果节点不存在，返回 <see langword="null"/>。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
+        /// 获取注释。如果元素不存在，返回 <see langword="null"/>。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
         /// </summary>
         /// <returns></returns>
         string GetComment();
 
         /// <summary>
-        /// 获取注释。如果节点不存在，返回 <see langword="null"/>。
+        /// 获取注释。如果元素不存在，返回 <see langword="null"/>。
         /// </summary>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
         /// <returns></returns>
@@ -118,7 +118,7 @@ namespace Honoo.Text.BEncode
         #region Nodes
 
         /// <summary>
-        /// 获取 DHT 初始节点。如果节点不存在，返回 <see langword="null"/>。
+        /// 获取 DHT 初始节点。如果元素不存在，返回 <see langword="null"/>。
         /// </summary>
         /// <returns></returns>
         IPEndPoint[] GetNodes();
@@ -128,13 +128,13 @@ namespace Honoo.Text.BEncode
         #region Name
 
         /// <summary>
-        /// 获取推荐文件名。如果节点不存在，返回 <see langword="null"/>。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
+        /// 获取推荐文件名。如果元素不存在，返回 <see langword="null"/>。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
         /// </summary>
         /// <returns></returns>
         string GetName();
 
         /// <summary>
-        /// 获取推荐文件名。如果节点不存在，返回 <see langword="null"/>。
+        /// 获取推荐文件名。如果元素不存在，返回 <see langword="null"/>。
         /// </summary>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
         /// <returns></returns>
@@ -146,7 +146,7 @@ namespace Honoo.Text.BEncode
         #region Private
 
         /// <summary>
-        /// 获取私有标记。如果节点不存在，返回 <see langword="null"/>。
+        /// 获取私有标记。如果元素不存在，返回 <see langword="null"/>。
         /// </summary>
         /// <returns></returns>
         bool? GetPrivate();
@@ -156,7 +156,7 @@ namespace Honoo.Text.BEncode
         #region PieceLength
 
         /// <summary>
-        /// 获取分块大小。如果节点不存在，返回 <see langword="null"/>。
+        /// 获取分块大小。如果元素不存在，返回 <see langword="null"/>。
         /// </summary>
         /// <returns></returns>
         long? GetPieceLength();
@@ -166,7 +166,7 @@ namespace Honoo.Text.BEncode
         #region Pieces
 
         /// <summary>
-        /// 获取分块的集成特征码。如果节点不存在，返回 <see langword="null"/>。
+        /// 获取分块的集成特征码。如果元素不存在，返回 <see langword="null"/>。
         /// </summary>
         /// <returns></returns>
         byte[] GetPieces();
@@ -179,7 +179,7 @@ namespace Honoo.Text.BEncode
         /// 获取所包含文件的信息。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
         /// </summary>
         /// <returns></returns>
-        ICollection<TorrentFileEntry> GetFiles();
+        IList<TorrentFileEntry> GetFiles();
 
         /// <summary>
         /// 获取所包含文件的信息。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
@@ -188,7 +188,7 @@ namespace Honoo.Text.BEncode
         /// <param name="minSize">匹配最小文件大小。</param>
         /// <param name="maxSize">匹配最大文件大小。</param>
         /// <returns></returns>
-        ICollection<TorrentFileEntry> GetFiles(string searchPattern, long minSize, long maxSize);
+        IList<TorrentFileEntry> GetFiles(string searchPattern, long minSize, long maxSize);
 
         /// <summary>
         /// 获取所包含文件的信息。
@@ -196,28 +196,17 @@ namespace Honoo.Text.BEncode
         /// <param name="searchPattern">文件名称检索条件（包括路径，路径使用 '/' 分隔符）。支持*.*，不可使用正则表达式。</param>
         /// <param name="minSize">匹配最小文件大小。</param>
         /// <param name="maxSize">匹配最大文件大小。</param>
-        /// <param name="customKeys">尝试读取指定键的元素。</param>
-        /// <returns></returns>
-        ICollection<TorrentFileEntry> GetFiles(string searchPattern, long minSize, long maxSize, HashSet<BEncodeString> customKeys);
-
-        /// <summary>
-        /// 获取所包含文件的信息。
-        /// </summary>
-        /// <param name="searchPattern">文件名称检索条件（包括路径，路径使用 '/' 分隔符）。支持*.*，不可使用正则表达式。</param>
-        /// <param name="minSize">匹配最小文件大小。</param>
-        /// <param name="maxSize">匹配最大文件大小。</param>
-        /// <param name="customKeys">尝试读取指定键的元素。</param>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
         /// <returns></returns>
         /// <exception cref="Exception"/>
-        ICollection<TorrentFileEntry> GetFiles(string searchPattern, long minSize, long maxSize, HashSet<BEncodeString> customKeys, Encoding valueEncoding);
+        IList<TorrentFileEntry> GetFiles(string searchPattern, long minSize, long maxSize, Encoding valueEncoding);
 
         #endregion Files
 
         #region Hash
 
         /// <summary>
-        /// 获取特征码。如果节点不存在，返回 <see langword="null"/>。
+        /// 获取特征码。如果元素不存在，返回 <see langword="null"/>。
         /// </summary>
         /// <returns></returns>
         string GetHash();

@@ -7,182 +7,179 @@
 
 using System;
 
-#pragma warning disable IDE0130 // 命名空间与文件夹结构不匹配
-
 namespace Honoo.IO
-#pragma warning restore IDE0130 // 命名空间与文件夹结构不匹配
 {
+    /// <summary>
+    /// 字节类型的容量单位。单位进位是 1024 字节。单位是 B， KiB， MiB 等。
+    /// </summary>
+    public enum SizeKilo
+    {
+        /// <summary>保持转换数值大于 1，选择可能的最大单位。</summary>
+        Auto,
+
+        /// <summary>单位是 B。</summary>
+        B,
+
+        /// <summary>单位是 KiB。</summary>
+        KiB,
+
+        /// <summary>单位是 MiB。</summary>
+        MiB,
+
+        /// <summary>单位是 GiB。</summary>
+        GiB,
+
+        /// <summary>单位是 TiB。</summary>
+        TiB,
+
+        /// <summary>单位是 PiB。</summary>
+        PiB,
+
+        /// <summary>单位是 EiB。</summary>
+        EiB,
+
+        /// <summary>单位是 BiB。</summary>
+        BiB,
+    }
+
+    /// <summary>
+    /// 字节类型的容量单位。单位进位是 1000 字节。单位是 B， KB， MB 等。
+    /// </summary>
+    public enum SizeThousands
+    {
+        /// <summary>保持转换数值大于 1，选择可能的最大单位。</summary>
+        Auto,
+
+        /// <summary>单位是 B。</summary>
+        B,
+
+        /// <summary>单位是 KB。</summary>
+        KB,
+
+        /// <summary>单位是 MB。</summary>
+        MB,
+
+        /// <summary>单位是 GB。</summary>
+        GB,
+
+        /// <summary>单位是 TB。</summary>
+        TB,
+
+        /// <summary>单位是 PB。</summary>
+        PB,
+
+        /// <summary>单位是 EB。</summary>
+        EB,
+
+        /// <summary>单位是 BB。</summary>
+        BB,
+    }
+
+    /// <summary>
+    /// 位类型的每秒速度单位。单位进位是 1000 位。单位是 bps， Kbps， Mbps 等。
+    /// </summary>
+    public enum SpeedBits
+    {
+        /// <summary>保持转换数值大于 1，选择可能的最大单位。</summary>
+        Auto,
+
+        /// <summary>单位是 bps。</summary>
+        bps,
+
+        /// <summary>单位是 Kbps。</summary>
+        Kbps,
+
+        /// <summary>单位是 Mbps。</summary>
+        Mbps,
+
+        /// <summary>单位是 Gbps。</summary>
+        Gbps,
+
+        /// <summary>单位是 Tbps。</summary>
+        Tbps,
+
+        /// <summary>单位是 Pbps。</summary>
+        Pbps,
+
+        /// <summary>单位是 Ebps。</summary>
+        Ebps,
+
+        /// <summary>单位是 Bbps。</summary>
+        Bbps,
+    }
+
+    /// <summary>
+    /// 字节类型的每秒速度单位。单位进位是 1024 字节。单位是 B/s， KiB/s， MiB/s 等。
+    /// </summary>
+    public enum SpeedKilo
+    {
+        /// <summary>保持转换数值大于 1，选择可能的最大单位。</summary>
+        Auto,
+
+        /// <summary>单位是 B/s。</summary>
+        Bps,
+
+        /// <summary>单位是 KiB/s。</summary>
+        KiBps,
+
+        /// <summary>单位是 MiB/s。</summary>
+        MiBps,
+
+        /// <summary>单位是 GiB/s。</summary>
+        GiBps,
+
+        /// <summary>单位是 TiB/s。</summary>
+        TiBps,
+
+        /// <summary>单位是 PiB/s。</summary>
+        PiBps,
+
+        /// <summary>单位是 EiB/s。</summary>
+        EiBps,
+
+        /// <summary>单位是 BiB/s。</summary>
+        BiBps,
+    }
+
+    /// <summary>
+    /// 字节类型的每秒速度单位。单位进位是 1000 字节。单位是 B/s， KB/s， MB/s 等。
+    /// </summary>
+    public enum SpeedThousands
+    {
+        /// <summary>保持转换数值大于 1，选择可能的最大单位。</summary>
+        Auto,
+
+        /// <summary>单位是 B/s。</summary>
+        Bps,
+
+        /// <summary>单位是 KB/s。</summary>
+        KBps,
+
+        /// <summary>单位是 MB/s。</summary>
+        MBps,
+
+        /// <summary>单位是 GB/s。</summary>
+        GBps,
+
+        /// <summary>单位是 TB/s。</summary>
+        TBps,
+
+        /// <summary>单位是 PB/s。</summary>
+        PBps,
+
+        /// <summary>单位是 EB/s。</summary>
+        EBps,
+
+        /// <summary>单位是 BB/s。</summary>
+        BBps,
+    }
+
     /// <summary>
     /// I/O 数值对象辅助。
     /// </summary>
     public static class Numerics
     {
         #region 转换
-
-        /// <summary>
-        /// 字节类型的容量单位。单位进位是 1024。
-        /// </summary>
-        public enum SizeKilo
-        {
-            /// <summary>保持转换数值大于 1，选择可能的最大单位。</summary>
-            Auto,
-
-            /// <summary>单位是 B。</summary>
-            B,
-
-            /// <summary>单位是 KiB。</summary>
-            KiB,
-
-            /// <summary>单位是 MiB。</summary>
-            MiB,
-
-            /// <summary>单位是 GiB。</summary>
-            GiB,
-
-            /// <summary>单位是 TiB。</summary>
-            TiB,
-
-            /// <summary>单位是 PiB。</summary>
-            PiB,
-
-            /// <summary>单位是 EiB。</summary>
-            EiB,
-
-            /// <summary>单位是 BiB。</summary>
-            BiB,
-        }
-
-        /// <summary>
-        /// 字节类型的容量单位。单位进位是 1000。
-        /// </summary>
-        public enum SizeThousands
-        {
-            /// <summary>保持转换数值大于 1，选择可能的最大单位。</summary>
-            Auto,
-
-            /// <summary>单位是 B。</summary>
-            B,
-
-            /// <summary>单位是 KB。</summary>
-            KB,
-
-            /// <summary>单位是 MB。</summary>
-            MB,
-
-            /// <summary>单位是 GB。</summary>
-            GB,
-
-            /// <summary>单位是 TB。</summary>
-            TB,
-
-            /// <summary>单位是 PB。</summary>
-            PB,
-
-            /// <summary>单位是 EB。</summary>
-            EB,
-
-            /// <summary>单位是 BB。</summary>
-            BB,
-        }
-
-        /// <summary>
-        /// 位类型的速度单位。单位进位是 1000。
-        /// </summary>
-        public enum SpeedBits
-        {
-            /// <summary>保持转换数值大于 1，选择可能的最大单位。</summary>
-            Auto,
-
-            /// <summary>单位是 bps。</summary>
-            bps,
-
-            /// <summary>单位是 Kbps。</summary>
-            Kbps,
-
-            /// <summary>单位是 Mbps。</summary>
-            Mbps,
-
-            /// <summary>单位是 Gbps。</summary>
-            Gbps,
-
-            /// <summary>单位是 Tbps。</summary>
-            Tbps,
-
-            /// <summary>单位是 Pbps。</summary>
-            Pbps,
-
-            /// <summary>单位是 Ebps。</summary>
-            Ebps,
-
-            /// <summary>单位是 Bbps。</summary>
-            Bbps,
-        }
-
-        /// <summary>
-        /// 字节类型的速度单位。单位进位是 1024。
-        /// </summary>
-        public enum SpeedKilo
-        {
-            /// <summary>保持转换数值大于 1，选择可能的最大单位。</summary>
-            Auto,
-
-            /// <summary>单位是 B/s。</summary>
-            Bps,
-
-            /// <summary>单位是 KiB/s。</summary>
-            KiBps,
-
-            /// <summary>单位是 MiB/s。</summary>
-            MiBps,
-
-            /// <summary>单位是 GiB/s。</summary>
-            GiBps,
-
-            /// <summary>单位是 TiB/s。</summary>
-            TiBps,
-
-            /// <summary>单位是 PiB/s。</summary>
-            PiBps,
-
-            /// <summary>单位是 EiB/s。</summary>
-            EiBps,
-
-            /// <summary>单位是 BiB/s。</summary>
-            BiBps,
-        }
-
-        /// <summary>
-        /// 字节类型的速度单位。单位进位是 1000。
-        /// </summary>
-        public enum SpeedThousands
-        {
-            /// <summary>保持转换数值大于 1，选择可能的最大单位。</summary>
-            Auto,
-
-            /// <summary>单位是 B/s。</summary>
-            Bps,
-
-            /// <summary>单位是 KB/s。</summary>
-            KBps,
-
-            /// <summary>单位是 MB/s。</summary>
-            MBps,
-
-            /// <summary>单位是 GB/s。</summary>
-            GBps,
-
-            /// <summary>单位是 TB/s。</summary>
-            TBps,
-
-            /// <summary>单位是 PB/s。</summary>
-            PBps,
-
-            /// <summary>单位是 EB/s。</summary>
-            EBps,
-
-            /// <summary>单位是 BB/s。</summary>
-            BBps,
-        }
 
         /// <summary>
         /// 将字节容量数值转换为指定单位。

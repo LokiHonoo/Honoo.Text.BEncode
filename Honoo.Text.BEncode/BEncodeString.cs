@@ -14,15 +14,21 @@ namespace Honoo.Text.BEncode
         #region DEBUG
 
 #if DEBUG
-        private readonly string _utf8;
+        private string _utf8;
 
         internal string Utf8 => _utf8;
 #endif
 
         #endregion DEBUG
 
-        private readonly string _hexValue;
-        private readonly byte[] _value;
+        private string _hexValue;
+        private bool _isReadOnly;
+        private byte[] _value;
+
+        /// <summary>
+        /// 获取一个值，该值指示 <see cref="BEncodeString"/> 是否为只读。
+        /// </summary>
+        public bool IsReadOnly => _isReadOnly;
 
         /// <summary>
         /// 获取原始格式的数据值。
@@ -86,9 +92,10 @@ namespace Honoo.Text.BEncode
         /// <summary>
         /// 初始化 BEncodeString 类的新实例。
         /// </summary>
-        /// <param name="content">指定从中读取的流。定位必须在编码标记（0-9）处。</param>
+        /// <param name="content">指定从中读取的流。定位必须在编码标记 <see langword="0"/>-<see langword="9"/> 处。</param>
+        /// <param name="readOnly">指定此 <see cref="BEncodeString"/> 及子元素是只读的。</param>
         /// <exception cref="Exception"/>
-        public BEncodeString(Stream content) : base(BEncodeValueKind.BEncodeString)
+        public BEncodeString(Stream content, bool readOnly) : base(BEncodeValueKind.BEncodeString)
         {
             if (content == null)
             {
@@ -120,6 +127,7 @@ namespace Honoo.Text.BEncode
 #if DEBUG
             _utf8 = Encoding.UTF8.GetString(bytes);
 #endif
+            _isReadOnly = readOnly;
         }
 
         #endregion Construction
@@ -337,6 +345,63 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
+        /// 设置值。
+        /// </summary>
+        /// <param name="value">字节数据类型的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public BEncodeString SetValue(byte[] value)
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+            _value = (byte[])value.Clone();
+            _hexValue = BitConverter.ToString(value).Replace("-", null);
+#if DEBUG
+            _utf8 = Encoding.UTF8.GetString(value);
+#endif
+            return this;
+        }
+
+        /// <summary>
+        /// 设置值。转换时默认使用 <see cref="Encoding.UTF8"/> 编码。
+        /// </summary>
+        /// <param name="value">文本类型的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public BEncodeString SetValue(string value)
+        {
+            return SetValue(value, Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// 设置值。
+        /// </summary>
+        /// <param name="value">文本类型的值。</param>
+        /// <param name="encoding">用于转换的字符编码。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public BEncodeString SetValue(string value, Encoding encoding)
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+            if (encoding == null)
+            {
+                throw new ArgumentNullException(nameof(encoding));
+            }
+            byte[] bytes = encoding.GetBytes(value);
+            _value = bytes;
+            _hexValue = BitConverter.ToString(bytes).Replace("-", null);
+#if DEBUG
+            _utf8 = value;
+#endif
+            return this;
+        }
+
+        /// <summary>
         /// 方法已重写。获取字符串表示形式的数据值。转换时默认使用 <see cref="Encoding.UTF8"/> 编码。
         /// </summary>
         /// <returns></returns>
@@ -358,6 +423,11 @@ namespace Honoo.Text.BEncode
                 throw new ArgumentNullException(nameof(encoding));
             }
             return encoding.GetString(_value);
+        }
+
+        internal override void ChangeReadOnly(bool isReadOnly)
+        {
+            _isReadOnly = isReadOnly;
         }
     }
 }

@@ -85,10 +85,10 @@ namespace TorrentAnalysis
                 Console.WriteLine("name          :" + torrent.GetName());
                 Console.WriteLine("piece length  :" + torrent.GetPieceLength());
                 Console.WriteLine("pieces        :" + BitConverter.ToString(torrent.GetPieces()).Replace("-", ""));
-                var files = torrent.GetFiles("", 0, long.MaxValue, null);
+                var files = torrent.GetFiles("", 0, long.MaxValue);
                 foreach (var file in files)
                 {
-                    Console.WriteLine(string.Join('\\', file.Paths).PadRight(80) + Numerics.GetSize(file.Length, Numerics.SizeKilo.Auto, 2, out string unit) + unit);
+                    Console.WriteLine(string.Join('\\', file.GetPaths()).PadRight(80) + Numerics.GetSize(file.GetLength(), SizeKilo.Auto, 2, out string unit) + unit);
                 }
             }
             Console.WriteLine();
@@ -104,10 +104,10 @@ namespace TorrentAnalysis
                 Console.WriteLine("name          :" + torrent.GetName());
                 Console.WriteLine("piece length  :" + torrent.GetPieceLength());
                 Console.WriteLine("pieces        :" + BitConverter.ToString(torrent.GetPieces()).Replace("-", ""));
-                var files = torrent.GetFiles("", 0, long.MaxValue, null);
+                var files = torrent.GetFiles("", 0, long.MaxValue);
                 foreach (var file in files)
                 {
-                    Console.WriteLine(string.Join('\\', file.Paths).PadRight(80) + Numerics.GetSize(file.Length, Numerics.SizeKilo.Auto, 2, out string unit) + unit);
+                    Console.WriteLine(string.Join('\\', file.GetPaths()).PadRight(80) + Numerics.GetSize(file.GetLength(), SizeKilo.Auto, 2, out string unit) + unit);
                 }
             }
             Console.WriteLine();
@@ -123,7 +123,6 @@ namespace TorrentAnalysis
                 ["http://tracker2.itzmx.com:6961/announce", "http://tracker2.itzmx.com:6961/announce"],
                 ["http://open.acgtracker.com:1096/announce", "http://open.acgtracker.com:1096/announce"]
             ]);
-            //torrent.SetCreatedBy("LokiHonoo");
             torrent.SetComment("https://github.com/LokiHonoo/Honoo.Text.BEncode");
             torrent.SetEncoding("UTF-8");
             torrent.SetNodes([new IPEndPoint(IPAddress.Parse("111.111.111.111"), 7777)]);
@@ -131,7 +130,7 @@ namespace TorrentAnalysis
 
             using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
             {
-                torrent.Save(stream);
+                torrent.Save(stream, "LokiHonoo", DateTime.UtcNow, true);
             }
             Console.WriteLine("created by    :" + torrent.GetCreatedBy());
             Console.WriteLine("creation date :" + torrent.GetCreationDate());
@@ -158,7 +157,6 @@ namespace TorrentAnalysis
                 ["http://tracker2.itzmx.com:6961/announce", "http://tracker2.itzmx.com:6961/announce"],
                 ["http://open.acgtracker.com:1096/announce", "http://open.acgtracker.com:1096/announce"]
             ]);
-            torrent.SetCreatedBy("LokiHonoo");
             torrent.SetComment("https://github.com/LokiHonoo/Honoo.Text.BEncode");
             torrent.SetEncoding("UTF-8");
             torrent.SetNodes([new IPEndPoint(IPAddress.Parse("111.111.111.111"), 7777)]);
@@ -166,7 +164,7 @@ namespace TorrentAnalysis
 
             using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
             {
-                torrent.Save(stream);
+                torrent.Save(stream, "LokiHonoo", DateTime.UtcNow, true);
             }
             Console.WriteLine("created by    :" + torrent.GetCreatedBy());
             Console.WriteLine("creation date :" + torrent.GetCreationDate());
@@ -193,7 +191,6 @@ namespace TorrentAnalysis
                 ["http://tracker2.itzmx.com:6961/announce", "http://tracker2.itzmx.com:6961/announce"],
                 ["http://open.acgtracker.com:1096/announce", "http://open.acgtracker.com:1096/announce"]
             ]);
-            //torrent.SetCreatedBy("LokiHonoo");
             torrent.SetComment("https://github.com/LokiHonoo/Honoo.Text.BEncode");
             torrent.SetEncoding("UTF-8");
             torrent.SetNodes([new IPEndPoint(IPAddress.Parse("111.111.111.111"), 7777)]);
@@ -202,7 +199,7 @@ namespace TorrentAnalysis
 
             using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
             {
-                torrent.Save(stream);
+                torrent.Save(stream, "LokiHonoo", DateTime.UtcNow, true);
             }
             Console.WriteLine("created by    :" + torrent.GetCreatedBy());
             Console.WriteLine("creation date :" + torrent.GetCreationDate());
@@ -229,7 +226,6 @@ namespace TorrentAnalysis
                 ["http://tracker2.itzmx.com:6961/announce", "http://tracker2.itzmx.com:6961/announce"],
                 ["http://open.acgtracker.com:1096/announce", "http://open.acgtracker.com:1096/announce"]
             ]);
-            torrent.SetCreatedBy("LokiHonoo");
             torrent.SetComment("https://github.com/LokiHonoo/Honoo.Text.BEncode");
             torrent.SetEncoding("UTF-8");
             torrent.SetNodes([new IPEndPoint(IPAddress.Parse("111.111.111.111"), 7777)]);
@@ -238,7 +234,7 @@ namespace TorrentAnalysis
 
             using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
             {
-                torrent.Save(stream);
+                torrent.Save(stream, "LokiHonoo", DateTime.UtcNow, true);
             }
             Console.WriteLine("created by    :" + torrent.GetCreatedBy());
             Console.WriteLine("creation date :" + torrent.GetCreationDate());
@@ -271,15 +267,15 @@ namespace TorrentAnalysis
                 Console.WriteLine("name          :" + torrent.GetName());
                 Console.WriteLine("piece length  :" + torrent.GetPieceLength());
 
-                var files = torrent.GetFiles("Frieren - 17 [WebRip", 0, long.MaxValue, null);
+                var files = torrent.GetFiles("Frieren - 17 [WebRip", 0, long.MaxValue);
                 Console.WriteLine($"Search - \"Frieren - 17 [WebRip\" - count:{files.Count}");
-                files = torrent.GetFiles("10bit AAC ASSx2].mkv", 0, long.MaxValue, null);
+                files = torrent.GetFiles("10bit AAC ASSx2].mkv", 0, long.MaxValue);
                 Console.WriteLine($"Search - \"10bit AAC ASSx2].mkv\" - count:{files.Count}");
                 Console.WriteLine("Search - \"*.*\"");
-                files = torrent.GetFiles("*.*", 0, long.MaxValue, null);
-                foreach (var file in files.OrderByDescending(entry => entry.Length))
+                files = torrent.GetFiles("*.*", 0, long.MaxValue);
+                foreach (var file in files.OrderByDescending(entry => entry.GetLength()))
                 {
-                    Console.WriteLine(file.Paths[^1] + "    " + Numerics.GetSize(file.Length, Numerics.SizeKilo.Auto, 2, out string unit) + unit);
+                    Console.WriteLine(file.GetPaths()[^1] + "    " + Numerics.GetSize(file.GetLength(), SizeKilo.Auto, 2, out string unit) + unit);
                 }
                 Console.WriteLine();
 

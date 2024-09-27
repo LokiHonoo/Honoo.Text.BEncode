@@ -12,8 +12,14 @@ namespace Honoo.Text.BEncode
     /// </summary>
     public class BEncodeInteger : BEncodeValue, IEquatable<BEncodeInteger>, IComparer<BEncodeInteger>, IComparable
     {
-        private readonly BigInteger _numericValue;
-        private readonly string _value;
+        private bool _isReadOnly;
+        private BigInteger _numericValue;
+        private string _value;
+
+        /// <summary>
+        /// 获取一个值，该值指示 <see cref="BEncodeInteger"/> 是否为只读。
+        /// </summary>
+        public bool IsReadOnly => _isReadOnly;
 
         /// <summary>
         /// 获取原始格式的数据值。
@@ -62,9 +68,10 @@ namespace Honoo.Text.BEncode
         /// <summary>
         /// 初始化 BEncodeInteger 类的新实例。
         /// </summary>
-        /// <param name="content">指定从中读取的流。定位必须在编码标记（i）处。</param>
+        /// <param name="content">指定从中读取的流。定位必须在编码标记 <see langword="i"/> 处。</param>
+        /// <param name="readOnly">指定此 <see cref="BEncodeInteger"/> 及子元素是只读的。</param>
         /// <exception cref="Exception"/>
-        public BEncodeInteger(Stream content) : base(BEncodeValueKind.BEncodeInteger)
+        public BEncodeInteger(Stream content, bool readOnly) : base(BEncodeValueKind.BEncodeInteger)
         {
             if (content == null)
             {
@@ -91,6 +98,7 @@ namespace Honoo.Text.BEncode
             }
             _numericValue = BigInteger.Parse(valueString.ToString(), NumberStyles.Number, CultureInfo.InvariantCulture);
             _value = _numericValue.ToString(CultureInfo.InvariantCulture);
+            _isReadOnly = readOnly;
         }
 
         #endregion Construction
@@ -292,12 +300,64 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
+        /// 设置值。
+        /// </summary>
+        /// <param name="value">十进制文本表示的长数值类型的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public BEncodeInteger SetValue(string value)
+        {
+            if (_isReadOnly)
+            {
+                throw new NotSupportedException("Element is read-only.");
+            }
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+            _numericValue = BigInteger.Parse(value, NumberStyles.Number, CultureInfo.InvariantCulture);
+            _value = _numericValue.ToString(CultureInfo.InvariantCulture);
+            return this;
+        }
+
+        /// <summary>
+        /// 设置值。
+        /// </summary>
+        /// <param name="value">Int32 类型的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public BEncodeInteger SetValue(int value)
+        {
+            _numericValue = value;
+            _value = value.ToString(CultureInfo.InvariantCulture);
+            return this;
+        }
+
+        /// <summary>
+        /// 设置值。
+        /// </summary>
+        /// <param name="value">Int64 类型的值。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public BEncodeInteger SetValue(long value)
+        {
+            _numericValue = value;
+            _value = value.ToString(CultureInfo.InvariantCulture);
+            return this;
+        }
+
+        /// <summary>
         /// 方法已重写。获取字符串表示形式的数据值。
         /// </summary>
         /// <returns></returns>
         public override string ToString()
         {
             return _value;
+        }
+
+        internal override void ChangeReadOnly(bool isReadOnly)
+        {
+            _isReadOnly = isReadOnly;
         }
     }
 }

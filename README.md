@@ -12,6 +12,7 @@
     - [Basic](#basic)
     - [Torrent](#torrent)
   - [CHANGELOG](#changelog)
+    - [1.0.9](#109)
     - [1.0.8](#108)
     - [1.0.4](#104)
     - [1.0.3](#103)
@@ -108,20 +109,16 @@ private static void ReadTorrent()
         Console.WriteLine("created by    :" + torrent.GetCreatedBy());
         Console.WriteLine("creation date :" + torrent.GetCreationDate());
         Console.WriteLine("announce      :" + torrent.GetAnnounce());
-        Console.WriteLine("name          :" + torrent.GetName());
-        Console.WriteLine("piece length  :" + torrent.GetPieceLength());
         Console.WriteLine("comment       :" + torrent.GetComment());
         Console.WriteLine("hash          :" + torrent.GetHash());
+        Console.WriteLine("nodes         :" + torrent.GetNodes());
+        Console.WriteLine("name          :" + torrent.GetName());
+        Console.WriteLine("piece length  :" + torrent.GetPieceLength());
 
-        var files = torrent.GetFiles("Frieren - 17 [WebRip", 0, long.MaxValue, null);
-        Console.WriteLine($"Search - \"Frieren - 17 [WebRip\" - count:{files.Count}");
-        files = torrent.GetFiles("10bit AAC ASSx2].mkv", 0, long.MaxValue, null);
-        Console.WriteLine($"Search - \"10bit AAC ASSx2].mkv\" - count:{files.Count}");
-        Console.WriteLine("Search - \"*.*\"");
-        files = torrent.GetFiles("*.*", 0, long.MaxValue, null);
-        foreach (var file in files.OrderByDescending(entry => entry.Length))
+        var files = torrent.GetFiles("*.*", 0, long.MaxValue);
+        foreach (var file in files.OrderByDescending(entry => entry.GetLength()))
         {
-            Console.WriteLine(file.Paths[^1] + "    " + Numeric.GetSize(file.Length, Numeric.SizeKilo.Auto, 2, out string unit) + unit);
+            Console.WriteLine(file.GetPaths()[^1] + "    " + Numerics.GetSize(file.GetLength(), SizeKilo.Auto, 2, out string unit) + unit);
         }
         Console.WriteLine();
 
@@ -144,7 +141,6 @@ private static void CreateTorrent256K()
         ["http://tracker2.itzmx.com:6961/announce", "http://tracker2.itzmx.com:6961/announce"],
         ["http://open.acgtracker.com:1096/announce", "http://open.acgtracker.com:1096/announce"]
     ]);
-    torrent.SetCreatedBy("LokiHonoo");
     torrent.SetComment("https://github.com/LokiHonoo/Honoo.Text.BEncode");
     torrent.SetEncoding("UTF-8");
     torrent.SetNodes([new IPEndPoint(IPAddress.Parse("111.111.111.111"), 7777)]);
@@ -156,7 +152,7 @@ private static void CreateTorrent256K()
 
     using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
     {
-        torrent.Save(stream);
+        torrent.Save(stream, "LokiHonoo", DateTime.UtcNow, true);
     }
   
     var magnet = torrent.GetMagnet(true, true, false, false);
@@ -166,6 +162,10 @@ private static void CreateTorrent256K()
 ```
 
 ## CHANGELOG
+
+### 1.0.9
+
+**Features* TorrentFileEntry 增加了快速修改文件名的方法。同时公开了元素节点以供自由编辑。
 
 ### 1.0.8
 
@@ -185,9 +185,9 @@ private static void CreateTorrent256K()
 
 ### 1.0.2
 
-**Refactored* BEncodeDictionary 的 AddOrUpdate() 方法可直接返回添加的值，并且支持泛型。
+**Refactored* BEncodeDictionary 的 AddOrUpdate() 方法返回添加的值，并且支持泛型。
 
-**Refactored* BEncodeList 的 Add() AddRange() 方法可直接返回添加的值，并且支持泛型。
+**Refactored* BEncodeList 的 Add() AddRange() 方法返回添加的值，并且支持泛型。
 
 ### 1.0.1
 

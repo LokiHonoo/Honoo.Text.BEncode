@@ -34,5 +34,7 @@ namespace Honoo.Text.BEncode
         /// <param name="stream">指定保存的目标流。</param>
         /// <exception cref="Exception"/>
         public abstract void Save(Stream stream);
+
+        internal abstract void ChangeReadOnly(bool isReadOnly);
     }
 }

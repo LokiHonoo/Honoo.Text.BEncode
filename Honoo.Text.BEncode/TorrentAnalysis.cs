@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 namespace Honoo.Text.BEncode
 {
     /// <summary>
-    /// Torrent 文件的根节点。在 BEncode 字典类型的基础上增加了一些 Torrent 文件的相关方法。
+    /// Torrent 文件的根元素。在 BEncode 字典类型的基础上增加了一些 Torrent 文件的相关方法。
     /// </summary>
     public class TorrentAnalysis : BEncodeDictionary, IReadOnlyTorrentAnalysis
     {
@@ -38,7 +38,7 @@ namespace Honoo.Text.BEncode
         /// <summary>
         /// 初始化 TorrentAnalysis 类的新实例。
         /// </summary>
-        /// <param name="content">指定从中读取的流。定位必须在编码标记（d）处。</param>
+        /// <param name="content">指定从中读取的流。定位必须在编码标记 <see langword="d"/> 处。</param>
         /// <exception cref="Exception"/>
         public TorrentAnalysis(Stream content) : this(content, false)
         {
@@ -47,8 +47,8 @@ namespace Honoo.Text.BEncode
         /// <summary>
         /// 初始化 TorrentAnalysis 类的新实例。
         /// </summary>
-        /// <param name="content">指定从中读取的流。定位必须在编码标记（d）处。</param>
-        /// <param name="readOnly">指定此 <see cref="TorrentAnalysis"/> 是只读实例。在保存时不会更新必要元素。</param>
+        /// <param name="content">指定从中读取的流。定位必须在编码标记 <see langword="d"/> 处。</param>
+        /// <param name="readOnly">指定此 <see cref="TorrentAnalysis"/> 是只读实例。</param>
         /// <exception cref="Exception"/>
         public TorrentAnalysis(Stream content, bool readOnly) : base(content, readOnly)
         {
@@ -66,7 +66,7 @@ namespace Honoo.Text.BEncode
         #region Announce
 
         /// <summary>
-        /// 获取主要 Tracker 服务器。如果节点不存在，返回 <see langword="null"/>。转换元素的键时默认使用 <see cref="Encoding.UTF8"/> 编码。
+        /// 获取主要 Tracker 服务器。如果元素不存在，返回 <see langword="null"/>。转换元素的键时默认使用 <see cref="Encoding.UTF8"/> 编码。
         /// </summary>
         /// <returns></returns>
         public string GetAnnounce()
@@ -75,7 +75,7 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 获取主要 Tracker 服务器。如果节点不存在，返回 <see langword="null"/>。
+        /// 获取主要 Tracker 服务器。如果元素不存在，返回 <see langword="null"/>。
         /// </summary>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
         /// <returns></returns>
@@ -90,18 +90,18 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 设置主要 Tracker 服务器。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
+        /// 设置主要 Tracker 服务器。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。设置 <see langword="null"/> 移除此元素。
         /// </summary>
-        /// <param name="announce">Tracker 服务器地址。</param>
+        /// <param name="announce">Tracker 服务器地址。设置 <see langword="null"/> 移除此元素。</param>
         public void SetAnnounce(string announce)
         {
             SetAnnounce(announce, Encoding.UTF8);
         }
 
         /// <summary>
-        /// 设置主要 Tracker 服务器。
+        /// 设置主要 Tracker 服务器。设置 <see langword="null"/> 移除此元素。
         /// </summary>
-        /// <param name="announce">Tracker 服务器地址。</param>
+        /// <param name="announce">Tracker 服务器地址。设置 <see langword="null"/> 移除此元素。</param>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
         /// <exception cref="Exception"/>
         public void SetAnnounce(string announce, Encoding valueEncoding)
@@ -121,7 +121,7 @@ namespace Honoo.Text.BEncode
         #region Announce-List
 
         /// <summary>
-        /// 获取备用 Tracker 服务器列表。如果节点不存在，返回 <see langword="null"/>。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
+        /// 获取备用 Tracker 服务器列表。如果元素不存在，返回 <see langword="null"/>。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
         /// </summary>
         /// <returns></returns>
         public string[][] GetAnnounceList()
@@ -130,7 +130,7 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 获取备用 Tracker 服务器列表。如果节点不存在，返回 <see langword="null"/>。
+        /// 获取备用 Tracker 服务器列表。如果元素不存在，返回 <see langword="null"/>。
         /// </summary>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
         /// <returns></returns>
@@ -155,18 +155,18 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 设置备用 Tracker 服务器列表。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
+        /// 设置备用 Tracker 服务器列表。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。设置 <see langword="null"/> 移除此元素。
         /// </summary>
-        /// <param name="announceList">Tracker 服务器列表。</param>
+        /// <param name="announceList">Tracker 服务器列表。设置 <see langword="null"/> 移除此元素。</param>
         public void SetAnnounceList(string[][] announceList)
         {
             SetAnnounceList(announceList, Encoding.UTF8);
         }
 
         /// <summary>
-        /// 设置备用 Tracker 服务器列表。
+        /// 设置备用 Tracker 服务器列表。设置 <see langword="null"/> 移除此元素。
         /// </summary>
-        /// <param name="announceList">Tracker 服务器列表。</param>
+        /// <param name="announceList">Tracker 服务器列表。设置 <see langword="null"/> 移除此元素。</param>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
         /// <exception cref="Exception"/>
         public void SetAnnounceList(string[][] announceList, Encoding valueEncoding)
@@ -194,7 +194,7 @@ namespace Honoo.Text.BEncode
         #region CreatedBy
 
         /// <summary>
-        /// 获取创建者名称。如果节点不存在，返回 <see langword="null"/>。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
+        /// 获取创建者名称。如果元素不存在，返回 <see langword="null"/>。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
         /// </summary>
         /// <returns></returns>
         public string GetCreatedBy()
@@ -203,7 +203,7 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 获取创建者名称。如果节点不存在，返回 <see langword="null"/>。
+        /// 获取创建者名称。如果元素不存在，返回 <see langword="null"/>。
         /// </summary>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
         /// <returns></returns>
@@ -218,18 +218,18 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 设置创建者名称。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
+        /// 设置创建者名称。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。设置 <see langword="null"/> 移除此元素。
         /// </summary>
-        /// <param name="createdBy">创建者名称。</param>
+        /// <param name="createdBy">创建者名称。设置 <see langword="null"/> 移除此元素。</param>
         public void SetCreatedBy(string createdBy)
         {
             SetCreatedBy(createdBy, Encoding.UTF8);
         }
 
         /// <summary>
-        /// 设置创建者名称。
+        /// 设置创建者名称。设置 <see langword="null"/> 移除此元素。
         /// </summary>
-        /// <param name="createdBy">创建者名称。</param>
+        /// <param name="createdBy">创建者名称。设置 <see langword="null"/> 移除此元素。</param>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
         /// <exception cref="Exception"/>
         public void SetCreatedBy(string createdBy, Encoding valueEncoding)
@@ -249,7 +249,7 @@ namespace Honoo.Text.BEncode
         #region CreationDate
 
         /// <summary>
-        /// 获取创建时间。如果节点不存在，返回 <see langword="null"/>。
+        /// 获取创建时间。如果元素不存在，返回 <see langword="null"/>。
         /// </summary>
         /// <returns></returns>
         public DateTime? GetCreationDate()
@@ -262,9 +262,9 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 设置创建时间。
+        /// 设置创建时间。设置 <see langword="null"/> 移除此元素。
         /// </summary>
-        /// <param name="creationDate">创建时间。</param>
+        /// <param name="creationDate">创建时间。设置 <see langword="null"/> 移除此元素。</param>
         public void SetCreationDate(DateTime? creationDate)
         {
             if (creationDate == null)
@@ -282,7 +282,7 @@ namespace Honoo.Text.BEncode
         #region Encoding
 
         /// <summary>
-        /// 获取编码标识。如果节点不存在，返回 <see langword="null"/>。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
+        /// 获取编码标识。如果元素不存在，返回 <see langword="null"/>。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
         /// </summary>
         /// <returns></returns>
         public string GetEncoding()
@@ -291,7 +291,7 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 获取编码标识。如果节点不存在，返回 <see langword="null"/>。
+        /// 获取编码标识。如果元素不存在，返回 <see langword="null"/>。
         /// </summary>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
         /// <returns></returns>
@@ -306,18 +306,18 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 设置编码标识。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
+        /// 设置编码标识。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。设置 <see langword="null"/> 移除此元素。
         /// </summary>
-        /// <param name="flag">编码标识。</param>
+        /// <param name="flag">编码标识。设置 <see langword="null"/> 移除此元素。</param>
         public void SetEncoding(string flag)
         {
             SetEncoding(flag, Encoding.UTF8);
         }
 
         /// <summary>
-        /// 设置编码标识。
+        /// 设置编码标识。设置 <see langword="null"/> 移除此元素。
         /// </summary>
-        /// <param name="flag">编码标识。</param>
+        /// <param name="flag">编码标识。设置 <see langword="null"/> 移除此元素。</param>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
         /// <exception cref="Exception"/>
         public void SetEncoding(string flag, Encoding valueEncoding)
@@ -337,7 +337,7 @@ namespace Honoo.Text.BEncode
         #region Comment
 
         /// <summary>
-        /// 获取注释。如果节点不存在，返回 <see langword="null"/>。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
+        /// 获取注释。如果元素不存在，返回 <see langword="null"/>。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
         /// </summary>
         /// <returns></returns>
         public string GetComment()
@@ -346,7 +346,7 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 获取注释。如果节点不存在，返回 <see langword="null"/>。
+        /// 获取注释。如果元素不存在，返回 <see langword="null"/>。
         /// </summary>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
         /// <returns></returns>
@@ -361,18 +361,18 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 设置注释。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
+        /// 设置注释。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。设置 <see langword="null"/> 移除此元素。
         /// </summary>
-        /// <param name="comment">注释。</param>
+        /// <param name="comment">注释。设置 <see langword="null"/> 移除此元素。</param>
         public void SetComment(string comment)
         {
             SetComment(comment, Encoding.UTF8);
         }
 
         /// <summary>
-        /// 设置注释。
+        /// 设置注释。设置 <see langword="null"/> 移除此元素。
         /// </summary>
-        /// <param name="comment">注释。</param>
+        /// <param name="comment">注释。设置 <see langword="null"/> 移除此元素。</param>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
         /// <exception cref="Exception"/>
         public void SetComment(string comment, Encoding valueEncoding)
@@ -392,7 +392,7 @@ namespace Honoo.Text.BEncode
         #region Nodes
 
         /// <summary>
-        /// 获取 DHT 初始节点。如果节点不存在，返回 <see langword="null"/>。
+        /// 获取 DHT 初始节点。如果元素不存在，返回 <see langword="null"/>。
         /// </summary>
         /// <returns></returns>
         public IPEndPoint[] GetNodes()
@@ -413,9 +413,9 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 设置 DHT 初始节点。
+        /// 设置 DHT 初始节点。设置 <see langword="null"/> 移除此元素。
         /// </summary>
-        /// <param name="eps">DHT 节点地址。</param>
+        /// <param name="eps">DHT 节点地址。设置 <see langword="null"/> 移除此元素。</param>
         public void SetNodes(IPEndPoint[] eps)
         {
             if (eps == null)
@@ -440,7 +440,7 @@ namespace Honoo.Text.BEncode
         #region Name
 
         /// <summary>
-        /// 获取推荐文件名。如果节点不存在，返回 <see langword="null"/>。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
+        /// 获取推荐文件名。如果元素不存在，返回 <see langword="null"/>。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
         /// </summary>
         /// <returns></returns>
         public string GetName()
@@ -449,7 +449,7 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 获取推荐文件名。如果节点不存在，返回 <see langword="null"/>。
+        /// 获取推荐文件名。如果元素不存在，返回 <see langword="null"/>。
         /// </summary>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
         /// <returns></returns>
@@ -467,18 +467,18 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 设置推荐文件名。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。添加文件后会重置此元素。
+        /// 设置推荐文件名。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。设置 <see langword="null"/> 移除此元素。添加文件后会重置此元素。
         /// </summary>
-        /// <param name="name">推荐文件名。</param>
+        /// <param name="name">推荐文件名。设置 <see langword="null"/> 移除此元素。</param>
         public void SetName(string name)
         {
             SetName(name, Encoding.UTF8);
         }
 
         /// <summary>
-        /// 设置推荐文件名。添加文件后会重置此元素。
+        /// 设置推荐文件名。设置 <see langword="null"/> 移除此元素。添加文件后会重置此元素。
         /// </summary>
-        /// <param name="name">推荐文件名。</param>
+        /// <param name="name">推荐文件名。设置 <see langword="null"/> 移除此元素。</param>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
         /// <exception cref="Exception"/>
         public void SetName(string name, Encoding valueEncoding)
@@ -505,7 +505,7 @@ namespace Honoo.Text.BEncode
         #region Private
 
         /// <summary>
-        /// 获取私有标记。如果节点不存在，返回 <see langword="null"/>。
+        /// 获取私有标记。如果元素不存在，返回 <see langword="null"/>。
         /// </summary>
         /// <returns></returns>
         public bool? GetPrivate()
@@ -521,9 +521,9 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 设置私有标记。
+        /// 设置私有标记。设置 <see langword="null"/> 移除此元素。
         /// </summary>
-        /// <param name="flag">私有标记。</param>
+        /// <param name="flag">私有标记。设置 <see langword="null"/> 移除此元素。</param>
         public void SetPrivate(bool? flag)
         {
             if (flag == null)
@@ -548,7 +548,7 @@ namespace Honoo.Text.BEncode
         #region Pieces
 
         /// <summary>
-        /// 获取分块的集成特征码。如果节点不存在，返回 <see langword="null"/>。
+        /// 获取分块的集成特征码。如果元素不存在，返回 <see langword="null"/>。
         /// </summary>
         /// <returns></returns>
         public byte[] GetPieces()
@@ -568,7 +568,7 @@ namespace Honoo.Text.BEncode
         #region PieceLength
 
         /// <summary>
-        /// 获取分块大小。如果节点不存在，返回 <see langword="null"/>。添加文件后会重置此元素。
+        /// 获取分块大小。如果元素不存在，返回 <see langword="null"/>。添加文件后会重置此元素。
         /// </summary>
         /// <returns></returns>
         public long? GetPieceLength()
@@ -584,9 +584,9 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 设置分块大小。更改此设置会使已存在的 "pieces" 元素值失效。必须重新添加文件。
+        /// 设置分块大小。设置 <see langword="null"/> 移除此元素。此设置与 "pieces" 元素值相关，更改后必须重新添加文件以生成新的 "pieces" 元素。
         /// </summary>
-        /// <param name="length">分块大小。</param>
+        /// <param name="length">分块大小。设置 <see langword="null"/> 移除此元素。</param>
         public void SetPieceLength(long? length)
         {
             if (length == null)
@@ -611,7 +611,7 @@ namespace Honoo.Text.BEncode
         #region Hash
 
         /// <summary>
-        /// 获取特征码。如果节点不存在，返回 <see langword="null"/>。
+        /// 获取特征码。如果元素不存在，返回 <see langword="null"/>。
         /// </summary>
         /// <returns></returns>
         public string GetHash()
@@ -623,6 +623,38 @@ namespace Honoo.Text.BEncode
             return null;
         }
 
+        /// <summary>
+        /// 设置实时计算的 BTIH 特征码。需要存在 "info" 元素。
+        /// </summary>
+        /// <returns></returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1308:将字符串规范化为大写", Justification = "<挂起>")]
+        public void SetHash()
+        {
+            if (base.TryGetValue("info", out BEncodeDictionary info))
+            {
+                byte[] checksum = ComputeHash(info);
+                string hash = BitConverter.ToString(checksum, 0, checksum.Length).Replace("-", null).ToLowerInvariant();
+                base.AddOrUpdate("hash", new BEncodeString(hash));
+            }
+        }
+
+        /// <summary>
+        /// 设置自定义特征码。设置 <see langword="null"/> 移除此元素。
+        /// </summary>
+        /// <param name="hashHex">自定义特征码的 Hex 字符串。设置 <see langword="null"/> 移除此元素。</param>
+        /// <returns></returns>
+        public void SetHash(string hashHex)
+        {
+            if (hashHex == null)
+            {
+                base.Remove("hash");
+            }
+            else
+            {
+                base.AddOrUpdate("hash", new BEncodeString(hashHex));
+            }
+        }
+
         #endregion Hash
 
         #region Files
@@ -631,7 +663,7 @@ namespace Honoo.Text.BEncode
         /// 获取所包含文件的信息。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
         /// </summary>
         /// <returns></returns>
-        public ICollection<TorrentFileEntry> GetFiles()
+        public IList<TorrentFileEntry> GetFiles()
         {
             return GetFiles(string.Empty, 0, long.MaxValue);
         }
@@ -643,9 +675,9 @@ namespace Honoo.Text.BEncode
         /// <param name="minSize">匹配最小文件大小。</param>
         /// <param name="maxSize">匹配最大文件大小。</param>
         /// <returns></returns>
-        public ICollection<TorrentFileEntry> GetFiles(string searchPattern, long minSize, long maxSize)
+        public IList<TorrentFileEntry> GetFiles(string searchPattern, long minSize, long maxSize)
         {
-            return GetFiles(searchPattern, minSize, maxSize, null);
+            return GetFiles(searchPattern, minSize, maxSize, Encoding.UTF8);
         }
 
         /// <summary>
@@ -654,24 +686,10 @@ namespace Honoo.Text.BEncode
         /// <param name="searchPattern">文件名称检索条件（包括路径，路径使用 '/' 分隔符）。支持*.*，不可使用正则表达式。</param>
         /// <param name="minSize">匹配最小文件大小。</param>
         /// <param name="maxSize">匹配最大文件大小。</param>
-        /// <param name="customKeys">尝试读取指定键的元素。</param>
-        /// <returns></returns>
-        public ICollection<TorrentFileEntry> GetFiles(string searchPattern, long minSize, long maxSize, HashSet<BEncodeString> customKeys)
-        {
-            return GetFiles(searchPattern, minSize, maxSize, customKeys, Encoding.UTF8);
-        }
-
-        /// <summary>
-        /// 获取所包含文件的信息。
-        /// </summary>
-        /// <param name="searchPattern">文件名称检索条件（包括路径，路径使用 '/' 分隔符）。支持*.*，不可使用正则表达式。</param>
-        /// <param name="minSize">匹配最小文件大小。</param>
-        /// <param name="maxSize">匹配最大文件大小。</param>
-        /// <param name="customKeys">尝试读取指定键的元素。</param>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
         /// <returns></returns>
         /// <exception cref="Exception"/>
-        public ICollection<TorrentFileEntry> GetFiles(string searchPattern, long minSize, long maxSize, HashSet<BEncodeString> customKeys, Encoding valueEncoding)
+        public IList<TorrentFileEntry> GetFiles(string searchPattern, long minSize, long maxSize, Encoding valueEncoding)
         {
             if (!string.IsNullOrWhiteSpace(searchPattern))
             {
@@ -685,73 +703,50 @@ namespace Honoo.Text.BEncode
             {
                 if (info.TryGetValue("files", out BEncodeList files))
                 {
+                    int index = -1;
                     foreach (BEncodeDictionary file in files.Cast<BEncodeDictionary>())
                     {
+                        index++;
                         bool matched = true;
-                        List<string> paths = new List<string>();
                         long len = ((BEncodeInteger)file["length"]).GetInt64Value();
-                        BEncodeDictionary customs = new BEncodeDictionary();
-                        foreach (BEncodeString path in file.GetValue<BEncodeList>("path").Cast<BEncodeString>())
-                        {
-                            paths.Add(path.GetStringValue(valueEncoding));
-                        }
-                        string p = string.Join("/", paths);
-
-                        if (!string.IsNullOrWhiteSpace(searchPattern))
-                        {
-                            Match match = Regex.Match(p, searchPattern);
-                            matched = match.Success;
-                        }
-                        if (matched && (len < minSize || len > maxSize))
+                        if (len < minSize || len > maxSize)
                         {
                             matched = false;
                         }
-                        if (matched && customKeys != null && customKeys.Count > 0)
+                        if (matched && !string.IsNullOrWhiteSpace(searchPattern))
                         {
-                            foreach (var key in customKeys)
+                            List<string> paths = new List<string>();
+                            foreach (BEncodeString path in file.GetValue<BEncodeList>("path").Cast<BEncodeString>())
                             {
-                                if (file.TryGetValue(key, out BEncodeValue custom))
-                                {
-                                    customs.Add(key, custom);
-                                }
+                                paths.Add(path.GetStringValue(valueEncoding));
                             }
+                            string p = string.Join("/", paths);
+                            Match match = Regex.Match(p, searchPattern);
+                            matched = match.Success;
                         }
                         if (matched)
                         {
-                            customs.ChangeReadOnly(true);
-                            result.Add(new TorrentFileEntry(paths.ToArray(), len, customs));
+                            result.Add(new TorrentFileEntry(_multiple, file, index));
                         }
                     }
                 }
-                else if (info.TryGetValue("name", out BEncodeString path) && info.TryGetValue("length", out BEncodeInteger length))
+                else if (info.TryGetValue("name", out BEncodeString name) && info.TryGetValue("length", out BEncodeInteger length))
                 {
                     bool matched = true;
-                    string p = path.GetStringValue(valueEncoding);
                     long len = length.GetInt64Value();
-                    BEncodeDictionary customs = new BEncodeDictionary();
-                    if (!string.IsNullOrWhiteSpace(searchPattern))
-                    {
-                        Match match = Regex.Match(p, searchPattern);
-                        matched = match.Success;
-                    }
-                    if (matched && (len < minSize || len > maxSize))
+                    if (len < minSize || len > maxSize)
                     {
                         matched = false;
                     }
-                    if (matched && customKeys != null && customKeys.Count > 0)
+                    if (matched && !string.IsNullOrWhiteSpace(searchPattern))
                     {
-                        foreach (var key in customKeys)
-                        {
-                            if (info.TryGetValue(key, out BEncodeValue custom))
-                            {
-                                customs.Add(key, custom);
-                            }
-                        }
+                        string p = name.GetStringValue(valueEncoding);
+                        Match match = Regex.Match(p, searchPattern);
+                        matched = match.Success;
                     }
                     if (matched)
                     {
-                        customs.ChangeReadOnly(true);
-                        result.Add(new TorrentFileEntry(new string[] { p }, len, customs));
+                        result.Add(new TorrentFileEntry(_multiple, info, 0));
                     }
                 }
             }
@@ -1049,27 +1044,45 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 保存到指定的流。如果 <see cref="TorrentAnalysis"/> 不是只读的，添加或更新以下元素
-        /// <br/>"created by" 如果不存在此元素添加 <see href="https://github.com/LokiHonoo/Honoo.Text.BEncode"/> 为 "created by"。
-        /// <br/>"creation date" 更新为 UTC 现在时间。
-        /// <br/>"hash" 实时计算 BTIH 特征码。
+        /// 设置创建者名称和创建时间，同时实时计算 BTIH 特征码，保存到指定的流。
         /// </summary>
         /// <param name="stream">指定保存的目标流。</param>
+        /// <param name="createdBy">创建者名称。设置 <see langword="null"/> 移除此元素。</param>
+        /// <param name="creationDate">创建时间。设置 <see langword="null"/> 移除此元素。</param>
+        /// <param name="renewHash">更新为实时计算的 BTIH 特征码。</param>
         /// <exception cref="Exception"/>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1308:将字符串规范化为大写", Justification = "<挂起>")]
-        public override void Save(Stream stream)
+        public void Save(Stream stream, string createdBy, DateTime? creationDate, bool renewHash)
         {
-            if (!base.IsReadOnly)
+            if (base.IsReadOnly)
             {
-                base.GetOrAdd("created by", new BEncodeString("https://github.com/LokiHonoo/Honoo.Text.BEncode"));
-                SetCreationDate(DateTime.UtcNow);
-                if (base.TryGetValue("info", out BEncodeDictionary info))
-                {
-                    byte[] checksum = ComputeHash(info);
-                    string hash = BitConverter.ToString(checksum, 0, checksum.Length).Replace("-", null).ToLowerInvariant();
-                    base.AddOrUpdate("hash", new BEncodeString(hash));
-                }
+                throw new NotSupportedException("Collection is read-only.");
             }
+            SetCreatedBy(createdBy);
+            SetCreationDate(creationDate);
+            if (renewHash)
+            {
+                SetHash();
+            }
+            base.Save(stream);
+        }
+
+        /// <summary>
+        /// 设置创建者名称、创建时间和自定义特征码，保存到指定的流。
+        /// </summary>
+        /// <param name="stream">指定保存的目标流。</param>
+        /// <param name="createdBy">创建者名称。设置 <see langword="null"/> 移除此元素。</param>
+        /// <param name="creationDate">创建时间。设置 <see langword="null"/> 移除此元素。</param>
+        /// <param name="hashHex">自定义特征码的 Hex 字符串。设置 <see langword="null"/> 移除此元素。</param>
+        /// <exception cref="Exception"/>
+        public void Save(Stream stream, string createdBy, DateTime? creationDate, string hashHex)
+        {
+            if (base.IsReadOnly)
+            {
+                throw new NotSupportedException("Collection is read-only.");
+            }
+            SetCreatedBy(createdBy);
+            SetCreationDate(creationDate);
+            SetHash(hashHex);
             base.Save(stream);
         }
 
