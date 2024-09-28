@@ -20,7 +20,7 @@ namespace Honoo.Text.BEncode
         /// <param name="index">元素的索引。</param>
         /// <returns></returns>
         /// <exception cref="Exception"/>
-        BEncodeValue this[int index] { get; }
+        BEncodeElement this[int index] { get; }
 
         /// <summary>
         /// 确定指定元素是否在集合中。
@@ -28,7 +28,7 @@ namespace Honoo.Text.BEncode
         /// <typeparam name="T">指定元素类型。</typeparam>
         /// <param name="value">搜索的指定对象。</param>
         /// <returns></returns>
-        bool Contains<T>(T value) where T : BEncodeValue;
+        bool Contains<T>(T value) where T : BEncodeElement;
 
         /// <summary>
         /// 从指定数组索引开始将值元素复制到到指定数组。
@@ -36,13 +36,13 @@ namespace Honoo.Text.BEncode
         /// <typeparam name="T">指定元素类型。</typeparam>
         /// <param name="array">要复制到的目标数组。</param>
         /// <param name="arrayIndex">目标数组中从零开始的索引，从此处开始复制。</param>
-        void CopyTo<T>(T[] array, int arrayIndex) where T : BEncodeValue;
+        void CopyTo<T>(T[] array, int arrayIndex) where T : BEncodeElement;
 
         /// <summary>
         /// 支持在泛型集合上进行简单迭代。
         /// </summary>
         /// <returns></returns>
-        IEnumerator<BEncodeValue> GetEnumerator();
+        IEnumerator<BEncodeElement> GetEnumerator();
 
         /// <summary>
         /// 搜索指定对象，并返回第一个匹配项从零开始的索引。
@@ -50,7 +50,7 @@ namespace Honoo.Text.BEncode
         /// <typeparam name="T">指定元素类型。</typeparam>
         /// <param name="value">搜索的指定对象。</param>
         /// <returns></returns>
-        int IndexOf<T>(T value) where T : BEncodeValue;
+        int IndexOf<T>(T value) where T : BEncodeElement;
 
         /// <summary>
         /// 保存到指定的流。

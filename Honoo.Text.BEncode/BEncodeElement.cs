@@ -4,24 +4,24 @@ using System.IO;
 namespace Honoo.Text.BEncode
 {
     /// <summary>
-    /// 表示所有 BEncode 值类型从中继承的基本类型。
+    /// 表示所有 BEncode 元素类型从中继承的基本类型。
     /// </summary>
-    public abstract class BEncodeValue
+    public abstract class BEncodeElement
     {
-        private readonly BEncodeValueKind _kind;
+        private readonly BEncodeElementKind _kind;
 
         /// <summary>
-        /// 获取 Encode 值的类型。
+        /// 获取 BEncode 元素的类型。
         /// </summary>
-        public BEncodeValueKind Kind => _kind;
+        public BEncodeElementKind Kind => _kind;
 
         #region Construction
 
         /// <summary>
-        /// 初始化 BEncodeValue 类的新实例。
+        /// 初始化 BEncodeElement 类的新实例。
         /// </summary>
-        /// <param name="kind">BEncode 值的类型。</param>
-        protected BEncodeValue(BEncodeValueKind kind)
+        /// <param name="kind">BEncode 元素的类型。</param>
+        protected BEncodeElement(BEncodeElementKind kind)
         {
             _kind = kind;
         }

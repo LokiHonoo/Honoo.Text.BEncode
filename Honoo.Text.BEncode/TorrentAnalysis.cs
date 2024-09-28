@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 namespace Honoo.Text.BEncode
 {
     /// <summary>
-    /// Torrent 文件的根元素。在 BEncode 字典类型的基础上增加了一些 Torrent 文件的相关方法。
+    /// Torrent 文件的根元素。从 <see cref="BEncodeDictionary"/> 继承并增加 Torrent 文件的相关方法。
     /// </summary>
     public class TorrentAnalysis : BEncodeDictionary, IReadOnlyTorrentAnalysis
     {

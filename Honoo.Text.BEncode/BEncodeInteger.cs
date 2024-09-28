@@ -10,7 +10,7 @@ namespace Honoo.Text.BEncode
     /// <summary>
     /// BEncode 数值类型。
     /// </summary>
-    public class BEncodeInteger : BEncodeValue, IEquatable<BEncodeInteger>, IComparer<BEncodeInteger>, IComparable
+    public class BEncodeInteger : BEncodeElement, IEquatable<BEncodeInteger>, IComparer<BEncodeInteger>, IComparable
     {
         private bool _isReadOnly;
         private BigInteger _numericValue;
@@ -35,7 +35,7 @@ namespace Honoo.Text.BEncode
         /// </summary>
         /// <param name="value">十进制文本表示的长数值类型的值。</param>
         /// <exception cref="Exception"/>
-        public BEncodeInteger(string value) : base(BEncodeValueKind.BEncodeInteger)
+        public BEncodeInteger(string value) : base(BEncodeElementKind.BEncodeInteger)
         {
             if (string.IsNullOrWhiteSpace(value))
             {
@@ -49,7 +49,7 @@ namespace Honoo.Text.BEncode
         /// 初始化 BEncodeInteger 类的新实例。
         /// </summary>
         /// <param name="value">Int32 类型的值。</param>
-        public BEncodeInteger(int value) : base(BEncodeValueKind.BEncodeInteger)
+        public BEncodeInteger(int value) : base(BEncodeElementKind.BEncodeInteger)
         {
             _numericValue = value;
             _value = value.ToString(CultureInfo.InvariantCulture);
@@ -59,7 +59,7 @@ namespace Honoo.Text.BEncode
         /// 初始化 BEncodeInteger 类的新实例。
         /// </summary>
         /// <param name="value">Int64 类型的值。</param>
-        public BEncodeInteger(long value) : base(BEncodeValueKind.BEncodeInteger)
+        public BEncodeInteger(long value) : base(BEncodeElementKind.BEncodeInteger)
         {
             _numericValue = value;
             _value = value.ToString(CultureInfo.InvariantCulture);
@@ -71,7 +71,7 @@ namespace Honoo.Text.BEncode
         /// <param name="content">指定从中读取的流。定位必须在编码标记 <see langword="i"/> 处。</param>
         /// <param name="readOnly">指定此 <see cref="BEncodeInteger"/> 及子元素是只读的。</param>
         /// <exception cref="Exception"/>
-        public BEncodeInteger(Stream content, bool readOnly) : base(BEncodeValueKind.BEncodeInteger)
+        public BEncodeInteger(Stream content, bool readOnly) : base(BEncodeElementKind.BEncodeInteger)
         {
             if (content == null)
             {

@@ -13,10 +13,10 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/LokiHonoo/Honoo.Text.BEncode</PackageProjectUrl>
     <RepositoryUrl>https://github.com/LokiHonoo/Honoo.Text.BEncode</RepositoryUrl>
-    <PackageTags>Honoo BEncode Torrent</PackageTags>
+    <PackageTags>Honoo;BEncode;Torrent</PackageTags>
     <AssemblyName>Honoo.Text.BEncode</AssemblyName>
     <RootNamespace>Honoo.Text.BEncode</RootNamespace>
-    <Version>1.0.9</Version>
+    <Version>1.1.0</Version>
     <PackageReadmeFile>Honoo.Text.BEncode.md</PackageReadmeFile>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>

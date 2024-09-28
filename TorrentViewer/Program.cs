@@ -67,13 +67,13 @@ namespace TorrentViewer
             }
         }
 
-        private static void Transform(BEncodeValue bEncodeValue, JsonTextWriter writer)
+        private static void Transform(BEncodeElement bEncodeValue, JsonTextWriter writer)
         {
             switch (bEncodeValue)
             {
                 case BEncodeDictionary dict:
                     writer.WriteStartObject();
-                    foreach (KeyValuePair<BEncodeString, BEncodeValue> entry in dict)
+                    foreach (KeyValuePair<BEncodeString, BEncodeElement> entry in dict)
                     {
                         string key = entry.Key.GetStringValue().Trim('\r').Trim('\n');
                         writer.WritePropertyName(key);
@@ -84,7 +84,7 @@ namespace TorrentViewer
 
                 case BEncodeList list:
                     writer.WriteStartArray();
-                    foreach (BEncodeValue value in list)
+                    foreach (BEncodeElement value in list)
                     {
                         Transform(value, writer);
                     }
@@ -103,7 +103,7 @@ namespace TorrentViewer
             }
         }
 
-        private static void TransformDictionaryEntry(string key, BEncodeValue value, JsonTextWriter writer)
+        private static void TransformDictionaryEntry(string key, BEncodeElement value, JsonTextWriter writer)
         {
             if (key == "pieces")
             {

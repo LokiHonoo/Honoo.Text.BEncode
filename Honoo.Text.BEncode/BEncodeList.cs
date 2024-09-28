@@ -8,9 +8,9 @@ namespace Honoo.Text.BEncode
     /// <summary>
     /// BEncode 列表类型。
     /// </summary>
-    public class BEncodeList : BEncodeValue, IEnumerable<BEncodeValue>, IReadOnlyBEncodeList
+    public class BEncodeList : BEncodeElement, IEnumerable<BEncodeElement>, IReadOnlyBEncodeList
     {
-        private readonly List<BEncodeValue> _elements = new List<BEncodeValue>();
+        private readonly List<BEncodeElement> _elements = new List<BEncodeElement>();
         private bool _isReadOnly;
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace Honoo.Text.BEncode
         /// <param name="index">元素的索引。</param>
         /// <returns></returns>
         /// <exception cref="Exception"/>
-        public BEncodeValue this[int index]
+        public BEncodeElement this[int index]
         {
             get => index < _elements.Count ? _elements[index] : null;
             set { Insert(index, value); }
@@ -40,7 +40,7 @@ namespace Honoo.Text.BEncode
         /// <summary>
         /// 初始化 BEncodeList 类的新实例。
         /// </summary>
-        public BEncodeList() : base(BEncodeValueKind.BEncodeList)
+        public BEncodeList() : base(BEncodeElementKind.BEncodeList)
         {
         }
 
@@ -59,7 +59,7 @@ namespace Honoo.Text.BEncode
         /// <param name="content">指定从中读取的流。定位必须在编码标记 <see langword="l"/> 处。</param>
         /// <param name="readOnly">指定此 <see cref="BEncodeList"/> 及子元素是只读的。</param>
         /// <exception cref="Exception"/>
-        public BEncodeList(Stream content, bool readOnly) : base(BEncodeValueKind.BEncodeList)
+        public BEncodeList(Stream content, bool readOnly) : base(BEncodeElementKind.BEncodeList)
         {
             if (content == null)
             {
@@ -110,7 +110,7 @@ namespace Honoo.Text.BEncode
         /// <typeparam name="T">指定元素类型。</typeparam>
         /// <param name="value">元素的值。</param>
         /// <exception cref="Exception"/>
-        public T Add<T>(T value) where T : BEncodeValue
+        public T Add<T>(T value) where T : BEncodeElement
         {
             if (_isReadOnly)
             {
@@ -130,7 +130,7 @@ namespace Honoo.Text.BEncode
         /// <typeparam name="T">指定元素类型。</typeparam>
         /// <param name="values">元素的集合。</param>
         /// <exception cref="Exception"/>
-        public IEnumerable<BEncodeValue> AddRange<T>(IEnumerable<BEncodeValue> values) where T : BEncodeValue
+        public IEnumerable<BEncodeElement> AddRange<T>(IEnumerable<BEncodeElement> values) where T : BEncodeElement
         {
             if (_isReadOnly)
             {
@@ -171,7 +171,7 @@ namespace Honoo.Text.BEncode
         /// <typeparam name="T">指定元素类型。</typeparam>
         /// <param name="value">搜索的指定对象。</param>
         /// <returns></returns>
-        public bool Contains<T>(T value) where T : BEncodeValue
+        public bool Contains<T>(T value) where T : BEncodeElement
         {
             return _elements.Contains(value);
         }
@@ -182,7 +182,7 @@ namespace Honoo.Text.BEncode
         /// <typeparam name="T">指定元素类型。</typeparam>
         /// <param name="array">要复制到的目标数组。</param>
         /// <param name="arrayIndex">目标数组中从零开始的索引，从此处开始复制。</param>
-        public void CopyTo<T>(T[] array, int arrayIndex) where T : BEncodeValue
+        public void CopyTo<T>(T[] array, int arrayIndex) where T : BEncodeElement
         {
             _elements.CopyTo(array, arrayIndex);
         }
@@ -191,7 +191,7 @@ namespace Honoo.Text.BEncode
         /// 支持在泛型集合上进行简单迭代。
         /// </summary>
         /// <returns></returns>
-        public IEnumerator<BEncodeValue> GetEnumerator()
+        public IEnumerator<BEncodeElement> GetEnumerator()
         {
             return _elements.GetEnumerator();
         }
@@ -207,7 +207,7 @@ namespace Honoo.Text.BEncode
         /// <typeparam name="T">指定元素类型。</typeparam>
         /// <param name="value">搜索的指定对象。</param>
         /// <returns></returns>
-        public int IndexOf<T>(T value) where T : BEncodeValue
+        public int IndexOf<T>(T value) where T : BEncodeElement
         {
             return _elements.IndexOf(value);
         }
@@ -219,7 +219,7 @@ namespace Honoo.Text.BEncode
         /// <param name="index">指定索引。</param>
         /// <param name="value">要插入的元素。</param>
         /// <exception cref="Exception"/>
-        public void Insert<T>(int index, T value) where T : BEncodeValue
+        public void Insert<T>(int index, T value) where T : BEncodeElement
         {
             if (_isReadOnly)
             {
@@ -235,7 +235,7 @@ namespace Honoo.Text.BEncode
         /// <param name="value">要移除的元素。</param>
         /// <returns></returns>
         /// <exception cref="Exception"/>
-        public bool Remove<T>(T value) where T : BEncodeValue
+        public bool Remove<T>(T value) where T : BEncodeElement
         {
             if (_isReadOnly)
             {

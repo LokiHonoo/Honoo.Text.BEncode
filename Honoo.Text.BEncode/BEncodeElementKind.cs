@@ -1,9 +1,9 @@
 ﻿namespace Honoo.Text.BEncode
 {
     /// <summary>
-    /// BEncode 值的类型。
+    /// BEncode 元素的类型。
     /// </summary>
-    public enum BEncodeValueKind
+    public enum BEncodeElementKind
     {
         /// <summary>
         /// BEncode 字典类型。

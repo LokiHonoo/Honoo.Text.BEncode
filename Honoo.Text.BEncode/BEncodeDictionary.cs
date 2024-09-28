@@ -10,7 +10,7 @@ namespace Honoo.Text.BEncode
     /// BEncode 字典类型。
     /// </summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1711:标识符应采用正确的后缀", Justification = "<挂起>")]
-    public class BEncodeDictionary : BEncodeValue, IEnumerable<KeyValuePair<BEncodeString, BEncodeValue>>, IReadOnlyBEncodeDictionary
+    public class BEncodeDictionary : BEncodeElement, IEnumerable<KeyValuePair<BEncodeString, BEncodeElement>>, IReadOnlyBEncodeDictionary
     {
         #region Class
 
@@ -22,7 +22,7 @@ namespace Honoo.Text.BEncode
         {
             #region Properties
 
-            private readonly Dictionary<BEncodeString, BEncodeValue> _elements;
+            private readonly Dictionary<BEncodeString, BEncodeElement> _elements;
 
             /// <summary>
             /// 获取元素集合的键的元素数。
@@ -31,7 +31,7 @@ namespace Honoo.Text.BEncode
 
             #endregion Properties
 
-            internal KeyCollection(Dictionary<BEncodeString, BEncodeValue> elements)
+            internal KeyCollection(Dictionary<BEncodeString, BEncodeElement> elements)
             {
                 _elements = elements;
             }
@@ -95,11 +95,11 @@ namespace Honoo.Text.BEncode
         /// 代表此元素集合的值的集合。
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:嵌套类型应不可见", Justification = "<挂起>")]
-        public sealed class ValueCollection : IEnumerable<BEncodeValue>
+        public sealed class ValueCollection : IEnumerable<BEncodeElement>
         {
             #region Properties
 
-            private readonly Dictionary<BEncodeString, BEncodeValue> _elements;
+            private readonly Dictionary<BEncodeString, BEncodeElement> _elements;
 
             /// <summary>
             /// 获取元素集合的值的元素数。
@@ -108,7 +108,7 @@ namespace Honoo.Text.BEncode
 
             #endregion Properties
 
-            internal ValueCollection(Dictionary<BEncodeString, BEncodeValue> elements)
+            internal ValueCollection(Dictionary<BEncodeString, BEncodeElement> elements)
             {
                 _elements = elements;
             }
@@ -119,7 +119,7 @@ namespace Honoo.Text.BEncode
             /// <typeparam name="T">指定元素类型。</typeparam>
             /// <param name="array">目标数组。</param>
             /// <param name="arrayIndex">目标数组中从零开始的索引，从此处开始复制。</param>
-            public void CopyTo<T>(T[] array, int arrayIndex) where T : BEncodeValue
+            public void CopyTo<T>(T[] array, int arrayIndex) where T : BEncodeElement
             {
                 _elements.Values.CopyTo(array, arrayIndex);
             }
@@ -128,7 +128,7 @@ namespace Honoo.Text.BEncode
             /// 支持在泛型集合上进行简单迭代。
             /// </summary>
             /// <returns></returns>
-            public IEnumerator<BEncodeValue> GetEnumerator()
+            public IEnumerator<BEncodeElement> GetEnumerator()
             {
                 return _elements.Values.GetEnumerator();
             }
@@ -143,7 +143,7 @@ namespace Honoo.Text.BEncode
 
         #region Properties
 
-        private readonly Dictionary<BEncodeString, BEncodeValue> _elements = new Dictionary<BEncodeString, BEncodeValue>();
+        private readonly Dictionary<BEncodeString, BEncodeElement> _elements = new Dictionary<BEncodeString, BEncodeElement>();
         private readonly KeyCollection _keyExhibits;
         private readonly ValueCollection _valueExhibits;
         private bool _isReadOnly;
@@ -174,9 +174,9 @@ namespace Honoo.Text.BEncode
         /// <param name="key">元素的键。</param>
         /// <returns></returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1043:将整型或字符串参数用于索引器", Justification = "<挂起>")]
-        public BEncodeValue this[BEncodeString key]
+        public BEncodeElement this[BEncodeString key]
         {
-            get { return TryGetValue(key, out BEncodeValue value) ? value : null; }
+            get { return TryGetValue(key, out BEncodeElement value) ? value : null; }
             set { AddOrUpdate(key, value); }
         }
 
@@ -186,9 +186,9 @@ namespace Honoo.Text.BEncode
         /// <param name="key">元素的键。</param>
         /// <returns></returns>
         /// <exception cref="Exception"/>
-        public BEncodeValue this[string key]
+        public BEncodeElement this[string key]
         {
-            get { return TryGetValue(new BEncodeString(key, Encoding.UTF8), out BEncodeValue value) ? value : null; }
+            get { return TryGetValue(new BEncodeString(key, Encoding.UTF8), out BEncodeElement value) ? value : null; }
             set { AddOrUpdate(key, value); }
         }
 
@@ -199,9 +199,9 @@ namespace Honoo.Text.BEncode
         /// <param name="keyEncoding">用于转换元素的键的字符编码。</param>
         /// <returns></returns>
         /// <exception cref="Exception"/>
-        public BEncodeValue this[string key, Encoding keyEncoding]
+        public BEncodeElement this[string key, Encoding keyEncoding]
         {
-            get { return TryGetValue(new BEncodeString(key, keyEncoding), out BEncodeValue value) ? value : null; }
+            get { return TryGetValue(new BEncodeString(key, keyEncoding), out BEncodeElement value) ? value : null; }
             set { AddOrUpdate(key, value); }
         }
 
@@ -212,7 +212,7 @@ namespace Honoo.Text.BEncode
         /// <summary>
         /// 初始化 BEncodeDictionary 类的新实例。
         /// </summary>
-        public BEncodeDictionary() : base(BEncodeValueKind.BEncodeDictionary)
+        public BEncodeDictionary() : base(BEncodeElementKind.BEncodeDictionary)
         {
             _keyExhibits = new KeyCollection(_elements);
             _valueExhibits = new ValueCollection(_elements);
@@ -233,7 +233,7 @@ namespace Honoo.Text.BEncode
         /// <param name="content">指定从中读取的流。定位必须在编码标记 <see langword="d"/> 处。</param>
         /// <param name="readOnly">指定此 <see cref="BEncodeDictionary"/> 及子元素是只读的。</param>
         /// <exception cref="Exception"/>
-        public BEncodeDictionary(Stream content, bool readOnly) : base(BEncodeValueKind.BEncodeDictionary)
+        public BEncodeDictionary(Stream content, bool readOnly) : base(BEncodeElementKind.BEncodeDictionary)
         {
             if (content == null)
             {
@@ -292,7 +292,7 @@ namespace Honoo.Text.BEncode
         /// <param name="key">元素的键。</param>
         /// <param name="value">元素的值。</param>
         /// <exception cref="Exception"/>
-        public T Add<T>(BEncodeString key, T value) where T : BEncodeValue
+        public T Add<T>(BEncodeString key, T value) where T : BEncodeElement
         {
             if (_isReadOnly)
             {
@@ -317,7 +317,7 @@ namespace Honoo.Text.BEncode
         /// <param name="key">元素的键。</param>
         /// <param name="value">元素的值。</param>
         /// <exception cref="Exception"/>
-        public T Add<T>(string key, T value) where T : BEncodeValue
+        public T Add<T>(string key, T value) where T : BEncodeElement
         {
             if (string.IsNullOrWhiteSpace(key))
             {
@@ -335,7 +335,7 @@ namespace Honoo.Text.BEncode
         /// <param name="keyEncoding">用于转换元素的键的字符编码。</param>
         /// <param name="value">元素的值。</param>
         /// <exception cref="Exception"/>
-        public T Add<T>(string key, Encoding keyEncoding, T value) where T : BEncodeValue
+        public T Add<T>(string key, Encoding keyEncoding, T value) where T : BEncodeElement
         {
             if (string.IsNullOrWhiteSpace(key))
             {
@@ -358,13 +358,13 @@ namespace Honoo.Text.BEncode
         /// <param name="valueIfNotExists">指定名称关联的元素不存在时添加此元素。</param>
         /// <returns></returns>
         /// <exception cref="Exception"/>
-        public T GetOrAdd<T>(BEncodeString key, T valueIfNotExists) where T : BEncodeValue
+        public T GetOrAdd<T>(BEncodeString key, T valueIfNotExists) where T : BEncodeElement
         {
             if (_isReadOnly)
             {
                 throw new NotSupportedException("Collection is read-only.");
             }
-            if (TryGetValue(key, out BEncodeValue value))
+            if (TryGetValue(key, out BEncodeElement value))
             {
                 if (value is T val)
                 {
@@ -390,7 +390,7 @@ namespace Honoo.Text.BEncode
         /// <param name="valueIfNotExists">指定名称关联的元素不存在时添加此元素。</param>
         /// <returns></returns>
         /// <exception cref="Exception"/>
-        public T GetOrAdd<T>(string key, T valueIfNotExists) where T : BEncodeValue
+        public T GetOrAdd<T>(string key, T valueIfNotExists) where T : BEncodeElement
         {
             if (key is null)
             {
@@ -410,7 +410,7 @@ namespace Honoo.Text.BEncode
         /// <param name="valueIfNotExists">指定名称关联的元素不存在时添加此元素。</param>
         /// <returns></returns>
         /// <exception cref="Exception"/>
-        public T GetOrAdd<T>(string key, Encoding keyEncoding, T valueIfNotExists) where T : BEncodeValue
+        public T GetOrAdd<T>(string key, Encoding keyEncoding, T valueIfNotExists) where T : BEncodeElement
         {
             if (key is null)
             {
@@ -431,7 +431,7 @@ namespace Honoo.Text.BEncode
         /// <param name="key">元素的键。</param>
         /// <param name="value">元素的值。</param>
         /// <exception cref="Exception"/>
-        public T AddOrUpdate<T>(BEncodeString key, T value) where T : BEncodeValue
+        public T AddOrUpdate<T>(BEncodeString key, T value) where T : BEncodeElement
         {
             if (_isReadOnly)
             {
@@ -464,7 +464,7 @@ namespace Honoo.Text.BEncode
         /// <param name="value">元素的值。</param>
         /// <returns></returns>
         /// <exception cref="Exception"/>
-        public T AddOrUpdate<T>(string key, T value) where T : BEncodeValue
+        public T AddOrUpdate<T>(string key, T value) where T : BEncodeElement
         {
             if (string.IsNullOrWhiteSpace(key))
             {
@@ -483,7 +483,7 @@ namespace Honoo.Text.BEncode
         /// <param name="value">元素的值。</param>
         /// <returns></returns>
         /// <exception cref="Exception"/>
-        public T AddOrUpdate<T>(string key, Encoding keyEncoding, T value) where T : BEncodeValue
+        public T AddOrUpdate<T>(string key, Encoding keyEncoding, T value) where T : BEncodeElement
         {
             if (string.IsNullOrWhiteSpace(key))
             {
@@ -505,9 +505,9 @@ namespace Honoo.Text.BEncode
         /// <param name="key">元素的键。</param>
         /// <param name="value">元素的值。</param>
         /// <returns></returns>
-        public bool TryGetValue<T>(BEncodeString key, out T value) where T : BEncodeValue
+        public bool TryGetValue<T>(BEncodeString key, out T value) where T : BEncodeElement
         {
-            if (_elements.TryGetValue(key, out BEncodeValue val))
+            if (_elements.TryGetValue(key, out BEncodeElement val))
             {
                 if (val is T v)
                 {
@@ -528,7 +528,7 @@ namespace Honoo.Text.BEncode
         /// <param name="value">元素的值。</param>
         /// <returns></returns>
         /// <exception cref="Exception"/>
-        public bool TryGetValue<T>(string key, out T value) where T : BEncodeValue
+        public bool TryGetValue<T>(string key, out T value) where T : BEncodeElement
         {
             var k = new BEncodeString(key, Encoding.UTF8);
             return TryGetValue(k, out value);
@@ -544,7 +544,7 @@ namespace Honoo.Text.BEncode
         /// <param name="value">元素的值。</param>
         /// <returns></returns>
         /// <exception cref="Exception"/>
-        public bool TryGetValue<T>(string key, Encoding keyEncoding, out T value) where T : BEncodeValue
+        public bool TryGetValue<T>(string key, Encoding keyEncoding, out T value) where T : BEncodeElement
         {
             var k = new BEncodeString(key, keyEncoding);
             return TryGetValue(k, out value);
@@ -560,7 +560,7 @@ namespace Honoo.Text.BEncode
         /// <typeparam name="T">指定元素类型。</typeparam>
         /// <param name="key">元素的键。</param>
         /// <returns></returns>
-        public T GetValue<T>(BEncodeString key) where T : BEncodeValue
+        public T GetValue<T>(BEncodeString key) where T : BEncodeElement
         {
             return TryGetValue(key, out T value) ? value : null;
         }
@@ -572,7 +572,7 @@ namespace Honoo.Text.BEncode
         /// <param name="key">元素的键。</param>
         /// <returns></returns>
         /// <exception cref="Exception"/>
-        public T GetValue<T>(string key) where T : BEncodeValue
+        public T GetValue<T>(string key) where T : BEncodeElement
         {
             var k = new BEncodeString(key, Encoding.UTF8);
             return GetValue<T>(k);
@@ -586,7 +586,7 @@ namespace Honoo.Text.BEncode
         /// <param name="keyEncoding">用于转换元素的键的字符编码。</param>
         /// <returns></returns>
         /// <exception cref="Exception"/>
-        public T GetValue<T>(string key, Encoding keyEncoding) where T : BEncodeValue
+        public T GetValue<T>(string key, Encoding keyEncoding) where T : BEncodeElement
         {
             var k = new BEncodeString(key, keyEncoding);
             return GetValue<T>(k);
@@ -603,7 +603,7 @@ namespace Honoo.Text.BEncode
         /// <param name="key">元素的键。</param>
         /// <param name="defaultValue">没有找到指定键时的元素的默认值。</param>
         /// <returns></returns>
-        public T GetValue<T>(BEncodeString key, T defaultValue) where T : BEncodeValue
+        public T GetValue<T>(BEncodeString key, T defaultValue) where T : BEncodeElement
         {
             return TryGetValue(key, out T value) ? value : defaultValue;
         }
@@ -616,7 +616,7 @@ namespace Honoo.Text.BEncode
         /// <param name="defaultValue">没有找到指定键时的元素的默认值。</param>
         /// <returns></returns>
         /// <exception cref="Exception"/>
-        public T GetValue<T>(string key, T defaultValue) where T : BEncodeValue
+        public T GetValue<T>(string key, T defaultValue) where T : BEncodeElement
         {
             var k = new BEncodeString(key, Encoding.UTF8);
             return GetValue<T>(k, defaultValue);
@@ -631,7 +631,7 @@ namespace Honoo.Text.BEncode
         /// <param name="defaultValue">没有找到指定键时的元素的默认值。</param>
         /// <returns></returns>
         /// <exception cref="Exception"/>
-        public T GetValue<T>(string key, Encoding keyEncoding, T defaultValue) where T : BEncodeValue
+        public T GetValue<T>(string key, Encoding keyEncoding, T defaultValue) where T : BEncodeElement
         {
             var k = new BEncodeString(key, keyEncoding);
             return GetValue<T>(k, defaultValue);
@@ -699,7 +699,7 @@ namespace Honoo.Text.BEncode
         /// 支持在泛型集合上进行简单迭代。
         /// </summary>
         /// <returns></returns>
-        public IEnumerator<KeyValuePair<BEncodeString, BEncodeValue>> GetEnumerator()
+        public IEnumerator<KeyValuePair<BEncodeString, BEncodeElement>> GetEnumerator()
         {
             return _elements.GetEnumerator();
         }

@@ -9,7 +9,7 @@ namespace Honoo.Text.BEncode
     /// <summary>
     /// BEncode 串行数据类型。
     /// </summary>
-    public class BEncodeString : BEncodeValue, IEquatable<BEncodeString>, IComparer<BEncodeString>, IComparable
+    public class BEncodeString : BEncodeElement, IEquatable<BEncodeString>, IComparer<BEncodeString>, IComparable
     {
         #region DEBUG
 
@@ -43,7 +43,7 @@ namespace Honoo.Text.BEncode
         /// </summary>
         /// <param name="value">字节数据类型的值。</param>
         /// <exception cref="Exception"/>
-        public BEncodeString(byte[] value) : base(BEncodeValueKind.BEncodeString)
+        public BEncodeString(byte[] value) : base(BEncodeElementKind.BEncodeString)
         {
             if (value == null)
             {
@@ -71,7 +71,7 @@ namespace Honoo.Text.BEncode
         /// <param name="value">文本类型的值。</param>
         /// <param name="encoding">用于转换的字符编码。</param>
         /// <exception cref="Exception"/>
-        public BEncodeString(string value, Encoding encoding) : base(BEncodeValueKind.BEncodeString)
+        public BEncodeString(string value, Encoding encoding) : base(BEncodeElementKind.BEncodeString)
         {
             if (value == null)
             {
@@ -95,7 +95,7 @@ namespace Honoo.Text.BEncode
         /// <param name="content">指定从中读取的流。定位必须在编码标记 <see langword="0"/>-<see langword="9"/> 处。</param>
         /// <param name="readOnly">指定此 <see cref="BEncodeString"/> 及子元素是只读的。</param>
         /// <exception cref="Exception"/>
-        public BEncodeString(Stream content, bool readOnly) : base(BEncodeValueKind.BEncodeString)
+        public BEncodeString(Stream content, bool readOnly) : base(BEncodeElementKind.BEncodeString)
         {
             if (content == null)
             {
