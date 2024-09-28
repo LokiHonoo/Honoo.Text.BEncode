@@ -173,6 +173,16 @@ namespace Honoo.Text.BEncode
 
         #endregion Pieces
 
+        #region Hash
+
+        /// <summary>
+        /// 获取特征码。如果元素不存在，返回 <see langword="null"/>。
+        /// </summary>
+        /// <returns></returns>
+        string GetHash();
+
+        #endregion Hash
+
         #region Files
 
         /// <summary>
@@ -202,16 +212,6 @@ namespace Honoo.Text.BEncode
         IList<TorrentFileEntry> GetFiles(string searchPattern, long minSize, long maxSize, Encoding valueEncoding);
 
         #endregion Files
-
-        #region Hash
-
-        /// <summary>
-        /// 获取特征码。如果元素不存在，返回 <see langword="null"/>。
-        /// </summary>
-        /// <returns></returns>
-        string GetHash();
-
-        #endregion Hash
 
         #region Magnet
 

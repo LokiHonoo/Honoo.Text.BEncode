@@ -83,7 +83,7 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 设置路径的拆分集合。单文件格式将集合的最后一项设置为 "name" 元素。不可为 <see langword="null"/>。
+        /// 设置路径的拆分集合。单文件格式将集合的最后一项设置为 "name" 元素。不可为 <see langword="null"/> 和 <see langword="Empty"/> 集合。
         /// <br/>修改会导致 "info" 元素内容改变。修改结果会反应在从中获取元素的源实例中。
         /// </summary>
         /// <param name="paths">路径的拆分集合。不可为 <see langword="null"/>。</param>
@@ -94,7 +94,7 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 设置路径的拆分集合。单文件格式将输入集合的最后一项设置为 "name" 元素。不可为 <see langword="null"/>。
+        /// 设置路径的拆分集合。单文件格式将输入集合的最后一项设置为 "name" 元素。不可为 <see langword="null"/> 和 <see langword="Empty"/> 集合。
         /// <br/>修改会导致 "info" 元素内容改变。修改结果会反应在从中获取元素的源实例中。
         /// </summary>
         /// <param name="paths">路径的拆分集合。不可为 <see langword="null"/>。</param>

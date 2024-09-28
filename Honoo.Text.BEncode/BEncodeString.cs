@@ -11,16 +11,6 @@ namespace Honoo.Text.BEncode
     /// </summary>
     public class BEncodeString : BEncodeElement, IEquatable<BEncodeString>, IComparer<BEncodeString>, IComparable
     {
-        #region DEBUG
-
-#if DEBUG
-        private string _utf8;
-
-        internal string Utf8 => _utf8;
-#endif
-
-        #endregion DEBUG
-
         private string _hexValue;
         private bool _isReadOnly;
         private byte[] _value;
@@ -51,9 +41,6 @@ namespace Honoo.Text.BEncode
             }
             _value = (byte[])value.Clone();
             _hexValue = BitConverter.ToString(value).Replace("-", null);
-#if DEBUG
-            _utf8 = Encoding.UTF8.GetString(value);
-#endif
         }
 
         /// <summary>
@@ -84,9 +71,6 @@ namespace Honoo.Text.BEncode
             byte[] bytes = encoding.GetBytes(value);
             _value = bytes;
             _hexValue = BitConverter.ToString(bytes).Replace("-", null);
-#if DEBUG
-            _utf8 = value;
-#endif
         }
 
         /// <summary>
@@ -124,9 +108,6 @@ namespace Honoo.Text.BEncode
             content.Read(bytes, 0, bytes.Length);
             _value = bytes;
             _hexValue = BitConverter.ToString(bytes).Replace("-", null);
-#if DEBUG
-            _utf8 = Encoding.UTF8.GetString(bytes);
-#endif
             _isReadOnly = readOnly;
         }
 
@@ -362,9 +343,6 @@ namespace Honoo.Text.BEncode
             }
             _value = (byte[])value.Clone();
             _hexValue = BitConverter.ToString(value).Replace("-", null);
-#if DEBUG
-            _utf8 = Encoding.UTF8.GetString(value);
-#endif
             return this;
         }
 
@@ -403,9 +381,6 @@ namespace Honoo.Text.BEncode
             byte[] bytes = encoding.GetBytes(value);
             _value = bytes;
             _hexValue = BitConverter.ToString(bytes).Replace("-", null);
-#if DEBUG
-            _utf8 = value;
-#endif
             return this;
         }
 

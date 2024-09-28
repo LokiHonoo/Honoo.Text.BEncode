@@ -545,30 +545,10 @@ namespace Honoo.Text.BEncode
 
         #endregion Private
 
-        #region Pieces
-
-        /// <summary>
-        /// 获取分块的集成特征码。如果元素不存在，返回 <see langword="null"/>。
-        /// </summary>
-        /// <returns></returns>
-        public byte[] GetPieces()
-        {
-            if (base.TryGetValue("info", out BEncodeDictionary info))
-            {
-                if (info.TryGetValue("pieces", out BEncodeString pieces))
-                {
-                    return pieces.Value;
-                }
-            }
-            return null;
-        }
-
-        #endregion Pieces
-
         #region PieceLength
 
         /// <summary>
-        /// 获取分块大小。如果元素不存在，返回 <see langword="null"/>。添加文件后会重置此元素。
+        /// 获取分块大小。如果元素不存在，返回 <see langword="null"/>。
         /// </summary>
         /// <returns></returns>
         public long? GetPieceLength()
@@ -608,6 +588,26 @@ namespace Honoo.Text.BEncode
 
         #endregion PieceLength
 
+        #region Pieces
+
+        /// <summary>
+        /// 获取分块的集成特征码。如果元素不存在，返回 <see langword="null"/>。
+        /// </summary>
+        /// <returns></returns>
+        public byte[] GetPieces()
+        {
+            if (base.TryGetValue("info", out BEncodeDictionary info))
+            {
+                if (info.TryGetValue("pieces", out BEncodeString pieces))
+                {
+                    return pieces.Value;
+                }
+            }
+            return null;
+        }
+
+        #endregion Pieces
+
         #region Hash
 
         /// <summary>
@@ -626,7 +626,7 @@ namespace Honoo.Text.BEncode
         /// <summary>
         /// 设置实时计算的 BTIH 特征码。需要存在 "info" 元素。
         /// </summary>
-        /// <returns></returns>
+        /// <exception cref="Exception"/>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1308:将字符串规范化为大写", Justification = "<挂起>")]
         public void SetHash()
         {
@@ -636,13 +636,16 @@ namespace Honoo.Text.BEncode
                 string hash = BitConverter.ToString(checksum, 0, checksum.Length).Replace("-", null).ToLowerInvariant();
                 base.AddOrUpdate("hash", new BEncodeString(hash));
             }
+            else
+            {
+                throw new CryptographicException("Has not \"info\", cannot compute hash values.");
+            }
         }
 
         /// <summary>
         /// 设置自定义特征码。设置 <see langword="null"/> 移除此元素。
         /// </summary>
         /// <param name="hashHex">自定义特征码的 Hex 字符串。设置 <see langword="null"/> 移除此元素。</param>
-        /// <returns></returns>
         public void SetHash(string hashHex)
         {
             if (hashHex == null)
@@ -671,7 +674,7 @@ namespace Honoo.Text.BEncode
         /// <summary>
         /// 获取所包含文件的信息。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
         /// </summary>
-        /// <param name="searchPattern">文件名称检索条件（包括路径，路径使用 '/' 分隔符）。支持*.*，不可使用正则表达式。</param>
+        /// <param name="searchPattern">文件名称检索条件（包括路径，路径使用 '/' 分隔符）。支持 * ? 通配符，不可使用正则表达式。</param>
         /// <param name="minSize">匹配最小文件大小。</param>
         /// <param name="maxSize">匹配最大文件大小。</param>
         /// <returns></returns>
@@ -683,7 +686,7 @@ namespace Honoo.Text.BEncode
         /// <summary>
         /// 获取所包含文件的信息。
         /// </summary>
-        /// <param name="searchPattern">文件名称检索条件（包括路径，路径使用 '/' 分隔符）。支持*.*，不可使用正则表达式。</param>
+        /// <param name="searchPattern">文件名称检索条件（包括路径，路径使用 '/' 分隔符）。支持 * ? 通配符，不可使用正则表达式。</param>
         /// <param name="minSize">匹配最小文件大小。</param>
         /// <param name="maxSize">匹配最大文件大小。</param>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
@@ -754,7 +757,8 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 设置单文件。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。添加文件后会重置 "name", "pieces" 等元素值。
+        /// 设置单文件。添加文件后会重置 "name", "pieces" 等元素值。设置 <see langword="null"/> 移除所有文件相关元素，无论之前存在的是单文件格式还是多文件格式。
+        /// 转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
         /// </summary>
         /// <param name="fileName">本地文件。</param>
         public void SetFile(string fileName)
@@ -763,7 +767,7 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 设置单文件。添加文件后会重置 "name", "pieces" 等元素值。
+        /// 设置单文件。添加文件后会重置 "name", "pieces" 等元素值。设置 <see langword="null"/> 移除所有文件相关元素，无论之前存在的是单文件格式还是多文件格式。
         /// </summary>
         /// <param name="fileName">本地文件。</param>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
@@ -775,7 +779,7 @@ namespace Honoo.Text.BEncode
             {
                 if (base.TryGetValue("info", out BEncodeDictionary info))
                 {
-                    info.Remove("name");
+                    //info.Remove("name");
                     info.Remove("length");
                     info.Remove("pieces");
                     info.Remove("files");
@@ -818,7 +822,8 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 设置复数文件。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。添加文件后会重置 "name", "pieces" 等元素值。
+        /// 设置复数文件。添加文件后会重置 "name", "pieces" 等元素值。设置 <see langword="null"/> 移除所有文件相关元素，无论之前存在的是单文件格式还是多文件格式。
+        /// 转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
         /// </summary>
         /// <param name="folder">选择本地文件夹，添加其中所有文件。</param>
         /// <exception cref="Exception"/>
@@ -828,7 +833,7 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 设置复数文件。添加文件后会重置 "name", "pieces" 等元素值。
+        /// 设置复数文件。添加文件后会重置 "name", "pieces" 等元素值。设置 <see langword="null"/> 移除所有文件相关元素，无论之前存在的是单文件格式还是多文件格式。
         /// </summary>
         /// <param name="folder">选择本地文件夹，添加其中所有文件。</param>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
@@ -839,7 +844,7 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 设置复数文件。添加文件后会重置 "name", "pieces" 等元素值。
+        /// 设置复数文件。添加文件后会重置 "name", "pieces" 等元素值。设置 <see langword="null"/> 移除所有文件相关元素，无论之前存在的是单文件格式还是多文件格式。
         /// </summary>
         /// <param name="folder">选择本地文件夹，添加其中所有文件。</param>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
@@ -852,7 +857,7 @@ namespace Honoo.Text.BEncode
             {
                 if (base.TryGetValue("info", out BEncodeDictionary info))
                 {
-                    info.Remove("name");
+                    //info.Remove("name");
                     info.Remove("length");
                     info.Remove("pieces");
                     info.Remove("files");
@@ -918,7 +923,7 @@ namespace Honoo.Text.BEncode
                 {
                     if (base.TryGetValue("info", out BEncodeDictionary info))
                     {
-                        info.Remove("name");
+                        //info.Remove("name");
                         info.Remove("length");
                         info.Remove("pieces");
                         info.Remove("files");

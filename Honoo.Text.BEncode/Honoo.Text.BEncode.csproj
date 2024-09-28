@@ -25,6 +25,10 @@
 	<BaseOutputPath>..\bin\</BaseOutputPath>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <PackageOutputPath>D:\NuGetPackages</PackageOutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Include="Honoo.Text.BEncode.md">
       <Pack>True</Pack>
