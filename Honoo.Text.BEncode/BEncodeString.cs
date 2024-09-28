@@ -352,6 +352,10 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"/>
         public BEncodeString SetValue(byte[] value)
         {
+            if (_isReadOnly)
+            {
+                throw new NotSupportedException("Element is read-only.");
+            }
             if (value == null)
             {
                 throw new ArgumentNullException(nameof(value));
@@ -384,6 +388,10 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"/>
         public BEncodeString SetValue(string value, Encoding encoding)
         {
+            if (_isReadOnly)
+            {
+                throw new NotSupportedException("Element is read-only.");
+            }
             if (value == null)
             {
                 throw new ArgumentNullException(nameof(value));

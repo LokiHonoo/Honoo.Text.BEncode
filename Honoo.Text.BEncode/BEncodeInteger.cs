@@ -328,6 +328,10 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"/>
         public BEncodeInteger SetValue(int value)
         {
+            if (_isReadOnly)
+            {
+                throw new NotSupportedException("Element is read-only.");
+            }
             _numericValue = value;
             _value = value.ToString(CultureInfo.InvariantCulture);
             return this;
@@ -341,6 +345,10 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"/>
         public BEncodeInteger SetValue(long value)
         {
+            if (_isReadOnly)
+            {
+                throw new NotSupportedException("Element is read-only.");
+            }
             _numericValue = value;
             _value = value.ToString(CultureInfo.InvariantCulture);
             return this;
