@@ -286,7 +286,7 @@ namespace Honoo.Text.BEncode
         #region Add
 
         /// <summary>
-        /// 添加一个元素。不能添加只读字典元素或列表元素。
+        /// 添加一个元素。
         /// </summary>
         /// <typeparam name="T">指定元素类型。</typeparam>
         /// <param name="key">元素的键。</param>
@@ -306,6 +306,8 @@ namespace Honoo.Text.BEncode
             {
                 throw new ArgumentNullException(nameof(value));
             }
+            key.ChangeReadOnly(false);
+            value.ChangeReadOnly(false);
             _elements.Add(key, value);
             return value;
         }
@@ -360,10 +362,6 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"/>
         public T GetOrAdd<T>(BEncodeString key, T valueIfNotExists) where T : BEncodeElement
         {
-            if (_isReadOnly)
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
             if (TryGetValue(key, out BEncodeElement value))
             {
                 if (value is T val)
