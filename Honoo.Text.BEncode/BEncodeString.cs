@@ -77,7 +77,7 @@ namespace Honoo.Text.BEncode
         /// 初始化 BEncodeString 类的新实例。
         /// </summary>
         /// <param name="content">指定从中读取的流。定位必须在编码标记 <see langword="0"/>-<see langword="9"/> 处。</param>
-        /// <param name="readOnly">指定此 <see cref="BEncodeString"/> 及子元素是只读的。</param>
+        /// <param name="readOnly">指定此 <see cref="BEncodeString"/> 元素是只读的。</param>
         /// <exception cref="Exception"/>
         public BEncodeString(Stream content, bool readOnly) : base(BEncodeElementKind.BEncodeString)
         {

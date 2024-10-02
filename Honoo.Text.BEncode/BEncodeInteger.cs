@@ -69,7 +69,7 @@ namespace Honoo.Text.BEncode
         /// 初始化 BEncodeInteger 类的新实例。
         /// </summary>
         /// <param name="content">指定从中读取的流。定位必须在编码标记 <see langword="i"/> 处。</param>
-        /// <param name="readOnly">指定此 <see cref="BEncodeInteger"/> 及子元素是只读的。</param>
+        /// <param name="readOnly">指定此 <see cref="BEncodeInteger"/> 元素是只读的。</param>
         /// <exception cref="Exception"/>
         public BEncodeInteger(Stream content, bool readOnly) : base(BEncodeElementKind.BEncodeInteger)
         {
