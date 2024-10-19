@@ -78,15 +78,15 @@ namespace Honoo.Text.BEncode
                 throw new ArgumentNullException(nameof(content));
             }
             int kc = content.ReadByte();
-            if (kc != 105)  // 'i'
+            if (kc != 105)  // "i"
             {
-                throw new ArgumentException($"The header char is not a integer identification char 'i'. Stop at position: {content.Position}.");
+                throw new ArgumentException($"The header char is not a integer identification char \"i\". Stop at position: {content.Position}.");
             }
             var valueString = new StringBuilder();
             kc = content.ReadByte();
             while (true)
             {
-                if (kc == 101)  // 'e'
+                if (kc == 101)  // "e"
                 {
                     break;
                 }
@@ -254,12 +254,12 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        ///
+        /// 方法已重写。获取数值类型的数据值的哈希代码。
         /// </summary>
         /// <returns></returns>
         public override int GetHashCode()
         {
-            return -1939223833 + EqualityComparer<BigInteger>.Default.GetHashCode(_numericValue);
+            return -1832168491 + EqualityComparer<BigInteger>.Default.GetHashCode(_numericValue);
         }
 
         /// <summary>
@@ -293,10 +293,10 @@ namespace Honoo.Text.BEncode
             {
                 throw new ArgumentNullException(nameof(stream));
             }
-            stream.WriteByte(105);  // 'i'
+            stream.WriteByte(105);  // "i"
             byte[] value = Encoding.ASCII.GetBytes(_value);
             stream.Write(value, 0, value.Length);
-            stream.WriteByte(101);  // 'e'
+            stream.WriteByte(101);  // "e"
         }
 
         /// <summary>

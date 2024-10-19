@@ -6,5 +6,6 @@
     /// <param name="fileEntry">添加的文件元素。</param>
     /// <param name="index">添加的文件元素在任务列表中从 0 开始的索引。</param>
     /// <param name="total">任务列表中的任务总数。</param>
-    public delegate void TorrentFileEntryAddedCallback(BEncodeDictionary fileEntry, int index, int total);
+    /// <param name="userState">在回调中传递参数。</param>
+    public delegate void TorrentFileEntryAddedCallback(BEncodeDictionary fileEntry, int index, int total, object userState);
 }

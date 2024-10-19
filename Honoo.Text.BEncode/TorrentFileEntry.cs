@@ -16,7 +16,7 @@ namespace Honoo.Text.BEncode
 
         /// <summary>
         /// 获取此文件的 "file" 元素映射。如果源实例是单文件种子，则获取 "info" 元素。
-        /// <br/>此元素可修改，任何修改都会导致 "info" 元素内容改变。修改结果会反应在从中获取元素的源实例中。
+        /// 此元素可修改，任何修改都会导致 "info" 元素内容改变。修改结果会反应在从中获取元素的源实例中。
         /// </summary>
         public BEncodeDictionary Element => _element;
 
@@ -51,7 +51,7 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 获取路径的拆分集合。
+        /// 获取路径的拆分集合。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
         /// </summary>
         /// <returns></returns>
         public string[] GetPaths()
@@ -84,7 +84,8 @@ namespace Honoo.Text.BEncode
 
         /// <summary>
         /// 设置路径的拆分集合。单文件格式将集合的最后一项设置为 "name" 元素。不可为 <see langword="null"/> 和 <see langword="Empty"/> 集合。
-        /// <br/>修改会导致 "info" 元素内容改变。修改结果会反应在从中获取元素的源实例中。
+        /// 修改会导致 "info" 元素内容改变。修改结果会反应在从中获取元素的源实例中。
+        /// <br/>转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
         /// </summary>
         /// <param name="paths">路径的拆分集合。不可为 <see langword="null"/>。</param>
         /// <exception cref="Exception"/>
@@ -94,8 +95,8 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 设置路径的拆分集合。单文件格式将输入集合的最后一项设置为 "name" 元素。不可为 <see langword="null"/> 和 <see langword="Empty"/> 集合。
-        /// <br/>修改会导致 "info" 元素内容改变。修改结果会反应在从中获取元素的源实例中。
+        /// 设置路径的拆分集合。单文件格式将集合的最后一项设置为 "name" 元素。不可为 <see langword="null"/> 和 <see langword="Empty"/> 集合。
+        /// 修改会导致 "info" 元素内容改变。修改结果会反应在从中获取元素的源实例中。
         /// </summary>
         /// <param name="paths">路径的拆分集合。不可为 <see langword="null"/>。</param>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>

@@ -240,14 +240,14 @@ namespace Honoo.Text.BEncode
                 throw new ArgumentNullException(nameof(content));
             }
             int kc = content.ReadByte();
-            if (kc != 100)  // 'd'
+            if (kc != 100)  // "d"
             {
-                throw new ArgumentException($"The header char is not a dictionary identification char 'd'. Stop at position: {content.Position}.");
+                throw new ArgumentException($"The header char is not a dictionary identification char \"d\". Stop at position: {content.Position}.");
             }
             kc = content.ReadByte();
             while (true)
             {
-                if (kc == 101)  // 'e'
+                if (kc == 101)  // "e"
                 {
                     break;
                 }
@@ -258,20 +258,20 @@ namespace Honoo.Text.BEncode
                     kc = content.ReadByte();
                     switch (kc)
                     {
-                        case 100: content.Seek(-1, SeekOrigin.Current); _elements.Add(key, new BEncodeDictionary(content, readOnly)); break;// 'd'
-                        case 108: content.Seek(-1, SeekOrigin.Current); _elements.Add(key, new BEncodeList(content, readOnly)); break;      // 'l'
-                        case 105: content.Seek(-1, SeekOrigin.Current); _elements.Add(key, new BEncodeInteger(content, readOnly)); break;   // 'i'
-                        case 48:                                                                                                            // '0'
-                        case 49:                                                                                                            // '1'
-                        case 50:                                                                                                            // '2'
-                        case 51:                                                                                                            // '3'
-                        case 52:                                                                                                            // '4'
-                        case 53:                                                                                                            // '5'
-                        case 54:                                                                                                            // '6'
-                        case 55:                                                                                                            // '7'
-                        case 56:                                                                                                            // '8'
-                        case 57: content.Seek(-1, SeekOrigin.Current); _elements.Add(key, new BEncodeString(content, readOnly)); break;     // '9'
-                        default: throw new ArgumentException($"The incorrect identification char '{kc}'. Stop at position: {content.Position}.");
+                        case 100: content.Seek(-1, SeekOrigin.Current); _elements.Add(key, new BEncodeDictionary(content, readOnly)); break;// "d"
+                        case 108: content.Seek(-1, SeekOrigin.Current); _elements.Add(key, new BEncodeList(content, readOnly)); break;      // "l"
+                        case 105: content.Seek(-1, SeekOrigin.Current); _elements.Add(key, new BEncodeInteger(content, readOnly)); break;   // "i"
+                        case 48:                                                                                                            // "0"
+                        case 49:                                                                                                            // "1"
+                        case 50:                                                                                                            // "2"
+                        case 51:                                                                                                            // "3"
+                        case 52:                                                                                                            // "4"
+                        case 53:                                                                                                            // "5"
+                        case 54:                                                                                                            // "6"
+                        case 55:                                                                                                            // "7"
+                        case 56:                                                                                                            // "8"
+                        case 57: content.Seek(-1, SeekOrigin.Current); _elements.Add(key, new BEncodeString(content, readOnly)); break;     // "9"
+                        default: throw new ArgumentException($"The incorrect identification char \"{kc}\". Stop at position: {content.Position}.");
                     }
                     kc = content.ReadByte();
                 }
@@ -761,14 +761,14 @@ namespace Honoo.Text.BEncode
             {
                 throw new ArgumentNullException(nameof(stream));
             }
-            stream.WriteByte(100);  // 'd'
+            stream.WriteByte(100);  // "d"
             var enumerator = _elements.GetEnumerator();
             while (enumerator.MoveNext())
             {
                 enumerator.Current.Key.Save(stream);
                 enumerator.Current.Value.Save(stream);
             }
-            stream.WriteByte(101);  // 'e'
+            stream.WriteByte(101);  // "e"
         }
 
         internal override void ChangeReadOnly(bool isReadOnly)

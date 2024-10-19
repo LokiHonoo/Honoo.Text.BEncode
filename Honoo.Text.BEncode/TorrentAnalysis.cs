@@ -674,7 +674,7 @@ namespace Honoo.Text.BEncode
         /// <summary>
         /// 获取所包含文件的信息。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
         /// </summary>
-        /// <param name="searchPattern">文件名称检索条件（包括路径，路径使用 '/' 分隔符）。支持 * ? 通配符，不可使用正则表达式。</param>
+        /// <param name="searchPattern">文件名称检索条件（包括路径，路径使用 "/" 分隔符）。支持 * ? 通配符，不可使用正则表达式。</param>
         /// <param name="minSize">匹配最小文件大小。</param>
         /// <param name="maxSize">匹配最大文件大小。</param>
         /// <returns></returns>
@@ -686,7 +686,7 @@ namespace Honoo.Text.BEncode
         /// <summary>
         /// 获取所包含文件的信息。
         /// </summary>
-        /// <param name="searchPattern">文件名称检索条件（包括路径，路径使用 '/' 分隔符）。支持 * ? 通配符，不可使用正则表达式。</param>
+        /// <param name="searchPattern">文件名称检索条件（包括路径，路径使用 "/" 分隔符）。支持 * ? 通配符，不可使用正则表达式。</param>
         /// <param name="minSize">匹配最小文件大小。</param>
         /// <param name="maxSize">匹配最大文件大小。</param>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
@@ -696,10 +696,7 @@ namespace Honoo.Text.BEncode
         {
             if (!string.IsNullOrWhiteSpace(searchPattern))
             {
-                searchPattern = searchPattern.Trim().Replace("\\", "/")
-                    .Replace("(", "\\(").Replace(")", "\\)").Replace("[", "\\[").Replace("{", "\\{")
-                    .Replace("^", "\\^").Replace("+", "\\+").Replace("|", "\\|").Replace("$", "\\$")
-                    .Replace(".", "\\.").Replace("*", ".*").Replace("?", ".?");
+                searchPattern = ConvertPattern(searchPattern);
             }
             List<TorrentFileEntry> result = new List<TorrentFileEntry>();
             if (base.TryGetValue("info", out BEncodeDictionary info))
@@ -840,7 +837,7 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"/>
         public void SetFiles(string folder, Encoding valueEncoding)
         {
-            SetFiles(folder, valueEncoding, null);
+            SetFiles(folder, valueEncoding, null, null);
         }
 
         /// <summary>
@@ -849,9 +846,10 @@ namespace Honoo.Text.BEncode
         /// <param name="folder">选择本地文件夹，添加其中所有文件。</param>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
         /// <param name="callback">添加一个文件成功后执行。</param>
+        /// <param name="userState">在回调中传递参数。</param>
         /// <exception cref="Exception"/>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5350:不要使用弱加密算法", Justification = "<挂起>")]
-        public void SetFiles(string folder, Encoding valueEncoding, TorrentFileEntryAddedCallback callback)
+        public void SetFiles(string folder, Encoding valueEncoding, TorrentFileEntryAddedCallback callback, object userState)
         {
             if (folder == null)
             {
@@ -909,7 +907,7 @@ namespace Honoo.Text.BEncode
                             }
                             entry.Add("length", new BEncodeInteger(fi.Length));
                             ComputeHash(sha1, fi, buffer, ref index, pieces);
-                            callback?.Invoke(entry, i, fileList.Count);
+                            callback?.Invoke(entry, i, fileList.Count, userState);
                             i++;
                         }
                         if (index > 0)
@@ -931,6 +929,14 @@ namespace Honoo.Text.BEncode
                     _multiple = false;
                 }
             }
+        }
+
+        private static string ConvertPattern(string pattern)
+        {
+            return pattern.Trim().Replace("\\", "/")
+                .Replace("(", "\\(").Replace(")", "\\)").Replace("[", "\\[").Replace("{", "\\{")
+                .Replace("^", "\\^").Replace("+", "\\+").Replace("|", "\\|").Replace("$", "\\$")
+                .Replace(".", "\\.").Replace("*", ".*").Replace("?", ".?");
         }
 
         private static void SearchFile(DirectoryInfo dir, List<FileInfo> fileList)

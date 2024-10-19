@@ -21,7 +21,7 @@ namespace Honoo.Text.BEncode
         public bool IsReadOnly => _isReadOnly;
 
         /// <summary>
-        /// 获取原始格式的数据值。
+        /// 获取原始字节类型的数据值。
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1819:属性不应返回数组", Justification = "<挂起>")]
         public byte[] Value => (byte[])_value.Clone();
@@ -87,13 +87,13 @@ namespace Honoo.Text.BEncode
             }
             var lenString = new StringBuilder();
             int kc = content.ReadByte();
-            if (kc < 48 || kc > 57)  // '0'-'9'
+            if (kc < 48 || kc > 57)  // "0"-"9"
             {
-                throw new ArgumentException($"The header char is not a single identification char '0'-'9'. Stop at position: {content.Position}.");
+                throw new ArgumentException($"The header char is not a single identification char \"0\"-\"9\". Stop at position: {content.Position}.");
             }
             while (true)
             {
-                if (kc == 58)  // ':'
+                if (kc == 58)  // ":"
                 {
                     break;
                 }
@@ -265,7 +265,7 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        ///
+        /// 方法已重写。获取原始字节类型的数据值的哈希代码。
         /// </summary>
         /// <returns></returns>
         public override int GetHashCode()
@@ -321,7 +321,7 @@ namespace Honoo.Text.BEncode
             }
             byte[] length = Encoding.ASCII.GetBytes(_value.Length.ToString(CultureInfo.InvariantCulture));
             stream.Write(length, 0, length.Length);
-            stream.WriteByte(58);  // ':'
+            stream.WriteByte(58);  // ":"
             stream.Write(_value, 0, _value.Length);
         }
 

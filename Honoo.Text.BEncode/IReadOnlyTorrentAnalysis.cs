@@ -194,7 +194,7 @@ namespace Honoo.Text.BEncode
         /// <summary>
         /// 获取所包含文件的信息。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
         /// </summary>
-        /// <param name="searchPattern">文件名称检索条件（包括路径，路径使用 '/' 分隔符）。支持*.*，不可使用正则表达式。</param>
+        /// <param name="searchPattern">文件名称检索条件（包括路径，路径使用 "/" 分隔符）。支持 *.*，不可使用正则表达式。</param>
         /// <param name="minSize">匹配最小文件大小。</param>
         /// <param name="maxSize">匹配最大文件大小。</param>
         /// <returns></returns>
@@ -203,7 +203,7 @@ namespace Honoo.Text.BEncode
         /// <summary>
         /// 获取所包含文件的信息。
         /// </summary>
-        /// <param name="searchPattern">文件名称检索条件（包括路径，路径使用 '/' 分隔符）。支持*.*，不可使用正则表达式。</param>
+        /// <param name="searchPattern">文件名称检索条件（包括路径，路径使用 "/" 分隔符）。支持 *.*，不可使用正则表达式。</param>
         /// <param name="minSize">匹配最小文件大小。</param>
         /// <param name="maxSize">匹配最大文件大小。</param>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
