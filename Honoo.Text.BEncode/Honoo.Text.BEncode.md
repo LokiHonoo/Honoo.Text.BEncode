@@ -14,7 +14,7 @@
 
 ## INTRODUCTION
 
-读写 BEncode 编码格式，例如 torrent 文件。
+BEncode Analysis. Edit BEncode content (e.g. BT torrent file).
 
 ## GUIDE
 
