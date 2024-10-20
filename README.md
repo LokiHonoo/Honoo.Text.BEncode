@@ -12,7 +12,7 @@
     - [Basic](#basic)
     - [Torrent](#torrent)
   - [CHANGELOG](#changelog)
-    - [1.1.1](#111)
+    - [1.1.2](#112)
     - [1.0.9](#109)
     - [1.0.8](#108)
     - [1.0.4](#104)
@@ -164,9 +164,9 @@ private static void CreateTorrent256K()
 
 ## CHANGELOG
 
-### 1.1.1
+### 1.1.2
 
-**Features* 优化。
+**Fix* 修复 BUG。
 
 ### 1.0.9
 

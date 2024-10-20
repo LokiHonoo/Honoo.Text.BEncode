@@ -173,10 +173,11 @@ namespace Honoo.Text.BEncode
         /// </summary>
         /// <param name="key">元素的键。</param>
         /// <returns></returns>
+        /// <exception cref="Exception"/>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1043:将整型或字符串参数用于索引器", Justification = "<挂起>")]
         public BEncodeElement this[BEncodeString key]
         {
-            get { return TryGetValue(key, out BEncodeElement value) ? value : null; }
+            get { return GetValue<BEncodeElement>(key); }
             set { AddOrUpdate(key, value); }
         }
 
@@ -188,7 +189,7 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"/>
         public BEncodeElement this[string key]
         {
-            get { return TryGetValue(new BEncodeString(key, Encoding.UTF8), out BEncodeElement value) ? value : null; }
+            get { return GetValue<BEncodeElement>(new BEncodeString(key, Encoding.UTF8)); }
             set { AddOrUpdate(key, value); }
         }
 
@@ -201,7 +202,7 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"/>
         public BEncodeElement this[string key, Encoding keyEncoding]
         {
-            get { return TryGetValue(new BEncodeString(key, keyEncoding), out BEncodeElement value) ? value : null; }
+            get { return GetValue<BEncodeElement>(new BEncodeString(key, keyEncoding)); }
             set { AddOrUpdate(key, value); }
         }
 
@@ -558,9 +559,10 @@ namespace Honoo.Text.BEncode
         /// <typeparam name="T">指定元素类型。</typeparam>
         /// <param name="key">元素的键。</param>
         /// <returns></returns>
+        /// <exception cref="Exception"/>
         public T GetValue<T>(BEncodeString key) where T : BEncodeElement
         {
-            return TryGetValue(key, out T value) ? value : null;
+            return (T)_elements[key];
         }
 
         /// <summary>

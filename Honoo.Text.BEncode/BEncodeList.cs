@@ -31,8 +31,12 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"/>
         public BEncodeElement this[int index]
         {
-            get => index < _elements.Count ? _elements[index] : null;
-            set { Insert(index, value); }
+            get => _elements[index];
+            set
+            {
+                RemoveAt(index);
+                Insert(index, value);
+            }
         }
 
         #region Construction
