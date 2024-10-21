@@ -15,6 +15,11 @@ namespace Honoo.Text.BEncode
         int Count { get; }
 
         /// <summary>
+        /// 获取一个值，该值指示此 <see cref="BEncodeList"/> 是否为只读。
+        /// </summary>
+        bool IsReadOnly { get; }
+
+        /// <summary>
         /// 获取指定索引的元素的值。
         /// </summary>
         /// <param name="index">元素的索引。</param>

@@ -21,7 +21,7 @@ namespace Honoo.Text.BEncode
         public BEncodeDictionary Element => _element;
 
         /// <summary>
-        /// 获取此文件元素在 "files" 元素列表中的索引。
+        /// 获取此文件元素在 "files" 元素列表中的索引。如果源实例是单文件种子，值为 0。
         /// </summary>
         public int Index => _index;
 

@@ -10,14 +10,14 @@ namespace Honoo.Text.BEncode
     /// <summary>
     /// BEncode 数值类型。
     /// </summary>
-    public class BEncodeInteger : BEncodeElement, IEquatable<BEncodeInteger>, IComparer<BEncodeInteger>, IComparable
+    public class BEncodeInteger : BEncodeElement, IEquatable<BEncodeInteger>, IComparer<BEncodeInteger>, IComparable, IReadOnlyBEncodeInteger
     {
         private bool _isReadOnly;
         private BigInteger _numericValue;
         private string _value;
 
         /// <summary>
-        /// 获取一个值，该值指示 <see cref="BEncodeInteger"/> 是否为只读。
+        /// 获取一个值，该值指示此 <see cref="BEncodeInteger"/> 是否为只读。
         /// </summary>
         public bool IsReadOnly => _isReadOnly;
 
@@ -193,6 +193,14 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
+        /// 获取此实例的只读接口。
+        /// </summary>
+        public IReadOnlyBEncodeInteger AsReadOnly()
+        {
+            return this;
+        }
+
+        /// <summary>
         /// 比较两个对象并返回一个值。该值指示一个对象是小于、等于还是大于另一个对象。
         /// </summary>
         /// <param name="x">要比较的第一个对象。</param>
@@ -266,7 +274,6 @@ namespace Honoo.Text.BEncode
         /// 获取转换为 Int32 格式的数据值。
         /// </summary>
         /// <returns></returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1024:在适用处使用属性", Justification = "<挂起>")]
         public int GetInt32Value()
         {
             return (int)_numericValue;
@@ -276,7 +283,6 @@ namespace Honoo.Text.BEncode
         /// 获取转换为 Int64 格式的数据值。
         /// </summary>
         /// <returns></returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1024:在适用处使用属性", Justification = "<挂起>")]
         public long GetInt64Value()
         {
             return (long)_numericValue;

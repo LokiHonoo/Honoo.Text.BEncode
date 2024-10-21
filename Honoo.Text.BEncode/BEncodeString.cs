@@ -9,14 +9,14 @@ namespace Honoo.Text.BEncode
     /// <summary>
     /// BEncode 串行数据类型。
     /// </summary>
-    public class BEncodeString : BEncodeElement, IEquatable<BEncodeString>, IComparer<BEncodeString>, IComparable
+    public class BEncodeString : BEncodeElement, IEquatable<BEncodeString>, IComparer<BEncodeString>, IComparable, IReadOnlyBEncodeString
     {
         private string _hexValue;
         private bool _isReadOnly;
         private byte[] _value;
 
         /// <summary>
-        /// 获取一个值，该值指示 <see cref="BEncodeString"/> 是否为只读。
+        /// 获取一个值，该值指示此 <see cref="BEncodeString"/> 是否为只读。
         /// </summary>
         public bool IsReadOnly => _isReadOnly;
 
@@ -204,6 +204,14 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
+        /// 获取此实例的只读接口。
+        /// </summary>
+        public IReadOnlyBEncodeString AsReadOnly()
+        {
+            return this;
+        }
+
+        /// <summary>
         /// 比较两个对象并返回一个值。该值指示一个对象是小于、等于还是大于另一个对象。
         /// </summary>
         /// <param name="x">要比较的第一个对象。</param>
@@ -265,6 +273,15 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
+        /// 获取原始字节类型的数据值。
+        /// </summary>
+        /// <returns></returns>
+        public byte[] GetBytesValue()
+        {
+            return (byte[])_value.Clone();
+        }
+
+        /// <summary>
         /// 方法已重写。获取原始字节类型的数据值的哈希代码。
         /// </summary>
         /// <returns></returns>
@@ -277,14 +294,13 @@ namespace Honoo.Text.BEncode
         /// 获取转换为十六进制字符串格式的数据值。
         /// </summary>
         /// <returns></returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1024:在适用处使用属性", Justification = "<挂起>")]
         public string GetHexValue()
         {
             return _hexValue;
         }
 
         /// <summary>
-        /// 获取转换为 String 格式的数据值。转换时默认使用 <see cref="Encoding.UTF8"/> 编码。
+        /// 获取转换为 string 格式的数据值。转换时默认使用 <see cref="Encoding.UTF8"/> 编码。
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"/>
@@ -294,7 +310,7 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 获取转换为 String 格式的数据值。
+        /// 获取转换为 string 格式的数据值。
         /// </summary>
         /// <param name="encoding">用于转换的字符编码。</param>
         /// <returns></returns>

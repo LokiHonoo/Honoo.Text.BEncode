@@ -154,7 +154,7 @@ namespace Honoo.Text.BEncode
         public int Count => _elements.Count;
 
         /// <summary>
-        /// 获取一个值，该值指示 <see cref="BEncodeDictionary"/> 是否为只读。
+        /// 获取一个值，该值指示此 <see cref="BEncodeDictionary"/> 是否为只读。
         /// </summary>
         public bool IsReadOnly => _isReadOnly;
 

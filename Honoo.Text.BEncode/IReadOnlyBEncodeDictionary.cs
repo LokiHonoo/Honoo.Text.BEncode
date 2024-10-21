@@ -17,6 +17,11 @@ namespace Honoo.Text.BEncode
         int Count { get; }
 
         /// <summary>
+        /// 获取一个值，该值指示此 <see cref="BEncodeDictionary"/> 是否为只读。
+        /// </summary>
+        bool IsReadOnly { get; }
+
+        /// <summary>
         /// 获取元素集合的键的集合。
         /// </summary>
         BEncodeDictionary.KeyCollection Keys { get; }
