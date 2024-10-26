@@ -21,12 +21,6 @@ namespace Honoo.Text.BEncode
         byte[] Value { get; }
 
         /// <summary>
-        /// 获取原始字节类型的数据值。
-        /// </summary>
-        /// <returns></returns>
-        byte[] GetBytesValue();
-
-        /// <summary>
         /// 获取转换为十六进制字符串格式的数据值。
         /// </summary>
         /// <returns></returns>

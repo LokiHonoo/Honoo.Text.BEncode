@@ -624,7 +624,7 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 设置实时计算的 BTIH 特征码。需要存在 "info" 元素。
+        /// 设置实时计算的 BTIH 特征码。特征码是 "info" 元素的 SHA1 校验值。
         /// </summary>
         /// <exception cref="Exception"/>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1308:将字符串规范化为大写", Justification = "<挂起>")]

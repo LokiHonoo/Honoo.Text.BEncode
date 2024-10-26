@@ -105,7 +105,7 @@ namespace Honoo.Text.BEncode
             }
             int valueLen = int.Parse(lenString.ToString(), CultureInfo.InvariantCulture);
             byte[] bytes = new byte[valueLen];
-            content.Read(bytes, 0, bytes.Length);
+            _ = content.Read(bytes, 0, bytes.Length);
             _value = bytes;
             _hexValue = BitConverter.ToString(bytes).Replace("-", null);
             _isReadOnly = readOnly;
@@ -270,15 +270,6 @@ namespace Honoo.Text.BEncode
         public override bool Equals(object obj)
         {
             return obj is BEncodeString other && other._hexValue == _hexValue;
-        }
-
-        /// <summary>
-        /// 获取原始字节类型的数据值。
-        /// </summary>
-        /// <returns></returns>
-        public byte[] GetBytesValue()
-        {
-            return (byte[])_value.Clone();
         }
 
         /// <summary>

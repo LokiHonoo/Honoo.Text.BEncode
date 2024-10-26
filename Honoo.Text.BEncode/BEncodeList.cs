@@ -134,7 +134,7 @@ namespace Honoo.Text.BEncode
         /// <typeparam name="T">指定元素类型。</typeparam>
         /// <param name="values">元素的集合。</param>
         /// <exception cref="Exception"/>
-        public IEnumerable<BEncodeElement> AddRange<T>(IEnumerable<BEncodeElement> values) where T : BEncodeElement
+        public IEnumerable<T> AddRange<T>(IEnumerable<T> values) where T : BEncodeElement
         {
             if (_isReadOnly)
             {
