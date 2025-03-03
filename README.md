@@ -12,6 +12,7 @@
     - [Basic](#basic)
     - [Torrent](#torrent)
   - [CHANGELOG](#changelog)
+    - [1.1.5](#115)
     - [1.1.4](#114)
     - [1.1.3](#113)
     - [1.0.9](#109)
@@ -133,7 +134,7 @@ private static void ReadTorrent()
 
 ```c#
 
-private static void CreateTorrent256K()
+private static void CreateTorrent()
 {
     string fileName = "test_create_" + Path.GetRandomFileName() + ".torrent";
 
@@ -144,13 +145,11 @@ private static void CreateTorrent256K()
         ["http://open.acgtracker.com:1096/announce", "http://open.acgtracker.com:1096/announce"]
     ]);
     torrent.SetComment("https://github.com/LokiHonoo/Honoo.Text.BEncode");
-    torrent.SetEncoding("UTF-8");
     torrent.SetNodes([new IPEndPoint(IPAddress.Parse("111.111.111.111"), 7777)]);
-    torrent.SetPieceLength(256 * 1024);
     // Set single file.
-    //torrent.SetFile("TestItems\\(pid-48674501)デウス.jpg");
+    //torrent.SetFile(new FileInfo("TestItems\\(pid-48674501)デウス.jpg"), 512 * 1024);
     // Set multiple file.
-    torrent.SetFiles(AppDomain.CurrentDomain.BaseDirectory); // folder
+    torrent.SetFiles(new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory), 512 * 1024);
 
     using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
     {
@@ -164,6 +163,10 @@ private static void CreateTorrent256K()
 ```
 
 ## CHANGELOG
+
+### 1.1.5
+
+**Removed* 删除了只读模式。
 
 ### 1.1.4
 

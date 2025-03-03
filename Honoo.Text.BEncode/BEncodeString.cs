@@ -9,16 +9,10 @@ namespace Honoo.Text.BEncode
     /// <summary>
     /// BEncode 串行数据类型。
     /// </summary>
-    public class BEncodeString : BEncodeElement, IEquatable<BEncodeString>, IComparer<BEncodeString>, IComparable, IReadOnlyBEncodeString
+    public class BEncodeString : BEncodeElement, IEquatable<BEncodeString>, IComparer<BEncodeString>, IComparable
     {
         private string _hexValue;
-        private bool _isReadOnly;
         private byte[] _value;
-
-        /// <summary>
-        /// 获取一个值，该值指示此 <see cref="BEncodeString"/> 是否为只读。
-        /// </summary>
-        public bool IsReadOnly => _isReadOnly;
 
         /// <summary>
         /// 获取原始字节类型的数据值。
@@ -77,9 +71,8 @@ namespace Honoo.Text.BEncode
         /// 初始化 BEncodeString 类的新实例。
         /// </summary>
         /// <param name="content">指定从中读取的流。定位必须在编码标记 <see langword="0"/>-<see langword="9"/> 处。</param>
-        /// <param name="readOnly">指定此 <see cref="BEncodeString"/> 元素是只读的。</param>
         /// <exception cref="Exception"/>
-        public BEncodeString(Stream content, bool readOnly) : base(BEncodeElementKind.BEncodeString)
+        public BEncodeString(Stream content) : base(BEncodeElementKind.BEncodeString)
         {
             if (content == null)
             {
@@ -108,7 +101,6 @@ namespace Honoo.Text.BEncode
             _ = content.Read(bytes, 0, bytes.Length);
             _value = bytes;
             _hexValue = BitConverter.ToString(bytes).Replace("-", null);
-            _isReadOnly = readOnly;
         }
 
         #endregion Construction
@@ -204,14 +196,6 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 获取此实例的只读接口。
-        /// </summary>
-        public IReadOnlyBEncodeString AsReadOnly()
-        {
-            return this;
-        }
-
-        /// <summary>
         /// 比较两个对象并返回一个值。该值指示一个对象是小于、等于还是大于另一个对象。
         /// </summary>
         /// <param name="x">要比较的第一个对象。</param>
@@ -285,6 +269,7 @@ namespace Honoo.Text.BEncode
         /// 获取转换为十六进制字符串格式的数据值。
         /// </summary>
         /// <returns></returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1024:在适用处使用属性", Justification = "<挂起>")]
         public string GetHexValue()
         {
             return _hexValue;
@@ -340,10 +325,6 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"/>
         public BEncodeString SetValue(byte[] value)
         {
-            if (_isReadOnly)
-            {
-                throw new NotSupportedException("Element is read-only.");
-            }
             if (value == null)
             {
                 throw new ArgumentNullException(nameof(value));
@@ -373,10 +354,6 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"/>
         public BEncodeString SetValue(string value, Encoding encoding)
         {
-            if (_isReadOnly)
-            {
-                throw new NotSupportedException("Element is read-only.");
-            }
             if (value == null)
             {
                 throw new ArgumentNullException(nameof(value));
@@ -413,11 +390,6 @@ namespace Honoo.Text.BEncode
                 throw new ArgumentNullException(nameof(encoding));
             }
             return encoding.GetString(_value);
-        }
-
-        internal override void ChangeReadOnly(bool isReadOnly)
-        {
-            _isReadOnly = isReadOnly;
         }
     }
 }

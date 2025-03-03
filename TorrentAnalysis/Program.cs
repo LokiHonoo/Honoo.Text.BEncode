@@ -13,7 +13,6 @@ namespace TorrentAnalysis
         private static void Main()
         {
             string testItemsFolder = "..\\..\\..\\TestItems";
-
             ReadTorrent($"{testItemsFolder}\\[喵萌奶茶屋&LoliHouse] 葬送的芙莉莲  Sousou no Frieren [01-28 修正合集][WebRip 1080p HEVC-10bit AAC][简繁日内封字幕][Fin].torrent");
             Console.WriteLine("====================================================================================");
             Console.ReadKey(true);
@@ -75,7 +74,7 @@ namespace TorrentAnalysis
 
             using (var stream = new FileStream(bc, FileMode.Open, FileAccess.Read))
             {
-                var torrent = new Honoo.Text.BEncode.TorrentAnalysis(stream, true);
+                var torrent = new Honoo.Text.BEncode.TorrentAnalysis(stream);
                 Console.WriteLine("created by    :" + torrent.GetCreatedBy());
                 Console.WriteLine("creation date :" + torrent.GetCreationDate());
                 Console.WriteLine("announce      :" + torrent.GetAnnounce());
@@ -94,7 +93,7 @@ namespace TorrentAnalysis
             Console.WriteLine();
             using (var stream = new FileStream(cre, FileMode.Open, FileAccess.Read))
             {
-                var torrent = new Honoo.Text.BEncode.TorrentAnalysis(stream, true);
+                var torrent = new Honoo.Text.BEncode.TorrentAnalysis(stream);
                 Console.WriteLine("created by    :" + torrent.GetCreatedBy());
                 Console.WriteLine("creation date :" + torrent.GetCreationDate());
                 Console.WriteLine("announce      :" + torrent.GetAnnounce());
@@ -124,9 +123,8 @@ namespace TorrentAnalysis
                 ["http://open.acgtracker.com:1096/announce", "http://open.acgtracker.com:1096/announce"]
             ]);
             torrent.SetComment("https://github.com/LokiHonoo/Honoo.Text.BEncode");
-            torrent.SetEncoding("UTF-8");
             torrent.SetNodes([new IPEndPoint(IPAddress.Parse("111.111.111.111"), 7777)]);
-            torrent.SetFiles(dst);
+            torrent.SetFiles(new DirectoryInfo(dst), 16 * 1024 * 1024);
 
             using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
             {
@@ -158,10 +156,8 @@ namespace TorrentAnalysis
                 ["http://open.acgtracker.com:1096/announce", "http://open.acgtracker.com:1096/announce"]
             ]);
             torrent.SetComment("https://github.com/LokiHonoo/Honoo.Text.BEncode");
-            torrent.SetEncoding("UTF-8");
             torrent.SetNodes([new IPEndPoint(IPAddress.Parse("111.111.111.111"), 7777)]);
-            torrent.SetFile(dst);
-
+            torrent.SetFile(new FileInfo(dst), 16 * 1024 * 1024);
             using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
             {
                 torrent.Save(stream, "LokiHonoo", DateTime.UtcNow, true);
@@ -192,10 +188,8 @@ namespace TorrentAnalysis
                 ["http://open.acgtracker.com:1096/announce", "http://open.acgtracker.com:1096/announce"]
             ]);
             torrent.SetComment("https://github.com/LokiHonoo/Honoo.Text.BEncode");
-            torrent.SetEncoding("UTF-8");
             torrent.SetNodes([new IPEndPoint(IPAddress.Parse("111.111.111.111"), 7777)]);
-            torrent.SetPieceLength(256 * 1024);
-            torrent.SetFiles(dst);
+            torrent.SetFiles(new DirectoryInfo(dst), 256 * 1024);
 
             using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
             {
@@ -227,10 +221,8 @@ namespace TorrentAnalysis
                 ["http://open.acgtracker.com:1096/announce", "http://open.acgtracker.com:1096/announce"]
             ]);
             torrent.SetComment("https://github.com/LokiHonoo/Honoo.Text.BEncode");
-            torrent.SetEncoding("UTF-8");
             torrent.SetNodes([new IPEndPoint(IPAddress.Parse("111.111.111.111"), 7777)]);
-            torrent.SetPieceLength(256 * 1024);
-            torrent.SetFile(dst);
+            torrent.SetFile(new FileInfo(dst), 256 * 1024);
 
             using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
             {
@@ -257,7 +249,7 @@ namespace TorrentAnalysis
 
             using (var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read))
             {
-                var torrent = new Honoo.Text.BEncode.TorrentAnalysis(stream, true);
+                var torrent = new Honoo.Text.BEncode.TorrentAnalysis(stream);
                 Console.WriteLine("created by    :" + torrent.GetCreatedBy());
                 Console.WriteLine("creation date :" + torrent.GetCreationDate());
                 Console.WriteLine("announce      :" + torrent.GetAnnounce());
@@ -271,8 +263,11 @@ namespace TorrentAnalysis
                 Console.WriteLine($"Search - \"Frieren - 17 [WebRip\" - count:{files.Count}");
                 files = torrent.GetFiles("10bit AAC ASSx2].mkv", 0, long.MaxValue);
                 Console.WriteLine($"Search - \"10bit AAC ASSx2].mkv\" - count:{files.Count}");
-                Console.WriteLine("Search - \"*.*\"");
                 files = torrent.GetFiles("*.*", 0, long.MaxValue);
+                Console.WriteLine($"Search - \"*.*\" - count:{files.Count}");
+                Console.WriteLine("Search - \"\"");
+                files = torrent.GetFiles("", 0, long.MaxValue);
+
                 foreach (var file in files.OrderByDescending(entry => entry.GetLength()))
                 {
                     Console.WriteLine(file.GetPaths()[^1] + "    " + Numerics.GetSize(file.GetLength(), SizeKilo.Auto, 2, out string unit) + unit);

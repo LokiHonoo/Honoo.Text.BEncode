@@ -8,20 +8,14 @@ namespace Honoo.Text.BEncode
     /// <summary>
     /// BEncode 列表类型。
     /// </summary>
-    public class BEncodeList : BEncodeElement, IEnumerable<BEncodeElement>, IReadOnlyBEncodeList
+    public class BEncodeList : BEncodeElement, IEnumerable<BEncodeElement>
     {
         private readonly List<BEncodeElement> _elements = new List<BEncodeElement>();
-        private bool _isReadOnly;
 
         /// <summary>
         /// 获取元素集合中包含的元素数。
         /// </summary>
         public int Count => _elements.Count;
-
-        /// <summary>
-        /// 获取一个值，该值指示此 <see cref="BEncodeList"/> 是否为只读。
-        /// </summary>
-        public bool IsReadOnly => _isReadOnly;
 
         /// <summary>
         /// 获取或设置指定索引的元素的值。
@@ -53,17 +47,7 @@ namespace Honoo.Text.BEncode
         /// </summary>
         /// <param name="content">指定从中读取的流。定位必须在编码标记 <see langword="l"/> 处。</param>
         /// <exception cref="Exception"/>
-        public BEncodeList(Stream content) : this(content, false)
-        {
-        }
-
-        /// <summary>
-        /// 初始化 BEncodeList 类的新实例。
-        /// </summary>
-        /// <param name="content">指定从中读取的流。定位必须在编码标记 <see langword="l"/> 处。</param>
-        /// <param name="readOnly">指定此 <see cref="BEncodeList"/> 及子元素是只读的。</param>
-        /// <exception cref="Exception"/>
-        public BEncodeList(Stream content, bool readOnly) : base(BEncodeElementKind.BEncodeList)
+        public BEncodeList(Stream content) : base(BEncodeElementKind.BEncodeList)
         {
             if (content == null)
             {
@@ -85,25 +69,24 @@ namespace Honoo.Text.BEncode
                 {
                     switch (kc)
                     {
-                        case 100: content.Seek(-1, SeekOrigin.Current); _elements.Add(new BEncodeDictionary(content, readOnly)); break;// "d"
-                        case 108: content.Seek(-1, SeekOrigin.Current); _elements.Add(new BEncodeList(content, readOnly)); break;      // "l"
-                        case 105: content.Seek(-1, SeekOrigin.Current); _elements.Add(new BEncodeInteger(content, readOnly)); break;   // "i"
-                        case 48:                                                                                                       // "0"
-                        case 49:                                                                                                       // "1"
-                        case 50:                                                                                                       // "2"
-                        case 51:                                                                                                       // "3"
-                        case 52:                                                                                                       // "4"
-                        case 53:                                                                                                       // "5"
-                        case 54:                                                                                                       // "6"
-                        case 55:                                                                                                       // "7"
-                        case 56:                                                                                                       // "8"
-                        case 57: content.Seek(-1, SeekOrigin.Current); _elements.Add(new BEncodeString(content, readOnly)); break;     // "9"
+                        case 100: content.Seek(-1, SeekOrigin.Current); _elements.Add(new BEncodeDictionary(content)); break;                // "d"
+                        case 108: content.Seek(-1, SeekOrigin.Current); _elements.Add(new BEncodeList(content)); break;                      // "l"
+                        case 105: content.Seek(-1, SeekOrigin.Current); _elements.Add(new BEncodeInteger(content)); break;                   // "i"
+                        case 48:                                                                                                             // "0"
+                        case 49:                                                                                                             // "1"
+                        case 50:                                                                                                             // "2"
+                        case 51:                                                                                                             // "3"
+                        case 52:                                                                                                             // "4"
+                        case 53:                                                                                                             // "5"
+                        case 54:                                                                                                             // "6"
+                        case 55:                                                                                                             // "7"
+                        case 56:                                                                                                             // "8"
+                        case 57: content.Seek(-1, SeekOrigin.Current); _elements.Add(new BEncodeString(content)); break;                     // "9"
                         default: throw new ArgumentException($"The incorrect identification char \"{kc}\". Stop at position: {content.Position}.");
                     }
                     kc = content.ReadByte();
                 }
             }
-            _isReadOnly = readOnly;
         }
 
         #endregion Construction
@@ -116,10 +99,6 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"/>
         public T Add<T>(T value) where T : BEncodeElement
         {
-            if (_isReadOnly)
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
             if (value == null)
             {
                 throw new ArgumentNullException(nameof(value));
@@ -136,10 +115,6 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"/>
         public IEnumerable<T> AddRange<T>(IEnumerable<T> values) where T : BEncodeElement
         {
-            if (_isReadOnly)
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
             if (values == null)
             {
                 throw new ArgumentNullException(nameof(values));
@@ -149,23 +124,11 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 获取此实例的只读接口。
-        /// </summary>
-        public IReadOnlyBEncodeList AsReadOnly()
-        {
-            return this;
-        }
-
-        /// <summary>
         /// 从元素集合中移除所有元素。
         /// </summary>
         /// <exception cref="Exception"/>
         public void Clear()
         {
-            if (_isReadOnly)
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
             _elements.Clear();
         }
 
@@ -225,10 +188,6 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"/>
         public void Insert<T>(int index, T value) where T : BEncodeElement
         {
-            if (_isReadOnly)
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
             _elements.Insert(index, value);
         }
 
@@ -241,10 +200,6 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"/>
         public bool Remove<T>(T value) where T : BEncodeElement
         {
-            if (_isReadOnly)
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
             return _elements.Remove(value);
         }
 
@@ -256,10 +211,6 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"/>
         public void RemoveAt(int index)
         {
-            if (_isReadOnly)
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
             _elements.RemoveAt(index);
         }
 
@@ -281,16 +232,6 @@ namespace Honoo.Text.BEncode
                 enumerator.Current.Save(stream);
             }
             stream.WriteByte(101);  // "e"
-        }
-
-        internal override void ChangeReadOnly(bool isReadOnly)
-        {
-            var enumerator = _elements.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                enumerator.Current.ChangeReadOnly(isReadOnly);
-            }
-            _isReadOnly = isReadOnly;
         }
     }
 }

@@ -10,16 +10,10 @@ namespace Honoo.Text.BEncode
     /// <summary>
     /// BEncode 数值类型。
     /// </summary>
-    public class BEncodeInteger : BEncodeElement, IEquatable<BEncodeInteger>, IComparer<BEncodeInteger>, IComparable, IReadOnlyBEncodeInteger
+    public class BEncodeInteger : BEncodeElement, IEquatable<BEncodeInteger>, IComparer<BEncodeInteger>, IComparable
     {
-        private bool _isReadOnly;
         private BigInteger _numericValue;
         private string _value;
-
-        /// <summary>
-        /// 获取一个值，该值指示此 <see cref="BEncodeInteger"/> 是否为只读。
-        /// </summary>
-        public bool IsReadOnly => _isReadOnly;
 
         /// <summary>
         /// 获取原始格式的数据值。
@@ -69,9 +63,8 @@ namespace Honoo.Text.BEncode
         /// 初始化 BEncodeInteger 类的新实例。
         /// </summary>
         /// <param name="content">指定从中读取的流。定位必须在编码标记 <see langword="i"/> 处。</param>
-        /// <param name="readOnly">指定此 <see cref="BEncodeInteger"/> 元素是只读的。</param>
         /// <exception cref="Exception"/>
-        public BEncodeInteger(Stream content, bool readOnly) : base(BEncodeElementKind.BEncodeInteger)
+        public BEncodeInteger(Stream content) : base(BEncodeElementKind.BEncodeInteger)
         {
             if (content == null)
             {
@@ -98,7 +91,6 @@ namespace Honoo.Text.BEncode
             }
             _numericValue = BigInteger.Parse(valueString.ToString(), NumberStyles.Number, CultureInfo.InvariantCulture);
             _value = _numericValue.ToString(CultureInfo.InvariantCulture);
-            _isReadOnly = readOnly;
         }
 
         #endregion Construction
@@ -193,14 +185,6 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 获取此实例的只读接口。
-        /// </summary>
-        public IReadOnlyBEncodeInteger AsReadOnly()
-        {
-            return this;
-        }
-
-        /// <summary>
         /// 比较两个对象并返回一个值。该值指示一个对象是小于、等于还是大于另一个对象。
         /// </summary>
         /// <param name="x">要比较的第一个对象。</param>
@@ -274,6 +258,7 @@ namespace Honoo.Text.BEncode
         /// 获取转换为 Int32 格式的数据值。
         /// </summary>
         /// <returns></returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1024:在适用处使用属性", Justification = "<挂起>")]
         public int GetInt32Value()
         {
             return (int)_numericValue;
@@ -283,6 +268,7 @@ namespace Honoo.Text.BEncode
         /// 获取转换为 Int64 格式的数据值。
         /// </summary>
         /// <returns></returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1024:在适用处使用属性", Justification = "<挂起>")]
         public long GetInt64Value()
         {
             return (long)_numericValue;
@@ -313,10 +299,6 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"/>
         public BEncodeInteger SetValue(string value)
         {
-            if (_isReadOnly)
-            {
-                throw new NotSupportedException("Element is read-only.");
-            }
             if (string.IsNullOrWhiteSpace(value))
             {
                 throw new ArgumentNullException(nameof(value));
@@ -334,10 +316,6 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"/>
         public BEncodeInteger SetValue(int value)
         {
-            if (_isReadOnly)
-            {
-                throw new NotSupportedException("Element is read-only.");
-            }
             _numericValue = value;
             _value = value.ToString(CultureInfo.InvariantCulture);
             return this;
@@ -351,10 +329,6 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"/>
         public BEncodeInteger SetValue(long value)
         {
-            if (_isReadOnly)
-            {
-                throw new NotSupportedException("Element is read-only.");
-            }
             _numericValue = value;
             _value = value.ToString(CultureInfo.InvariantCulture);
             return this;
@@ -367,11 +341,6 @@ namespace Honoo.Text.BEncode
         public override string ToString()
         {
             return _value;
-        }
-
-        internal override void ChangeReadOnly(bool isReadOnly)
-        {
-            _isReadOnly = isReadOnly;
         }
     }
 }

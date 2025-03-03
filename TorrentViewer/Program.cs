@@ -42,7 +42,7 @@ namespace TorrentViewer
                                 Console.WriteLine("\x1b[3J");
                                 using (var stream = new FileStream(line, FileMode.Open, FileAccess.Read))
                                 {
-                                    var torrent = new TorrentAnalysis(stream, false);
+                                    var torrent = new TorrentAnalysis(stream);
                                     var sb = new StringBuilder();
                                     var writer = new JsonTextWriter(new StringWriter(sb))
                                     {

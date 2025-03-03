@@ -6,13 +6,15 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Honoo.Text.BEncode
 {
     /// <summary>
     /// Torrent 文件的根元素。从 <see cref="BEncodeDictionary"/> 继承并增加 Torrent 文件的相关方法。
     /// </summary>
-    public class TorrentAnalysis : BEncodeDictionary, IReadOnlyTorrentAnalysis
+    public class TorrentAnalysis : BEncodeDictionary
     {
         #region Properties
 
@@ -40,17 +42,7 @@ namespace Honoo.Text.BEncode
         /// </summary>
         /// <param name="content">指定从中读取的流。定位必须在编码标记 <see langword="d"/> 处。</param>
         /// <exception cref="Exception"/>
-        public TorrentAnalysis(Stream content) : this(content, false)
-        {
-        }
-
-        /// <summary>
-        /// 初始化 TorrentAnalysis 类的新实例。
-        /// </summary>
-        /// <param name="content">指定从中读取的流。定位必须在编码标记 <see langword="d"/> 处。</param>
-        /// <param name="readOnly">指定此 <see cref="TorrentAnalysis"/> 是只读实例。</param>
-        /// <exception cref="Exception"/>
-        public TorrentAnalysis(Stream content, bool readOnly) : base(content, readOnly)
+        public TorrentAnalysis(Stream content) : base(content)
         {
             if (base.TryGetValue("info", out BEncodeDictionary info))
             {
@@ -754,29 +746,32 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 设置单文件。添加文件后会重置 "name", "pieces" 等元素值。设置 <see langword="null"/> 移除所有文件相关元素，无论之前存在的是单文件格式还是多文件格式。
+        /// 设置单文件。添加文件后会重置 "length", "pieces" 等元素值。设置 <see langword="null"/> 移除所有文件相关元素，无论之前存在的是单文件格式还是多文件格式。
         /// 转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
         /// </summary>
-        /// <param name="fileName">本地文件。</param>
-        public void SetFile(string fileName)
+        /// <param name="file">本地文件。</param>
+        /// <param name="pieceLength">设置分块大小。此设置与 "pieces" 元素值相关，更改后必须重新添加文件以生成新的 "pieces" 元素。</param>
+        /// <exception cref="Exception"/>
+        public void SetFile(FileInfo file, int pieceLength)
         {
-            SetFile(fileName, Encoding.UTF8);
+            SetFile(file, pieceLength, Encoding.UTF8);
         }
 
         /// <summary>
-        /// 设置单文件。添加文件后会重置 "name", "pieces" 等元素值。设置 <see langword="null"/> 移除所有文件相关元素，无论之前存在的是单文件格式还是多文件格式。
+        /// 设置单文件。添加文件后会重置 "length", "pieces" 等元素值。设置 <see langword="null"/> 移除所有文件相关元素，无论之前存在的是单文件格式还是多文件格式。
         /// </summary>
-        /// <param name="fileName">本地文件。</param>
+        /// <param name="file">本地文件。</param>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
+        /// <param name="pieceLength">设置分块大小。此设置与 "pieces" 元素值相关，更改后必须重新添加文件以生成新的 "pieces" 元素。</param>
         /// <exception cref="Exception"/>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5350:不要使用弱加密算法", Justification = "<挂起>")]
-        public void SetFile(string fileName, Encoding valueEncoding)
+        public void SetFile(FileInfo file, int pieceLength, Encoding valueEncoding)
         {
-            if (fileName == null)
+            if (file == null || !file.Exists)
             {
                 if (base.TryGetValue("info", out BEncodeDictionary info))
                 {
-                    //info.Remove("name");
+                    // info.Remove("name");
                     info.Remove("length");
                     info.Remove("pieces");
                     info.Remove("files");
@@ -786,29 +781,20 @@ namespace Honoo.Text.BEncode
             else
             {
                 _multiple = false;
-                FileInfo fileInfo = new FileInfo(fileName);
                 if (!base.TryGetValue("info", out BEncodeDictionary info))
                 {
                     info = base.Add("info", new BEncodeDictionary());
                 }
                 info.Remove("files");
-                info.AddOrUpdate("name", new BEncodeString(fileInfo.Name, valueEncoding));
-                info.AddOrUpdate("length", new BEncodeInteger(fileInfo.Length));
-                long pl = 16 * 1024 * 1024;
-                if (info.TryGetValue("piece length", out BEncodeInteger pieceLength))
-                {
-                    pl = pieceLength.GetInt64Value();
-                }
-                else
-                {
-                    info.Add("piece length", new BEncodeInteger(pl));
-                }
+                info.AddOrUpdate("name", new BEncodeString(file.Name, valueEncoding));
+                info.AddOrUpdate("length", new BEncodeInteger(file.Length));
+                info.AddOrUpdate("piece length", new BEncodeInteger(pieceLength));
                 using (SHA1 sha1 = SHA1.Create())
                 {
                     List<byte> pieces = new List<byte>();
-                    byte[] buffer = new byte[pl];
+                    byte[] buffer = new byte[pieceLength];
                     int index = 0;
-                    ComputeHash(sha1, fileInfo, buffer, ref index, pieces);
+                    ComputeHash(sha1, file, buffer, ref index, pieces);
                     if (index > 0)
                     {
                         pieces.AddRange(sha1.ComputeHash(buffer, 0, index));
@@ -819,116 +805,58 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 设置复数文件。添加文件后会重置 "name", "pieces" 等元素值。设置 <see langword="null"/> 移除所有文件相关元素，无论之前存在的是单文件格式还是多文件格式。
+        /// 设置复数文件。添加文件后会重置 "length", "pieces" 等元素值。设置 <see langword="null"/> 移除所有文件相关元素，无论之前存在的是单文件格式还是多文件格式。
         /// 转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
         /// </summary>
         /// <param name="folder">选择本地文件夹，添加其中所有文件。</param>
+        /// <param name="pieceLength">设置分块大小。此设置与 "pieces" 元素值相关，更改后必须重新添加文件以生成新的 "pieces" 元素。</param>
         /// <exception cref="Exception"/>
-        public void SetFiles(string folder)
+        public void SetFiles(DirectoryInfo folder, int pieceLength)
         {
-            SetFiles(folder, Encoding.UTF8);
+            SetFiles(folder, pieceLength, Encoding.UTF8);
         }
 
         /// <summary>
-        /// 设置复数文件。添加文件后会重置 "name", "pieces" 等元素值。设置 <see langword="null"/> 移除所有文件相关元素，无论之前存在的是单文件格式还是多文件格式。
+        /// 设置复数文件。添加文件后会重置 "length", "pieces" 等元素值。设置 <see langword="null"/> 移除所有文件相关元素，无论之前存在的是单文件格式还是多文件格式。
         /// </summary>
         /// <param name="folder">选择本地文件夹，添加其中所有文件。</param>
+        /// <param name="pieceLength">设置分块大小。此设置与 "pieces" 元素值相关，更改后必须重新添加文件以生成新的 "pieces" 元素。</param>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
         /// <exception cref="Exception"/>
-        public void SetFiles(string folder, Encoding valueEncoding)
+        public void SetFiles(DirectoryInfo folder, int pieceLength, Encoding valueEncoding)
         {
-            SetFiles(folder, valueEncoding, null, null);
+            SetFiles(folder, pieceLength, valueEncoding, null, null);
         }
 
         /// <summary>
-        /// 设置复数文件。添加文件后会重置 "name", "pieces" 等元素值。设置 <see langword="null"/> 移除所有文件相关元素，无论之前存在的是单文件格式还是多文件格式。
+        /// 设置复数文件。添加文件后会重置 "length", "pieces" 等元素值。设置 <see langword="null"/> 移除所有文件相关元素，无论之前存在的是单文件格式还是多文件格式。
+        /// 转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
         /// </summary>
         /// <param name="folder">选择本地文件夹，添加其中所有文件。</param>
+        /// <param name="pieceLength">设置分块大小。此设置与 "pieces" 元素值相关，更改后必须重新添加文件以生成新的 "pieces" 元素。</param>
+        /// <param name="callback">添加一个文件成功后执行。</param>
+        /// <param name="userState">在回调中传递参数。</param>
+        /// <exception cref="Exception"/>
+        public void SetFilesAsync(DirectoryInfo folder, int pieceLength, TorrentFileEntryAddedCallback callback, object userState)
+        {
+            SetFilesAsync(folder, pieceLength, Encoding.UTF8, callback, userState);
+        }
+
+        /// <summary>
+        /// 设置复数文件。添加文件后会重置 "length", "pieces" 等元素值。设置 <see langword="null"/> 移除所有文件相关元素，无论之前存在的是单文件格式还是多文件格式。
+        /// </summary>
+        /// <param name="folder">选择本地文件夹，添加其中所有文件。</param>
+        /// <param name="pieceLength">设置分块大小。此设置与 "pieces" 元素值相关，更改后必须重新添加文件以生成新的 "pieces" 元素。</param>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
         /// <param name="callback">添加一个文件成功后执行。</param>
         /// <param name="userState">在回调中传递参数。</param>
         /// <exception cref="Exception"/>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5350:不要使用弱加密算法", Justification = "<挂起>")]
-        public void SetFiles(string folder, Encoding valueEncoding, TorrentFileEntryAddedCallback callback, object userState)
+        public void SetFilesAsync(DirectoryInfo folder, int pieceLength, Encoding valueEncoding, TorrentFileEntryAddedCallback callback, object userState)
         {
-            if (folder == null)
+            Task.Factory.StartNew(() =>
             {
-                if (base.TryGetValue("info", out BEncodeDictionary info))
-                {
-                    //info.Remove("name");
-                    info.Remove("length");
-                    info.Remove("pieces");
-                    info.Remove("files");
-                }
-                _multiple = false;
-            }
-            else
-            {
-                DirectoryInfo dir = new DirectoryInfo(folder);
-                List<FileInfo> fileList = new List<FileInfo>();
-                SearchFile(dir, fileList);
-                if (fileList.Count > 0)
-                {
-                    _multiple = true;
-                    if (!base.TryGetValue("info", out BEncodeDictionary info))
-                    {
-                        info = base.Add("info", new BEncodeDictionary());
-                    }
-                    info.Remove("length");
-                    info.AddOrUpdate("name", new BEncodeString(dir.Name, valueEncoding));
-                    if (!info.TryGetValue("files", out BEncodeList files))
-                    {
-                        files = info.Add("files", new BEncodeList());
-                    }
-                    long pl = 16 * 1024 * 1024;
-                    if (info.TryGetValue("piece length", out BEncodeInteger pieceLength))
-                    {
-                        pl = pieceLength.GetInt64Value();
-                    }
-                    else
-                    {
-                        info.Add("piece length", new BEncodeInteger(pl));
-                    }
-                    using (SHA1 sha1 = SHA1.Create())
-                    {
-                        List<byte> pieces = new List<byte>();
-                        byte[] buffer = new byte[pl];
-                        int index = 0;
-                        int i = 0;
-                        foreach (FileInfo fi in fileList)
-                        {
-                            BEncodeDictionary entry = files.Add(new BEncodeDictionary());
-                            BEncodeList path = entry.Add("path", new BEncodeList());
-                            string en = fi.FullName.Remove(0, dir.FullName.Length).Replace('\\', '/').Trim('/');
-                            string[] paths = en.Split('/');
-                            foreach (string p in paths)
-                            {
-                                path.Add(new BEncodeString(p, valueEncoding));
-                            }
-                            entry.Add("length", new BEncodeInteger(fi.Length));
-                            ComputeHash(sha1, fi, buffer, ref index, pieces);
-                            callback?.Invoke(entry, i, fileList.Count, userState);
-                            i++;
-                        }
-                        if (index > 0)
-                        {
-                            pieces.AddRange(sha1.ComputeHash(buffer, 0, index));
-                        }
-                        info.AddOrUpdate("pieces", new BEncodeString(pieces.ToArray()));
-                    }
-                }
-                else
-                {
-                    if (base.TryGetValue("info", out BEncodeDictionary info))
-                    {
-                        //info.Remove("name");
-                        info.Remove("length");
-                        info.Remove("pieces");
-                        info.Remove("files");
-                    }
-                    _multiple = false;
-                }
-            }
+                SetFiles(folder, pieceLength, valueEncoding, callback, userState);
+            }, CancellationToken.None, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
         }
 
         private static string ConvertPattern(string pattern)
@@ -939,17 +867,96 @@ namespace Honoo.Text.BEncode
                 .Replace(".", "\\.").Replace("*", ".*").Replace("?", ".?");
         }
 
-        private static void SearchFile(DirectoryInfo dir, List<FileInfo> fileList)
+        private static void SearchFiles(DirectoryInfo folder, List<FileInfo> files)
         {
-            DirectoryInfo[] dirList = dir.GetDirectories();
-            if (dirList.Length > 0)
+            var folders = folder.GetDirectories();
+            if (folders.Length > 0)
             {
-                foreach (DirectoryInfo d in dirList)
+                foreach (DirectoryInfo f in folders)
                 {
-                    SearchFile(d, fileList);
+                    SearchFiles(f, files);
                 }
             }
-            fileList.AddRange(dir.GetFiles());
+            var searched = folder.GetFiles();
+            if (searched.Length > 0)
+            {
+                foreach (FileInfo f in searched)
+                {
+                    files.Add(f);
+                }
+            }
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5350:不要使用弱加密算法", Justification = "<挂起>")]
+        private void SetFiles(DirectoryInfo folder, int pieceLength, Encoding valueEncoding, TorrentFileEntryAddedCallback callback, object userState)
+        {
+            if (folder == null || !folder.Exists)
+            {
+                if (base.TryGetValue("info", out BEncodeDictionary info))
+                {
+                    // info.Remove("name");
+                    info.Remove("length");
+                    info.Remove("pieces");
+                    info.Remove("files");
+                }
+                _multiple = false;
+            }
+            else
+            {
+                var files = new List<FileInfo>();
+                SearchFiles(folder, files);
+                if (files.Count == 0)
+                {
+                    if (base.TryGetValue("info", out BEncodeDictionary info))
+                    {
+                        // info.Remove("name");
+                        info.Remove("length");
+                        info.Remove("pieces");
+                        info.Remove("files");
+                    }
+                    _multiple = false;
+                }
+                else
+                {
+                    _multiple = true;
+                    if (!base.TryGetValue("info", out BEncodeDictionary info))
+                    {
+                        info = base.Add("info", new BEncodeDictionary());
+                    }
+                    info.Remove("length");
+                    info.Remove("pieces");
+                    info.AddOrUpdate("name", new BEncodeString(folder.Name, valueEncoding));
+                    info.GetOrAdd("piece length", new BEncodeInteger(pieceLength));
+                    var fileEntries = info.AddOrUpdate("files", new BEncodeList());
+                    using (SHA1 sha1 = SHA1.Create())
+                    {
+                        List<byte> pieces = new List<byte>();
+                        byte[] buffer = new byte[pieceLength];
+                        int index = 0;
+                        int i = 0;
+                        foreach (FileInfo fi in files)
+                        {
+                            BEncodeDictionary entry = fileEntries.Add(new BEncodeDictionary());
+                            BEncodeList path = entry.Add("path", new BEncodeList());
+                            string en = fi.FullName.Remove(0, folder.FullName.Length).Replace('\\', '/').Trim('/');
+                            string[] paths = en.Split('/');
+                            foreach (string p in paths)
+                            {
+                                path.Add(new BEncodeString(p, valueEncoding));
+                            }
+                            entry.Add("length", new BEncodeInteger(fi.Length));
+                            ComputeHash(sha1, fi, buffer, ref index, pieces);
+                            callback?.Invoke(entry, i, files.Count, userState);
+                            i++;
+                        }
+                        if (index > 0)
+                        {
+                            pieces.AddRange(sha1.ComputeHash(buffer, 0, index));
+                        }
+                        info.AddOrUpdate("pieces", new BEncodeString(pieces.ToArray()));
+                    }
+                }
+            }
         }
 
         #endregion Files
@@ -1047,14 +1054,6 @@ namespace Honoo.Text.BEncode
         #endregion Magnet
 
         /// <summary>
-        /// 获取此实例的只读接口。
-        /// </summary>
-        public new IReadOnlyTorrentAnalysis AsReadOnly()
-        {
-            return this;
-        }
-
-        /// <summary>
         /// 设置创建者名称和创建时间，同时实时计算 BTIH 特征码，保存到指定的流。
         /// </summary>
         /// <param name="stream">指定保存的目标流。</param>
@@ -1064,10 +1063,6 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"/>
         public void Save(Stream stream, string createdBy, DateTime? creationDate, bool renewHash)
         {
-            if (base.IsReadOnly)
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
             SetCreatedBy(createdBy);
             SetCreationDate(creationDate);
             if (renewHash)
@@ -1087,10 +1082,6 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"/>
         public void Save(Stream stream, string createdBy, DateTime? creationDate, string hashHex)
         {
-            if (base.IsReadOnly)
-            {
-                throw new NotSupportedException("Collection is read-only.");
-            }
             SetCreatedBy(createdBy);
             SetCreationDate(creationDate);
             SetHash(hashHex);
