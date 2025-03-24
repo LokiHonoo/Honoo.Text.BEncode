@@ -10,18 +10,21 @@ namespace Honoo.Text.BEncode
     /// </summary>
     public class TorrentFileEntry
     {
+        #region Members
+
+        private readonly TorrentAnalysis _document;
         private readonly BEncodeDictionary _element;
         private readonly int _index;
         private readonly bool _multiple;
 
         /// <summary>
         /// 获取此文件的 "file" 元素映射。如果源实例是单文件种子，则获取 "info" 元素。
-        /// 此元素可修改，任何修改都会导致 "info" 元素内容改变。修改结果会反应在从中获取元素的源实例中。
+        /// 此元素是文档元素的映射，任何修改都会导致 "info" 元素内容改变。修改结果会反应在从中获取元素的源实例中。
         /// </summary>
         public BEncodeDictionary Element => _element;
 
         /// <summary>
-        /// 获取此文件元素在 "files" 元素列表中的索引。如果源实例是单文件种子，值为 0。
+        /// 获取此文件元素在 "files" 元素列表中的索引。如果源实例是单文件种子，值为 0。此参数仅在读取文档后有效，源实例修改可能导致此参数指向错误。
         /// </summary>
         public int Index => _index;
 
@@ -30,13 +33,16 @@ namespace Honoo.Text.BEncode
         /// </summary>
         public bool Multiple => _multiple;
 
+        #endregion Members
+
         #region Construction
 
-        internal TorrentFileEntry(bool multiple, BEncodeDictionary element, int index)
+        internal TorrentFileEntry(BEncodeDictionary element, int index, bool multiple, TorrentAnalysis document)
         {
             _multiple = multiple;
             _element = element;
             _index = index;
+            _document = document;
         }
 
         #endregion Construction
@@ -51,12 +57,12 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 获取路径的拆分集合。转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
+        /// 获取路径的拆分集合。转换元素的值时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。
         /// </summary>
         /// <returns></returns>
         public string[] GetPaths()
         {
-            return GetPaths(Encoding.UTF8);
+            return GetPaths(_document.Encoding);
         }
 
         /// <summary>
@@ -85,13 +91,13 @@ namespace Honoo.Text.BEncode
         /// <summary>
         /// 设置路径的拆分集合。单文件格式将集合的最后一项设置为 "name" 元素。不可为 <see langword="null"/> 和 <see langword="Empty"/> 集合。
         /// 修改会导致 "info" 元素内容改变。修改结果会反应在从中获取元素的源实例中。
-        /// <br/>转换元素的值时默认使用 <see cref="Encoding.UTF8"/> 编码。
+        /// <br/>转换元素的值时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。
         /// </summary>
         /// <param name="paths">路径的拆分集合。不可为 <see langword="null"/>。</param>
         /// <exception cref="Exception"/>
-        public void SetPaths(string[] paths)
+        public void SetPath(string[] paths)
         {
-            SetPaths(paths, Encoding.UTF8);
+            SetPath(paths, _document.Encoding);
         }
 
         /// <summary>
@@ -99,9 +105,9 @@ namespace Honoo.Text.BEncode
         /// 修改会导致 "info" 元素内容改变。修改结果会反应在从中获取元素的源实例中。
         /// </summary>
         /// <param name="paths">路径的拆分集合。不可为 <see langword="null"/>。</param>
-        /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
+        /// <param name="valueEncoding">用于转换元素的值的字符编码。不使用所属的 <see cref="BEncodeDocument"/> 实例的默认字符编码。</param>
         /// <exception cref="Exception"/>
-        public void SetPaths(string[] paths, Encoding valueEncoding)
+        public void SetPath(string[] paths, Encoding valueEncoding)
         {
             if (paths is null)
             {
@@ -113,12 +119,12 @@ namespace Honoo.Text.BEncode
                 path.Clear();
                 foreach (string p in paths)
                 {
-                    path.Add(new BEncodeString(p, valueEncoding));
+                    path.Add(new BEncodeString(p, valueEncoding, _document));
                 }
             }
             else
             {
-                _element.GetValue<BEncodeString>("name", Encoding.UTF8).SetValue(paths[paths.Length - 1], valueEncoding);
+                _document.SetName(paths[paths.Length - 1], valueEncoding);
             }
         }
     }

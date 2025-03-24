@@ -12,7 +12,7 @@
     - [Basic](#basic)
     - [Torrent](#torrent)
   - [CHANGELOG](#changelog)
-    - [1.1.5](#115)
+    - [1.2.0](#120)
     - [1.1.4](#114)
     - [1.1.3](#113)
     - [1.0.9](#109)
@@ -48,52 +48,67 @@ using Honoo.Text.BEncode;
 
 ```c#
 
-internal class Program
+private static void Main()
 {
-    private static void Main()
+    BEncodeDocument doc = new BEncodeDocument();
+    BEncodeDocument doc2 = new BEncodeDocument();
+    while (true)
     {
-        BEncodeDictionary root = new BEncodeDictionary();
-        while (true)
+        //
+        // Write
+        //
+        var dict = doc.Root.AddOrUpdate("dict", doc.CreateDictionary());
+        dict.AddOrUpdate("key3", doc.CreateString("key3"));
+        dict.AddOrUpdate("key2", doc.CreateString("key2"));
+        dict.AddOrUpdate("key4", doc.CreateString("key4"));
+        dict.AddOrUpdate("key2", doc.CreateString("key2update"));
+        var list = doc.Root.AddOrUpdate("key1", doc.CreateList());
+        list.Add(doc.CreateInteger(333));
+        list.Add(doc.CreateInteger(111));
+        list.Add(doc.CreateInteger(222));
+        //
+        // Allways error.
+        //
+        try
         {
-            //
-            // Write
-            //
-            var dict = root.AddOrUpdate("dict", new BEncodeDictionary());
-            dict.AddOrUpdate("key3", new BEncodeString("key3"));
-            dict.AddOrUpdate("key2", new BEncodeString("key2"));
-            dict.AddOrUpdate("key4", new BEncodeString("key4"));
-            dict.AddOrUpdate("key2", new BEncodeString("key2update"));
-            var list = dict.AddOrUpdate("key1", new BEncodeList());
-            list.Add(new BEncodeInteger(333));
-            list.Add(new BEncodeInteger(111));
-            list.Add(new BEncodeInteger(222));
-            //
-            // Read
-            //
-            dict = root.GetValue<BEncodeDictionary>("dict");
-            dict.TryGetValue("key2", out BEncodeString string1);
-            Console.WriteLine(string1.GetStringValue());
-            dict.TryGetValue("key3", out string1);
-            Console.WriteLine(string1.GetStringValue());
-            dict.TryGetValue("key4", out string1);
-            Console.WriteLine(string1.GetStringValue());
-            var list1 = (BEncodeList)dict["key1"];
-            Console.WriteLine(((BEncodeInteger)list1[0]).Value);
-            Console.WriteLine(((BEncodeInteger)list1[1]).GetInt32Value());
-            Console.WriteLine(((BEncodeInteger)list1[2]).GetInt64Value());
-            //
-            // Save
-            //
-            using (MemoryStream stream = new MemoryStream())
-            {
-                root.Save(stream);
-                string content = Encoding.UTF8.GetString(stream.ToArray());
-                Console.WriteLine(content);
-                stream.Seek(0, SeekOrigin.Begin);
-                root = new BEncodeDictionary(stream);
-            }
-            Console.ReadKey(true);
+            doc.Root.Add("error", doc2.CreateString("error"));
         }
+        catch
+        {
+            Console.WriteLine("Document cross reference.");
+        }
+        //
+        // Read
+        //
+        dict = doc.Root.GetValue<BEncodeDictionary>("dict");
+        dict.TryGetValue("key2", out BEncodeString string1);
+        Console.WriteLine(string1.GetStringValue());
+        dict.TryGetValue("key3", out string1);
+        Console.WriteLine(string1.GetStringValue());
+        dict.TryGetValue("key4", out string1);
+        Console.WriteLine(string1.GetStringValue());
+        var list1 = (BEncodeList)doc.Root["key1"];
+        Console.WriteLine(((BEncodeInteger)list1[0]).Value);
+        Console.WriteLine(((BEncodeInteger)list1[1]).GetInt32Value());
+        Console.WriteLine(((BEncodeInteger)list1[2]).GetInt64Value());
+        //
+        // Copy
+        //
+        doc = new BEncodeDocument(doc.Root);
+        doc = new BEncodeDocument(doc);
+        //
+        // Save
+        //
+        using (MemoryStream stream = new MemoryStream())
+        {
+            doc.Save(stream);
+            string content = Encoding.UTF8.GetString(stream.ToArray());
+            Console.WriteLine(content);
+            stream.Seek(0, SeekOrigin.Begin);
+            doc = new BEncodeDocument(stream);
+        }
+        //
+        Console.ReadKey(true);
     }
 }
 
@@ -164,9 +179,13 @@ private static void CreateTorrent()
 
 ## CHANGELOG
 
-### 1.1.5
+### 1.2.0
 
-**Removed* 删除了只读模式。
+**Removed* 删除了只读接口。
+
+**Refactored* BEncodeInteger、BEncodeString 更改为只读模式。
+
+**Features* 新增 BEncodeDocument 类型作为根元素，元素需要从 Document.Create 创建，以便于统一应用字符编码。
 
 ### 1.1.4
 

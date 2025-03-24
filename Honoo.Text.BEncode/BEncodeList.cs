@@ -10,6 +10,8 @@ namespace Honoo.Text.BEncode
     /// </summary>
     public class BEncodeList : BEncodeElement, IEnumerable<BEncodeElement>
     {
+        #region Members
+
         private readonly List<BEncodeElement> _elements = new List<BEncodeElement>();
 
         /// <summary>
@@ -33,12 +35,15 @@ namespace Honoo.Text.BEncode
             }
         }
 
+        #endregion Members
+
         #region Construction
 
         /// <summary>
         /// 初始化 BEncodeList 类的新实例。
         /// </summary>
-        public BEncodeList() : base(BEncodeElementKind.BEncodeList)
+        /// <param name="document">所属的 <see cref="BEncodeDocument"/> 实例。</param>
+        internal BEncodeList(BEncodeDocument document) : base(BEncodeElementType.BEncodeList, document)
         {
         }
 
@@ -46,8 +51,9 @@ namespace Honoo.Text.BEncode
         /// 初始化 BEncodeList 类的新实例。
         /// </summary>
         /// <param name="content">指定从中读取的流。定位必须在编码标记 <see langword="l"/> 处。</param>
+        /// <param name="document">所属的 <see cref="BEncodeDocument"/> 实例。</param>
         /// <exception cref="Exception"/>
-        public BEncodeList(Stream content) : base(BEncodeElementKind.BEncodeList)
+        internal BEncodeList(Stream content, BEncodeDocument document) : base(BEncodeElementType.BEncodeList, document)
         {
             if (content == null)
             {
@@ -69,9 +75,9 @@ namespace Honoo.Text.BEncode
                 {
                     switch (kc)
                     {
-                        case 100: content.Seek(-1, SeekOrigin.Current); _elements.Add(new BEncodeDictionary(content)); break;                // "d"
-                        case 108: content.Seek(-1, SeekOrigin.Current); _elements.Add(new BEncodeList(content)); break;                      // "l"
-                        case 105: content.Seek(-1, SeekOrigin.Current); _elements.Add(new BEncodeInteger(content)); break;                   // "i"
+                        case 100: content.Seek(-1, SeekOrigin.Current); _elements.Add(new BEncodeDictionary(content, document)); break;      // "d"
+                        case 108: content.Seek(-1, SeekOrigin.Current); _elements.Add(new BEncodeList(content, document)); break;            // "l"
+                        case 105: content.Seek(-1, SeekOrigin.Current); _elements.Add(new BEncodeInteger(content, document)); break;         // "i"
                         case 48:                                                                                                             // "0"
                         case 49:                                                                                                             // "1"
                         case 50:                                                                                                             // "2"
@@ -81,7 +87,7 @@ namespace Honoo.Text.BEncode
                         case 54:                                                                                                             // "6"
                         case 55:                                                                                                             // "7"
                         case 56:                                                                                                             // "8"
-                        case 57: content.Seek(-1, SeekOrigin.Current); _elements.Add(new BEncodeString(content)); break;                     // "9"
+                        case 57: content.Seek(-1, SeekOrigin.Current); _elements.Add(new BEncodeString(content, document)); break;           // "9"
                         default: throw new ArgumentException($"The incorrect identification char \"{kc}\". Stop at position: {content.Position}.");
                     }
                     kc = content.ReadByte();
@@ -103,6 +109,10 @@ namespace Honoo.Text.BEncode
             {
                 throw new ArgumentNullException(nameof(value));
             }
+            if (base.Document != value.Document)
+            {
+                throw new ArgumentException($"\"{nameof(value)}\" is not create by this document.");
+            }
             _elements.Add(value);
             return value;
         }
@@ -119,7 +129,10 @@ namespace Honoo.Text.BEncode
             {
                 throw new ArgumentNullException(nameof(values));
             }
-            _elements.AddRange(values);
+            foreach (var value in values)
+            {
+                Add(value);
+            }
             return values;
         }
 
@@ -188,6 +201,14 @@ namespace Honoo.Text.BEncode
         /// <exception cref="Exception"/>
         public void Insert<T>(int index, T value) where T : BEncodeElement
         {
+            if (value is null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+            if (base.Document != value.Document)
+            {
+                throw new ArgumentException($"\"{nameof(value)}\" is not create by this document.");
+            }
             _elements.Insert(index, value);
         }
 
@@ -219,7 +240,7 @@ namespace Honoo.Text.BEncode
         /// </summary>
         /// <param name="stream">指定保存的目标流。</param>
         /// <exception cref="Exception"/>
-        public override void Save(Stream stream)
+        internal override void Save(Stream stream)
         {
             if (stream == null)
             {

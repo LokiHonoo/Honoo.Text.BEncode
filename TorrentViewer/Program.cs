@@ -11,7 +11,7 @@ namespace TorrentViewer
     {
         private static void Main(string[] args)
         {
-            string m = string.Empty;
+            string m = "输入文件路径，有空格的路径名称需要加前后双引号。";
             while (true)
             {
                 Console.Clear();
@@ -19,50 +19,56 @@ namespace TorrentViewer
                 Console.WriteLine();
                 Console.WriteLine("                        TorrentViewer   runtime " + Environment.Version);
                 Console.WriteLine();
+                Console.WriteLine("=======================================================================================");
+                Console.WriteLine();
                 if (m.Length > 0)
                 {
                     Console.WriteLine(m);
                     m = string.Empty;
                 }
-                Console.WriteLine("=======================================================================================");
-                //
+                Console.WriteLine();
                 Console.WriteLine();
                 Console.Write("拖放或输入 Torrent 文件:");
-                while (true)
+
+                string? line = Console.ReadLine();
+                if (line != null)
                 {
-                    string? line = Console.ReadLine();
-                    if (line != null)
+                    line = line.Trim('"');
+                    if (File.Exists(line))
                     {
-                        line = line.Trim('"');
-                        if (File.Exists(line))
+                        try
                         {
-                            try
+                            Console.Clear();
+                            Console.WriteLine("\x1b[3J");
+                            using (var stream = new FileStream(line, FileMode.Open, FileAccess.Read))
                             {
-                                Console.Clear();
-                                Console.WriteLine("\x1b[3J");
-                                using (var stream = new FileStream(line, FileMode.Open, FileAccess.Read))
+                                var torrent = new TorrentAnalysis(stream);
+                                var sb = new StringBuilder();
+                                var writer = new JsonTextWriter(new StringWriter(sb))
                                 {
-                                    var torrent = new TorrentAnalysis(stream);
-                                    var sb = new StringBuilder();
-                                    var writer = new JsonTextWriter(new StringWriter(sb))
-                                    {
-                                        Formatting = Formatting.Indented
-                                    };
-                                    Transform(torrent, writer);
-                                    Console.WriteLine(sb.ToString());
-                                }
-                                Console.WriteLine();
-                                Console.Write("Press any key to Main Menu...");
-                                Console.Write("\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n");
-                                Console.ReadKey(true);
+                                    Formatting = Formatting.Indented
+                                };
+                                Transform(torrent.Root, writer);
+                                Console.WriteLine(sb.ToString());
                             }
-                            catch (Exception ex)
-                            {
-                                m = ex.Message;
-                            }
+                            Console.WriteLine();
+                            Console.Write("Press any key to Main Menu...");
+                            Console.Write("\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n");
+                            Console.ReadKey(true);
+                        }
+                        catch (Exception ex)
+                        {
+                            m = ex.Message;
                         }
                     }
-                    break;
+                    else
+                    {
+                        m = "文件不存在。";
+                    }
+                }
+                else
+                {
+                    m = "输入文件路径，有空格的路径名称需要加前后双引号。";
                 }
             }
         }

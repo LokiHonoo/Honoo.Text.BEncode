@@ -8,22 +8,34 @@ namespace Honoo.Text.BEncode
     /// </summary>
     public abstract class BEncodeElement
     {
-        private readonly BEncodeElementKind _kind;
+        #region Members
+
+        private readonly BEncodeDocument _document;
+        private readonly BEncodeElementType _elementType;
+
+        #endregion Members
+
+        /// <summary>
+        /// 获取所属的 <see cref="BEncodeDocument"/> 实例。
+        /// </summary>
+        public BEncodeDocument Document => _document;
 
         /// <summary>
         /// 获取 BEncode 元素的类型。
         /// </summary>
-        public BEncodeElementKind Kind => _kind;
+        public BEncodeElementType ElementType => _elementType;
 
         #region Construction
 
         /// <summary>
         /// 初始化 BEncodeElement 类的新实例。
         /// </summary>
-        /// <param name="kind">BEncode 元素的类型。</param>
-        protected BEncodeElement(BEncodeElementKind kind)
+        /// <param name="elementType">BEncode 元素的类型。</param>
+        /// <param name="document">所属的 <see cref="BEncodeDocument"/> 实例。</param>
+        protected BEncodeElement(BEncodeElementType elementType, BEncodeDocument document)
         {
-            _kind = kind;
+            _elementType = elementType;
+            _document = document;
         }
 
         #endregion Construction
@@ -33,6 +45,6 @@ namespace Honoo.Text.BEncode
         /// </summary>
         /// <param name="stream">指定保存的目标流。</param>
         /// <exception cref="Exception"/>
-        public abstract void Save(Stream stream);
+        internal abstract void Save(Stream stream);
     }
 }

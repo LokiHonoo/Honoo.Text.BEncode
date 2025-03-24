@@ -11,8 +11,10 @@ namespace Honoo.Text.BEncode
     /// </summary>
     public class BEncodeString : BEncodeElement, IEquatable<BEncodeString>, IComparer<BEncodeString>, IComparable
     {
-        private string _hexValue;
-        private byte[] _value;
+        #region Members
+
+        private readonly string _hexValue;
+        private readonly byte[] _value;
 
         /// <summary>
         /// 获取原始字节类型的数据值。
@@ -20,14 +22,17 @@ namespace Honoo.Text.BEncode
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1819:属性不应返回数组", Justification = "<挂起>")]
         public byte[] Value => (byte[])_value.Clone();
 
+        #endregion Members
+
         #region Construction
 
         /// <summary>
         /// 初始化 BEncodeString 类的新实例。
         /// </summary>
         /// <param name="value">字节数据类型的值。</param>
+        /// <param name="document">所属的 <see cref="BEncodeDocument"/> 实例。</param>
         /// <exception cref="Exception"/>
-        public BEncodeString(byte[] value) : base(BEncodeElementKind.BEncodeString)
+        internal BEncodeString(byte[] value, BEncodeDocument document) : base(BEncodeElementType.BEncodeString, document)
         {
             if (value == null)
             {
@@ -38,27 +43,36 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 初始化 BEncodeString 类的新实例。转换时默认使用 <see cref="Encoding.UTF8"/> 编码。
+        /// 初始化 BEncodeString 类的新实例。
         /// </summary>
         /// <param name="value">文本类型的值。</param>
+        /// <param name="document">所属的 <see cref="BEncodeDocument"/> 实例。</param>
         /// <exception cref="Exception"/>
-        public BEncodeString(string value) : this(value, Encoding.UTF8)
+        internal BEncodeString(string value, BEncodeDocument document) : base(BEncodeElementType.BEncodeString, document)
         {
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+            byte[] bytes = document.Encoding.GetBytes(value);
+            _value = bytes;
+            _hexValue = BitConverter.ToString(bytes).Replace("-", null);
         }
 
         /// <summary>
         /// 初始化 BEncodeString 类的新实例。
         /// </summary>
         /// <param name="value">文本类型的值。</param>
-        /// <param name="encoding">用于转换的字符编码。</param>
+        /// <param name="encoding">指定用于转换的字符编码。不使用所属的 <see cref="BEncodeDocument"/> 实例的默认字符编码。</param>
+        /// <param name="document">所属的 <see cref="BEncodeDocument"/> 实例。</param>
         /// <exception cref="Exception"/>
-        public BEncodeString(string value, Encoding encoding) : base(BEncodeElementKind.BEncodeString)
+        internal BEncodeString(string value, Encoding encoding, BEncodeDocument document) : base(BEncodeElementType.BEncodeString, document)
         {
             if (value == null)
             {
                 throw new ArgumentNullException(nameof(value));
             }
-            if (encoding == null)
+            if (encoding is null)
             {
                 throw new ArgumentNullException(nameof(encoding));
             }
@@ -71,8 +85,9 @@ namespace Honoo.Text.BEncode
         /// 初始化 BEncodeString 类的新实例。
         /// </summary>
         /// <param name="content">指定从中读取的流。定位必须在编码标记 <see langword="0"/>-<see langword="9"/> 处。</param>
+        /// <param name="document">所属的 <see cref="BEncodeDocument"/> 实例。</param>
         /// <exception cref="Exception"/>
-        public BEncodeString(Stream content) : base(BEncodeElementKind.BEncodeString)
+        internal BEncodeString(Stream content, BEncodeDocument document) : base(BEncodeElementType.BEncodeString, document)
         {
             if (content == null)
             {
@@ -276,13 +291,22 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 获取转换为 string 格式的数据值。转换时默认使用 <see cref="Encoding.UTF8"/> 编码。
+        /// 获取原始格式的数据值。
+        /// </summary>
+        /// <returns></returns>
+        public byte[] GetRawValue()
+        {
+            return (byte[])_value.Clone();
+        }
+
+        /// <summary>
+        /// 获取转换为 string 格式的数据值。转换时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"/>
         public string GetStringValue()
         {
-            return GetStringValue(Encoding.UTF8);
+            return base.Document.Encoding.GetString(_value);
         }
 
         /// <summary>
@@ -301,86 +325,18 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 保存到指定的流。
-        /// </summary>
-        /// <param name="stream">指定保存的目标流。</param>
-        /// <exception cref="Exception"/>
-        public override void Save(Stream stream)
-        {
-            if (stream == null)
-            {
-                throw new ArgumentNullException(nameof(stream));
-            }
-            byte[] length = Encoding.ASCII.GetBytes(_value.Length.ToString(CultureInfo.InvariantCulture));
-            stream.Write(length, 0, length.Length);
-            stream.WriteByte(58);  // ":"
-            stream.Write(_value, 0, _value.Length);
-        }
-
-        /// <summary>
-        /// 设置值。
-        /// </summary>
-        /// <param name="value">字节数据类型的值。</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"/>
-        public BEncodeString SetValue(byte[] value)
-        {
-            if (value == null)
-            {
-                throw new ArgumentNullException(nameof(value));
-            }
-            _value = (byte[])value.Clone();
-            _hexValue = BitConverter.ToString(value).Replace("-", null);
-            return this;
-        }
-
-        /// <summary>
-        /// 设置值。转换时默认使用 <see cref="Encoding.UTF8"/> 编码。
-        /// </summary>
-        /// <param name="value">文本类型的值。</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"/>
-        public BEncodeString SetValue(string value)
-        {
-            return SetValue(value, Encoding.UTF8);
-        }
-
-        /// <summary>
-        /// 设置值。
-        /// </summary>
-        /// <param name="value">文本类型的值。</param>
-        /// <param name="encoding">用于转换的字符编码。</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"/>
-        public BEncodeString SetValue(string value, Encoding encoding)
-        {
-            if (value == null)
-            {
-                throw new ArgumentNullException(nameof(value));
-            }
-            if (encoding == null)
-            {
-                throw new ArgumentNullException(nameof(encoding));
-            }
-            byte[] bytes = encoding.GetBytes(value);
-            _value = bytes;
-            _hexValue = BitConverter.ToString(bytes).Replace("-", null);
-            return this;
-        }
-
-        /// <summary>
-        /// 方法已重写。获取字符串表示形式的数据值。转换时默认使用 <see cref="Encoding.UTF8"/> 编码。
+        /// 方法已重写。获取字符串表示形式的数据值。转换时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。
         /// </summary>
         /// <returns></returns>
         public override string ToString()
         {
-            return ToString(Encoding.UTF8);
+            return ToString(base.Document.Encoding);
         }
 
         /// <summary>
         /// 获取字符串表示形式的数据值。
         /// </summary>
-        /// <param name="encoding">用于转换的字符编码。</param>
+        /// <param name="encoding">用于转换的字符编码。不使用所属的 <see cref="BEncodeDocument"/> 实例的默认字符编码。</param>
         /// <returns></returns>
         /// <exception cref="Exception"/>
         public string ToString(Encoding encoding)
@@ -390,6 +346,23 @@ namespace Honoo.Text.BEncode
                 throw new ArgumentNullException(nameof(encoding));
             }
             return encoding.GetString(_value);
+        }
+
+        /// <summary>
+        /// 保存到指定的流。
+        /// </summary>
+        /// <param name="stream">指定保存的目标流。</param>
+        /// <exception cref="Exception"/>
+        internal override void Save(Stream stream)
+        {
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+            byte[] length = Encoding.ASCII.GetBytes(_value.Length.ToString(CultureInfo.InvariantCulture));
+            stream.Write(length, 0, length.Length);
+            stream.WriteByte(58);  // ":"
+            stream.Write(_value, 0, _value.Length);
         }
     }
 }

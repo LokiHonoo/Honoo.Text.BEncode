@@ -12,8 +12,10 @@ namespace Honoo.Text.BEncode
     /// </summary>
     public class BEncodeInteger : BEncodeElement, IEquatable<BEncodeInteger>, IComparer<BEncodeInteger>, IComparable
     {
+        #region Members
+
+        private readonly string _value;
         private BigInteger _numericValue;
-        private string _value;
 
         /// <summary>
         /// 获取原始格式的数据值。
@@ -22,14 +24,17 @@ namespace Honoo.Text.BEncode
 
         internal BigInteger NumericValue => _numericValue;
 
+        #endregion Members
+
         #region Construction
 
         /// <summary>
         /// 初始化 BEncodeInteger 类的新实例。
         /// </summary>
         /// <param name="value">十进制文本表示的长数值类型的值。</param>
+        /// <param name="document">所属的 <see cref="BEncodeDocument"/> 实例。</param>
         /// <exception cref="Exception"/>
-        public BEncodeInteger(string value) : base(BEncodeElementKind.BEncodeInteger)
+        internal BEncodeInteger(string value, BEncodeDocument document) : base(BEncodeElementType.BEncodeInteger, document)
         {
             if (string.IsNullOrWhiteSpace(value))
             {
@@ -43,7 +48,8 @@ namespace Honoo.Text.BEncode
         /// 初始化 BEncodeInteger 类的新实例。
         /// </summary>
         /// <param name="value">Int32 类型的值。</param>
-        public BEncodeInteger(int value) : base(BEncodeElementKind.BEncodeInteger)
+        /// <param name="document">所属的 <see cref="BEncodeDocument"/> 实例。</param>
+        internal BEncodeInteger(int value, BEncodeDocument document) : base(BEncodeElementType.BEncodeInteger, document)
         {
             _numericValue = value;
             _value = value.ToString(CultureInfo.InvariantCulture);
@@ -53,7 +59,8 @@ namespace Honoo.Text.BEncode
         /// 初始化 BEncodeInteger 类的新实例。
         /// </summary>
         /// <param name="value">Int64 类型的值。</param>
-        public BEncodeInteger(long value) : base(BEncodeElementKind.BEncodeInteger)
+        /// <param name="document">所属的 <see cref="BEncodeDocument"/> 实例。</param>
+        internal BEncodeInteger(long value, BEncodeDocument document) : base(BEncodeElementType.BEncodeInteger, document)
         {
             _numericValue = value;
             _value = value.ToString(CultureInfo.InvariantCulture);
@@ -63,8 +70,9 @@ namespace Honoo.Text.BEncode
         /// 初始化 BEncodeInteger 类的新实例。
         /// </summary>
         /// <param name="content">指定从中读取的流。定位必须在编码标记 <see langword="i"/> 处。</param>
+        /// <param name="document">所属的 <see cref="BEncodeDocument"/> 实例。</param>
         /// <exception cref="Exception"/>
-        public BEncodeInteger(Stream content) : base(BEncodeElementKind.BEncodeInteger)
+        internal BEncodeInteger(Stream content, BEncodeDocument document) : base(BEncodeElementType.BEncodeInteger, document)
         {
             if (content == null)
             {
@@ -275,63 +283,13 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 保存到指定的流。
+        /// 获取原始格式的数据值。
         /// </summary>
-        /// <param name="stream">指定保存的目标流。</param>
-        /// <exception cref="Exception"/>
-        public override void Save(Stream stream)
-        {
-            if (stream == null)
-            {
-                throw new ArgumentNullException(nameof(stream));
-            }
-            stream.WriteByte(105);  // "i"
-            byte[] value = Encoding.ASCII.GetBytes(_value);
-            stream.Write(value, 0, value.Length);
-            stream.WriteByte(101);  // "e"
-        }
-
-        /// <summary>
-        /// 设置值。
-        /// </summary>
-        /// <param name="value">十进制文本表示的长数值类型的值。</param>
         /// <returns></returns>
-        /// <exception cref="Exception"/>
-        public BEncodeInteger SetValue(string value)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1024:在适用处使用属性", Justification = "<挂起>")]
+        public string GetRawValue()
         {
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                throw new ArgumentNullException(nameof(value));
-            }
-            _numericValue = BigInteger.Parse(value, NumberStyles.Number, CultureInfo.InvariantCulture);
-            _value = _numericValue.ToString(CultureInfo.InvariantCulture);
-            return this;
-        }
-
-        /// <summary>
-        /// 设置值。
-        /// </summary>
-        /// <param name="value">Int32 类型的值。</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"/>
-        public BEncodeInteger SetValue(int value)
-        {
-            _numericValue = value;
-            _value = value.ToString(CultureInfo.InvariantCulture);
-            return this;
-        }
-
-        /// <summary>
-        /// 设置值。
-        /// </summary>
-        /// <param name="value">Int64 类型的值。</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"/>
-        public BEncodeInteger SetValue(long value)
-        {
-            _numericValue = value;
-            _value = value.ToString(CultureInfo.InvariantCulture);
-            return this;
+            return _value;
         }
 
         /// <summary>
@@ -341,6 +299,23 @@ namespace Honoo.Text.BEncode
         public override string ToString()
         {
             return _value;
+        }
+
+        /// <summary>
+        /// 保存到指定的流。
+        /// </summary>
+        /// <param name="stream">指定保存的目标流。</param>
+        /// <exception cref="Exception"/>
+        internal override void Save(Stream stream)
+        {
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+            stream.WriteByte(105);  // "i"
+            byte[] value = Encoding.ASCII.GetBytes(_value);
+            stream.Write(value, 0, value.Length);
+            stream.WriteByte(101);  // "e"
         }
     }
 }

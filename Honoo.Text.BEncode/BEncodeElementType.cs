@@ -3,7 +3,7 @@
     /// <summary>
     /// BEncode 元素的类型。
     /// </summary>
-    public enum BEncodeElementKind
+    public enum BEncodeElementType
     {
         /// <summary>
         /// BEncode 字典类型。
