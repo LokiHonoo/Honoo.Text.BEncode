@@ -16,6 +16,22 @@
 
 BEncode Analysis. Edit BEncode content (e.g. BT torrent file).
 
+BEncodeDocument doc = new BEncodeDocument();
+doc.Root.AddOrUpdate("key1", doc.CreateInteger(996));
+doc.Root.AddOrUpdate("key2", doc.CreateInteger(007));
+BEncodeDictionary dict = doc.Root.AddOrUpdate("dict", doc.CreateDictionary());
+BEncodeList list = dict.AddOrUpdate("key3", doc.CreateList());
+list.Add(doc.CreateString("icu"));
+//
+doc.Root.TryGetValue("key1", out BEncodeInteger output);
+//
+//
+//
+TorrentAnalysis torrent = new TorrentAnalysis(stream);
+torrent.SetName("Torrent Name");
+//
+torrent.GetName();
+
 ## GUIDE
 
 ### GitHub

@@ -12,7 +12,7 @@
     - [Basic](#basic)
     - [Torrent](#torrent)
   - [CHANGELOG](#changelog)
-    - [1.2.0](#120)
+    - [1.2.1](#121)
     - [1.1.4](#114)
     - [1.1.3](#113)
     - [1.0.9](#109)
@@ -29,6 +29,22 @@
 ## INTRODUCTION
 
 读写 BEncode 编码格式，例如 torrent 文件。
+
+BEncodeDocument doc = new BEncodeDocument();
+doc.Root.AddOrUpdate("key1", doc.CreateInteger(996));
+doc.Root.AddOrUpdate("key2", doc.CreateInteger(007));
+BEncodeDictionary dict = doc.Root.AddOrUpdate("dict", doc.CreateDictionary());
+BEncodeList list = dict.AddOrUpdate("key3", doc.CreateList());
+list.Add(doc.CreateString("icu"));
+//
+doc.Root.TryGetValue("key1", out BEncodeInteger output);
+//
+//
+//
+TorrentAnalysis torrent = new TorrentAnalysis(stream);
+torrent.SetName("Torrent Name");
+//
+torrent.GetName();
 
 ## GUIDE
 
@@ -57,15 +73,11 @@ private static void Main()
         //
         // Write
         //
-        var dict = doc.Root.AddOrUpdate("dict", doc.CreateDictionary());
-        dict.AddOrUpdate("key3", doc.CreateString("key3"));
-        dict.AddOrUpdate("key2", doc.CreateString("key2"));
-        dict.AddOrUpdate("key4", doc.CreateString("key4"));
-        dict.AddOrUpdate("key2", doc.CreateString("key2update"));
-        var list = doc.Root.AddOrUpdate("key1", doc.CreateList());
-        list.Add(doc.CreateInteger(333));
-        list.Add(doc.CreateInteger(111));
-        list.Add(doc.CreateInteger(222));
+        doc.Root.AddOrUpdate("key1", doc.CreateInteger(996));
+        doc.Root.AddOrUpdate("key2", doc.CreateInteger(007));
+        BEncodeDictionary dict = doc.Root.AddOrUpdate("dict", doc.CreateDictionary());
+        BEncodeList list = dict.AddOrUpdate("key3", doc.CreateList());
+        list.Add(doc.CreateString("icu"));
         //
         // Allways error.
         //
@@ -80,17 +92,10 @@ private static void Main()
         //
         // Read
         //
-        dict = doc.Root.GetValue<BEncodeDictionary>("dict");
-        dict.TryGetValue("key2", out BEncodeString string1);
-        Console.WriteLine(string1.GetStringValue());
-        dict.TryGetValue("key3", out string1);
-        Console.WriteLine(string1.GetStringValue());
-        dict.TryGetValue("key4", out string1);
-        Console.WriteLine(string1.GetStringValue());
-        var list1 = (BEncodeList)doc.Root["key1"];
-        Console.WriteLine(((BEncodeInteger)list1[0]).Value);
-        Console.WriteLine(((BEncodeInteger)list1[1]).GetInt32Value());
-        Console.WriteLine(((BEncodeInteger)list1[2]).GetInt64Value());
+        Console.WriteLine(doc.Root.GetValue<BEncodeInteger>("key1").GetInt32Value());
+        Console.WriteLine(doc.Root.GetValue<BEncodeInteger>("key2").GetInt32Value());
+        doc.Root.GetValue<BEncodeDictionary>("dict").TryGetValue("key3", out list);
+        Console.WriteLine(((BEncodeString)list[0]).GetStringValue());
         //
         // Copy
         //
@@ -179,13 +184,15 @@ private static void CreateTorrent()
 
 ## CHANGELOG
 
-### 1.2.0
+### 1.2.1
 
 **Removed* 删除了只读接口。
 
+**Refactored* 种子添加文件的方法增加更多操作项。
+
 **Refactored* BEncodeInteger、BEncodeString 更改为只读模式。
 
-**Features* 新增 BEncodeDocument 类型作为根元素，元素需要从 Document.Create 创建，以便于统一应用字符编码。
+**Features* 新增 BEncodeDocument 类型作为根元素，元素需要从 BEncodeDocument.CreateDictionary() 创建。操作方式类似与 XmlDocument。
 
 ### 1.1.4
 

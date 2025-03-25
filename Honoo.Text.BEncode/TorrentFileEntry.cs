@@ -60,9 +60,9 @@ namespace Honoo.Text.BEncode
         /// 获取路径的拆分集合。转换元素的值时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。
         /// </summary>
         /// <returns></returns>
-        public string[] GetPaths()
+        public string[] GetPath()
         {
-            return GetPaths(_document.Encoding);
+            return GetPath(_document.Encoding);
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace Honoo.Text.BEncode
         /// </summary>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。</param>
         /// <returns></returns>
-        public string[] GetPaths(Encoding valueEncoding)
+        public string[] GetPath(Encoding valueEncoding)
         {
             if (_multiple)
             {

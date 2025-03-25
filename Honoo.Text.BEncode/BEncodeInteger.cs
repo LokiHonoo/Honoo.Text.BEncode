@@ -240,7 +240,7 @@ namespace Honoo.Text.BEncode
         /// <returns></returns>
         public bool Equals(BEncodeInteger other)
         {
-            return other is BEncodeInteger && _numericValue == other._numericValue;
+            return other != null && GetHashCode() == other.GetHashCode();
         }
 
         /// <summary>
@@ -250,7 +250,7 @@ namespace Honoo.Text.BEncode
         /// <returns></returns>
         public override bool Equals(object obj)
         {
-            return obj is BEncodeInteger other && _numericValue == other._numericValue;
+            return obj is BEncodeInteger other && Equals(other);
         }
 
         /// <summary>
@@ -259,7 +259,7 @@ namespace Honoo.Text.BEncode
         /// <returns></returns>
         public override int GetHashCode()
         {
-            return -1832168491 + EqualityComparer<BigInteger>.Default.GetHashCode(_numericValue);
+            return -1832168491 + EqualityComparer<BigInteger>.Default.GetHashCode(_numericValue) + EqualityComparer<BEncodeDocument>.Default.GetHashCode(base.Document);
         }
 
         /// <summary>

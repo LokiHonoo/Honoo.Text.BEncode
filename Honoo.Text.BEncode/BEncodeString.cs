@@ -258,7 +258,7 @@ namespace Honoo.Text.BEncode
         /// <returns></returns>
         public bool Equals(BEncodeString other)
         {
-            return other is BEncodeString && other._hexValue == _hexValue;
+            return other != null && GetHashCode() == other.GetHashCode();
         }
 
         /// <summary>
@@ -268,16 +268,16 @@ namespace Honoo.Text.BEncode
         /// <returns></returns>
         public override bool Equals(object obj)
         {
-            return obj is BEncodeString other && other._hexValue == _hexValue;
+            return obj is BEncodeString other && Equals(other);
         }
 
         /// <summary>
-        /// 方法已重写。获取原始字节类型的数据值的哈希代码。
+        /// 方法已重写。获取数值类型的数据值的哈希代码。
         /// </summary>
         /// <returns></returns>
         public override int GetHashCode()
         {
-            return -1939223833 + EqualityComparer<string>.Default.GetHashCode(_hexValue);
+            return -1939223833 + EqualityComparer<string>.Default.GetHashCode(_hexValue) + EqualityComparer<BEncodeDocument>.Default.GetHashCode(base.Document);
         }
 
         /// <summary>

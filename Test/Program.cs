@@ -9,22 +9,18 @@ namespace Test
     {
         private static void Main()
         {
-            var doc = new BEncodeDocument();
-            var doc2 = new BEncodeDocument();
+            BEncodeDocument doc = new BEncodeDocument();
+            BEncodeDocument doc2 = new BEncodeDocument();
             while (true)
             {
                 //
                 // Write
                 //
-                var dict = doc.Root.AddOrUpdate("dict", doc.CreateDictionary());
-                dict.AddOrUpdate("key3", doc.CreateString("key3"));
-                dict.AddOrUpdate("key2", doc.CreateString("key2"));
-                dict.AddOrUpdate("key4", doc.CreateString("key4"));
-                dict.AddOrUpdate("key2", doc.CreateString("key2update"));
-                var list = doc.Root.AddOrUpdate("key1", doc.CreateList());
-                list.Add(doc.CreateInteger(333));
-                list.Add(doc.CreateInteger(111));
-                list.Add(doc.CreateInteger(222));
+                doc.Root.AddOrUpdate("key1", doc.CreateInteger(996));
+                doc.Root.AddOrUpdate("key2", doc.CreateInteger(007));
+                BEncodeDictionary dict = doc.Root.AddOrUpdate("dict", doc.CreateDictionary());
+                BEncodeList list = dict.AddOrUpdate("key3", doc.CreateList());
+                list.Add(doc.CreateString("icu"));
                 //
                 // Allways error.
                 //
@@ -39,17 +35,10 @@ namespace Test
                 //
                 // Read
                 //
-                dict = doc.Root.GetValue<BEncodeDictionary>("dict");
-                dict.TryGetValue("key2", out BEncodeString string1);
-                Console.WriteLine(string1.GetStringValue());
-                dict.TryGetValue("key3", out string1);
-                Console.WriteLine(string1.GetStringValue());
-                dict.TryGetValue("key4", out string1);
-                Console.WriteLine(string1.GetStringValue());
-                var list1 = (BEncodeList)doc.Root["key1"];
-                Console.WriteLine(((BEncodeInteger)list1[0]).Value);
-                Console.WriteLine(((BEncodeInteger)list1[1]).GetInt32Value());
-                Console.WriteLine(((BEncodeInteger)list1[2]).GetInt64Value());
+                Console.WriteLine(doc.Root.GetValue<BEncodeInteger>("key1").GetInt32Value());
+                Console.WriteLine(doc.Root.GetValue<BEncodeInteger>("key2").GetInt32Value());
+                doc.Root.GetValue<BEncodeDictionary>("dict").TryGetValue("key3", out list);
+                Console.WriteLine(((BEncodeString)list[0]).GetStringValue());
                 //
                 // Copy
                 //

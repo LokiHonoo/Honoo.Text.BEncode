@@ -8,14 +8,30 @@
 	<Copyright>Copyright (C) Loki Honoo 2022. All rights reserved.</Copyright>
 	<SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Honoo.Text.BEncode.snk</AssemblyOriginatorKeyFile>
-    <Description>BEncode Analysis. Edit BEncode content (e.g. BT torrent file).</Description>
+    <Description>BEncode Analysis. Edit BEncode content (e.g. BT torrent file).
+
+BEncodeDocument doc = new BEncodeDocument();
+doc.Root.AddOrUpdate("key1", doc.CreateInteger(996));
+doc.Root.AddOrUpdate("key2", doc.CreateInteger(007));
+BEncodeDictionary dict = doc.Root.AddOrUpdate("dict", doc.CreateDictionary());
+BEncodeList list = dict.AddOrUpdate("key3", doc.CreateList());
+list.Add(doc.CreateString("icu"));
+//
+doc.Root.TryGetValue("key1", out BEncodeInteger output);
+//
+//
+//
+TorrentAnalysis torrent = new TorrentAnalysis(stream);
+torrent.SetName("Torrent Name");
+//
+torrent.GetName();</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/LokiHonoo/Honoo.Text.BEncode</PackageProjectUrl>
     <RepositoryUrl>https://github.com/LokiHonoo/Honoo.Text.BEncode</RepositoryUrl>
     <PackageTags>Honoo;BEncode;Torrent</PackageTags>
     <AssemblyName>Honoo.Text.BEncode</AssemblyName>
     <RootNamespace>Honoo.Text.BEncode</RootNamespace>
-    <Version>1.2.0</Version>
+    <Version>1.2.1</Version>
     <PackageReadmeFile>Honoo.Text.BEncode.md</PackageReadmeFile>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>

@@ -654,7 +654,7 @@ namespace Honoo.Text.BEncode
 
         #endregion Hash
 
-        #region Files
+        #region GetFiles
 
         /// <summary>
         /// 获取所包含文件的信息。转换元素的值时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。
@@ -747,6 +747,10 @@ namespace Honoo.Text.BEncode
             return result;
         }
 
+        #endregion GetFiles
+
+        #region SetFile
+
         /// <summary>
         /// 设置单文件。添加文件后会重置 "length", "pieces" 等元素值。设置 <see langword="null"/> 移除所有文件相关元素，无论之前存在的是单文件格式还是多文件格式。
         /// 转换元素的值时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。
@@ -763,8 +767,8 @@ namespace Honoo.Text.BEncode
         /// 设置单文件。添加文件后会重置 "length", "pieces" 等元素值。设置 <see langword="null"/> 移除所有文件相关元素，无论之前存在的是单文件格式还是多文件格式。
         /// </summary>
         /// <param name="file">本地文件。</param>
-        /// <param name="valueEncoding">用于转换元素的值的字符编码。不使用所属的 <see cref="BEncodeDocument"/> 实例的默认字符编码。</param>
         /// <param name="pieceLength">设置分块大小。此设置与 "pieces" 元素值相关，更改后必须重新添加文件以生成新的 "pieces" 元素。</param>
+        /// <param name="valueEncoding">用于转换元素的值的字符编码。不使用所属的 <see cref="BEncodeDocument"/> 实例的默认字符编码。</param>
         /// <exception cref="Exception"/>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5350:不要使用弱加密算法", Justification = "<挂起>")]
         public void SetFile(FileInfo file, int pieceLength, Encoding valueEncoding)
@@ -773,7 +777,6 @@ namespace Honoo.Text.BEncode
             {
                 if (base.Root.TryGetValue("info", out BEncodeDictionary info))
                 {
-                    // info.Remove("name");
                     info.Remove("length");
                     info.Remove("pieces");
                     info.Remove("files");
@@ -810,6 +813,42 @@ namespace Honoo.Text.BEncode
         /// 设置复数文件。添加文件后会重置 "length", "pieces" 等元素值。设置 <see langword="null"/> 移除所有文件相关元素，无论之前存在的是单文件格式还是多文件格式。
         /// 转换元素的值时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。
         /// </summary>
+        /// <param name="file">本地文件。</param>
+        /// <param name="pieceLength">设置分块大小。此设置与 "pieces" 元素值相关，更改后必须重新添加文件以生成新的 "pieces" 元素。</param>
+        /// <param name="completed">任务结束后执行。</param>
+        /// <param name="userState">在回调中传递参数。</param>
+        /// <exception cref="Exception"/>
+        public void SetFileAsync(FileInfo file, int pieceLength, TorrentSetFileCompletedCallback completed, object userState)
+        {
+            SetFileAsync(file, pieceLength, base.Encoding, completed, userState);
+        }
+
+        /// <summary>
+        /// 设置复数文件。添加文件后会重置 "length", "pieces" 等元素值。设置 <see langword="null"/> 移除所有文件相关元素，无论之前存在的是单文件格式还是多文件格式。
+        /// </summary>
+        /// <param name="file">本地文件。</param>
+        /// <param name="pieceLength">设置分块大小。此设置与 "pieces" 元素值相关，更改后必须重新添加文件以生成新的 "pieces" 元素。</param>
+        /// <param name="valueEncoding">用于转换元素的值的字符编码。不使用所属的 <see cref="BEncodeDocument"/> 实例的默认字符编码。</param>
+        /// <param name="completed">任务结束后执行。</param>
+        /// <param name="userState">在回调中传递参数。</param>
+        /// <exception cref="Exception"/>
+        public void SetFileAsync(FileInfo file, int pieceLength, Encoding valueEncoding, TorrentSetFileCompletedCallback completed, object userState)
+        {
+            Task.Factory.StartNew(() =>
+            {
+                SetFile(file, pieceLength, valueEncoding);
+                completed?.Invoke(new TorrentSetFileCompletedEventArgs(1, userState, false));
+            }, CancellationToken.None, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
+        }
+
+        #endregion SetFile
+
+        #region SetFiles
+
+        /// <summary>
+        /// 设置复数文件。添加文件后会重置 "length", "pieces" 等元素值。设置 <see langword="null"/> 移除所有文件相关元素，无论之前存在的是单文件格式还是多文件格式。
+        /// 转换元素的值时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。
+        /// </summary>
         /// <param name="folder">选择本地文件夹，添加其中所有文件。</param>
         /// <param name="pieceLength">设置分块大小。此设置与 "pieces" 元素值相关，更改后必须重新添加文件以生成新的 "pieces" 元素。</param>
         /// <exception cref="Exception"/>
@@ -836,12 +875,12 @@ namespace Honoo.Text.BEncode
         /// </summary>
         /// <param name="folder">选择本地文件夹，添加其中所有文件。</param>
         /// <param name="pieceLength">设置分块大小。此设置与 "pieces" 元素值相关，更改后必须重新添加文件以生成新的 "pieces" 元素。</param>
-        /// <param name="callback">添加一个文件成功后执行。</param>
+        /// <param name="fileEntryAdded">添加一个文件后执行。</param>
         /// <param name="userState">在回调中传递参数。</param>
         /// <exception cref="Exception"/>
-        public void SetFilesAsync(DirectoryInfo folder, int pieceLength, TorrentFileEntryAddedCallback callback, object userState)
+        public void SetFiles(DirectoryInfo folder, int pieceLength, TorrentFileEntryAddedCallback fileEntryAdded, object userState)
         {
-            SetFilesAsync(folder, pieceLength, base.Encoding, callback, userState);
+            SetFiles(folder, pieceLength, base.Encoding, fileEntryAdded, userState);
         }
 
         /// <summary>
@@ -850,58 +889,63 @@ namespace Honoo.Text.BEncode
         /// <param name="folder">选择本地文件夹，添加其中所有文件。</param>
         /// <param name="pieceLength">设置分块大小。此设置与 "pieces" 元素值相关，更改后必须重新添加文件以生成新的 "pieces" 元素。</param>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。不使用所属的 <see cref="BEncodeDocument"/> 实例的默认字符编码。</param>
-        /// <param name="callback">添加一个文件成功后执行。</param>
+        /// <param name="fileEntryAdded">添加一个文件后执行。</param>
+        /// <param name="userState">在回调中传递参数。</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"/>
+        public int SetFiles(DirectoryInfo folder, int pieceLength, Encoding valueEncoding, TorrentFileEntryAddedCallback fileEntryAdded, object userState)
+        {
+            return SetFiles(folder, pieceLength, valueEncoding, fileEntryAdded, userState, out _);
+        }
+
+        /// <summary>
+        /// 设置复数文件。添加文件后会重置 "length", "pieces" 等元素值。设置 <see langword="null"/> 移除所有文件相关元素，无论之前存在的是单文件格式还是多文件格式。
+        /// 转换元素的值时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。
+        /// </summary>
+        /// <param name="folder">选择本地文件夹，添加其中所有文件。</param>
+        /// <param name="pieceLength">设置分块大小。此设置与 "pieces" 元素值相关，更改后必须重新添加文件以生成新的 "pieces" 元素。</param>
+        /// <param name="fileEntryAdded">添加一个文件后执行。</param>
+        /// <param name="completed">任务结束后执行。</param>
         /// <param name="userState">在回调中传递参数。</param>
         /// <exception cref="Exception"/>
-        public void SetFilesAsync(DirectoryInfo folder, int pieceLength, Encoding valueEncoding, TorrentFileEntryAddedCallback callback, object userState)
+        public void SetFilesAsync(DirectoryInfo folder, int pieceLength, TorrentFileEntryAddedCallback fileEntryAdded, TorrentSetFileCompletedCallback completed, object userState)
+        {
+            SetFilesAsync(folder, pieceLength, base.Encoding, fileEntryAdded, completed, userState);
+        }
+
+        /// <summary>
+        /// 设置复数文件。添加文件后会重置 "length", "pieces" 等元素值。设置 <see langword="null"/> 移除所有文件相关元素，无论之前存在的是单文件格式还是多文件格式。
+        /// </summary>
+        /// <param name="folder">选择本地文件夹，添加其中所有文件。</param>
+        /// <param name="pieceLength">设置分块大小。此设置与 "pieces" 元素值相关，更改后必须重新添加文件以生成新的 "pieces" 元素。</param>
+        /// <param name="valueEncoding">用于转换元素的值的字符编码。不使用所属的 <see cref="BEncodeDocument"/> 实例的默认字符编码。</param>
+        /// <param name="fileEntryAdded">添加一个文件后执行。</param>
+        /// <param name="completed">任务结束后执行。</param>
+        /// <param name="userState">在回调中传递参数。</param>
+        /// <exception cref="Exception"/>
+        public void SetFilesAsync(DirectoryInfo folder, int pieceLength, Encoding valueEncoding, TorrentFileEntryAddedCallback fileEntryAdded, TorrentSetFileCompletedCallback completed, object userState)
         {
             Task.Factory.StartNew(() =>
             {
-                SetFiles(folder, pieceLength, valueEncoding, callback, userState);
+                int total = SetFiles(folder, pieceLength, valueEncoding, fileEntryAdded, userState, out bool isCancelled);
+                completed?.Invoke(new TorrentSetFileCompletedEventArgs(total, userState, isCancelled));
             }, CancellationToken.None, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
         }
 
-        private static string ConvertPattern(string pattern)
-        {
-            return pattern.Trim().Replace("\\", "/")
-                .Replace("(", "\\(").Replace(")", "\\)").Replace("[", "\\[").Replace("{", "\\{")
-                .Replace("^", "\\^").Replace("+", "\\+").Replace("|", "\\|").Replace("$", "\\$")
-                .Replace(".", "\\.").Replace("*", ".*").Replace("?", ".?");
-        }
-
-        private static void SearchFiles(DirectoryInfo folder, List<FileInfo> files)
-        {
-            var folders = folder.GetDirectories();
-            if (folders.Length > 0)
-            {
-                foreach (DirectoryInfo f in folders)
-                {
-                    SearchFiles(f, files);
-                }
-            }
-            var searched = folder.GetFiles();
-            if (searched.Length > 0)
-            {
-                foreach (FileInfo f in searched)
-                {
-                    files.Add(f);
-                }
-            }
-        }
-
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5350:不要使用弱加密算法", Justification = "<挂起>")]
-        private void SetFiles(DirectoryInfo folder, int pieceLength, Encoding valueEncoding, TorrentFileEntryAddedCallback callback, object userState)
+        private int SetFiles(DirectoryInfo folder, int pieceLength, Encoding valueEncoding, TorrentFileEntryAddedCallback fileEntryAdded, object userState, out bool isCancelled)
         {
             if (folder == null || !folder.Exists)
             {
                 if (base.Root.TryGetValue("info", out BEncodeDictionary info))
                 {
-                    // info.Remove("name");
                     info.Remove("length");
                     info.Remove("pieces");
                     info.Remove("files");
                 }
                 _multiple = false;
+                isCancelled = false;
+                return 0;
             }
             else
             {
@@ -911,12 +955,13 @@ namespace Honoo.Text.BEncode
                 {
                     if (base.Root.TryGetValue("info", out BEncodeDictionary info))
                     {
-                        // info.Remove("name");
                         info.Remove("length");
                         info.Remove("pieces");
                         info.Remove("files");
                     }
                     _multiple = false;
+                    isCancelled = false;
+                    return 0;
                 }
                 else
                 {
@@ -934,34 +979,48 @@ namespace Honoo.Text.BEncode
                     {
                         List<byte> pieces = new List<byte>();
                         byte[] buffer = new byte[pieceLength];
-                        int index = 0;
-                        int i = 0;
-                        foreach (FileInfo fi in files)
+                        int hashIndex = 0;
+                        for (int i = 0; i < files.Count; i++)
                         {
+                            FileInfo file = files[i];
                             BEncodeDictionary entry = fileEntries.Add(new BEncodeDictionary(this));
                             BEncodeList path = entry.Add("path", new BEncodeList(this));
-                            string en = fi.FullName.Remove(0, folder.FullName.Length).Replace('\\', '/').Trim('/');
+                            string en = file.FullName.Remove(0, folder.FullName.Length).Replace('\\', '/').Trim('/');
                             string[] paths = en.Split('/');
                             foreach (string p in paths)
                             {
                                 path.Add(new BEncodeString(p, valueEncoding, this));
                             }
-                            entry.Add("length", new BEncodeInteger(fi.Length, this));
-                            ComputeHash(sha1, fi, buffer, ref index, pieces);
-                            callback?.Invoke(new TorrentFileEntry(entry, i, _multiple, this), i, files.Count, userState);
-                            i++;
+                            entry.Add("length", new BEncodeInteger(file.Length, this));
+                            ComputeHash(sha1, file, buffer, ref hashIndex, pieces);
+                            if (fileEntryAdded != null)
+                            {
+                                var e = new TorrentFileEntryAddedEventArgs(new TorrentFileEntry(entry, i, _multiple, this), i, files.Count, userState, false);
+                                fileEntryAdded.Invoke(e);
+                                if (e.Cancel)
+                                {
+                                    info.Remove("length");
+                                    info.Remove("pieces");
+                                    info.Remove("files");
+                                    _multiple = false;
+                                    isCancelled = true;
+                                    return 0;
+                                }
+                            }
                         }
-                        if (index > 0)
+                        if (hashIndex > 0)
                         {
-                            pieces.AddRange(sha1.ComputeHash(buffer, 0, index));
+                            pieces.AddRange(sha1.ComputeHash(buffer, 0, hashIndex));
                         }
                         info.AddOrUpdate("pieces", new BEncodeString(pieces.ToArray(), this));
                     }
+                    isCancelled = false;
+                    return files.Count;
                 }
             }
         }
 
-        #endregion Files
+        #endregion SetFiles
 
         #region Magnet
 
@@ -1055,6 +1114,8 @@ namespace Honoo.Text.BEncode
 
         #endregion Magnet
 
+        #region Save
+
         /// <summary>
         /// 设置创建者名称和创建时间，同时实时计算 BTIH 特征码，保存到指定的流。
         /// </summary>
@@ -1090,6 +1151,8 @@ namespace Honoo.Text.BEncode
             base.Save(stream);
         }
 
+        #endregion Save
+
         private static void ComputeHash(SHA1 sha1, FileInfo fileInfo, byte[] buffer, ref int index, List<byte> pieces)
         {
             using (FileStream stream = fileInfo.OpenRead())
@@ -1122,6 +1185,34 @@ namespace Honoo.Text.BEncode
                 using (SHA1 hash = SHA1.Create())
                 {
                     return hash.ComputeHash(stream);
+                }
+            }
+        }
+
+        private static string ConvertPattern(string pattern)
+        {
+            return pattern.Trim().Replace("\\", "/")
+                .Replace("(", "\\(").Replace(")", "\\)").Replace("[", "\\[").Replace("{", "\\{")
+                .Replace("^", "\\^").Replace("+", "\\+").Replace("|", "\\|").Replace("$", "\\$")
+                .Replace(".", "\\.").Replace("*", ".*").Replace("?", ".?");
+        }
+
+        private static void SearchFiles(DirectoryInfo folder, List<FileInfo> files)
+        {
+            var folders = folder.GetDirectories();
+            if (folders.Length > 0)
+            {
+                foreach (DirectoryInfo f in folders)
+                {
+                    SearchFiles(f, files);
+                }
+            }
+            var searched = folder.GetFiles();
+            if (searched.Length > 0)
+            {
+                foreach (FileInfo f in searched)
+                {
+                    files.Add(f);
                 }
             }
         }

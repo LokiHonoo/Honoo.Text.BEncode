@@ -87,7 +87,7 @@ namespace TorrentAnalysis
                 var files = torrent.GetFiles("", 0, long.MaxValue);
                 foreach (var file in files)
                 {
-                    Console.WriteLine(string.Join('\\', file.GetPaths()).PadRight(80) + Numerics.GetSize(file.GetLength(), SizeKilo.Auto, 2, out string unit) + unit);
+                    Console.WriteLine(string.Join('\\', file.GetPath()).PadRight(80) + Numerics.GetSize(file.GetLength(), SizeKilo.Auto, 2, out string unit) + unit);
                 }
             }
             Console.WriteLine();
@@ -106,7 +106,7 @@ namespace TorrentAnalysis
                 var files = torrent.GetFiles("", 0, long.MaxValue);
                 foreach (var file in files)
                 {
-                    Console.WriteLine(string.Join('\\', file.GetPaths()).PadRight(80) + Numerics.GetSize(file.GetLength(), SizeKilo.Auto, 2, out string unit) + unit);
+                    Console.WriteLine(string.Join('\\', file.GetPath()).PadRight(80) + Numerics.GetSize(file.GetLength(), SizeKilo.Auto, 2, out string unit) + unit);
                 }
             }
             Console.WriteLine();
@@ -270,7 +270,7 @@ namespace TorrentAnalysis
 
                 foreach (var file in files.OrderByDescending(entry => entry.GetLength()))
                 {
-                    Console.WriteLine(file.GetPaths()[^1] + "    " + Numerics.GetSize(file.GetLength(), SizeKilo.Auto, 2, out string unit) + unit);
+                    Console.WriteLine(file.GetPath()[^1] + "    " + Numerics.GetSize(file.GetLength(), SizeKilo.Auto, 2, out string unit) + unit);
                 }
                 Console.WriteLine();
 
