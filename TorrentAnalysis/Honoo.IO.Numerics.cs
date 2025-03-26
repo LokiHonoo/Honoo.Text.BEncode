@@ -12,7 +12,7 @@ namespace Honoo.IO
     /// <summary>
     /// 字节类型的容量单位。单位进位是 1024 字节。单位是 B， KiB， MiB 等。
     /// </summary>
-    public enum SizeKilo
+    internal enum SizeKilo
     {
         /// <summary>保持转换数值大于 1，选择可能的最大单位。</summary>
         Auto,
@@ -45,7 +45,7 @@ namespace Honoo.IO
     /// <summary>
     /// 字节类型的容量单位。单位进位是 1000 字节。单位是 B， KB， MB 等。
     /// </summary>
-    public enum SizeThousands
+    internal enum SizeThousands
     {
         /// <summary>保持转换数值大于 1，选择可能的最大单位。</summary>
         Auto,
@@ -78,7 +78,7 @@ namespace Honoo.IO
     /// <summary>
     /// 位类型的每秒速度单位。单位进位是 1000 位。单位是 bps， Kbps， Mbps 等。
     /// </summary>
-    public enum SpeedBits
+    internal enum SpeedBits
     {
         /// <summary>保持转换数值大于 1，选择可能的最大单位。</summary>
         Auto,
@@ -111,7 +111,7 @@ namespace Honoo.IO
     /// <summary>
     /// 字节类型的每秒速度单位。单位进位是 1024 字节。单位是 B/s， KiB/s， MiB/s 等。
     /// </summary>
-    public enum SpeedKilo
+    internal enum SpeedKilo
     {
         /// <summary>保持转换数值大于 1，选择可能的最大单位。</summary>
         Auto,
@@ -144,7 +144,7 @@ namespace Honoo.IO
     /// <summary>
     /// 字节类型的每秒速度单位。单位进位是 1000 字节。单位是 B/s， KB/s， MB/s 等。
     /// </summary>
-    public enum SpeedThousands
+    internal enum SpeedThousands
     {
         /// <summary>保持转换数值大于 1，选择可能的最大单位。</summary>
         Auto,
@@ -177,7 +177,7 @@ namespace Honoo.IO
     /// <summary>
     /// I/O 数值对象辅助。
     /// </summary>
-    public static class Numerics
+    internal static class Numerics
     {
         #region 转换
 
@@ -189,7 +189,7 @@ namespace Honoo.IO
         /// <param name="places">保留小数位数。</param>
         /// <param name="unit">字节数值的容量单位的字符串表示。</param>
         /// <returns></returns>
-        public static double GetSize(long byteLength, SizeKilo radix, int places, out string unit)
+        internal static double GetSize(long byteLength, SizeKilo radix, int places, out string unit)
         {
             double value = byteLength;
             int unitIndex = 0;
@@ -232,7 +232,7 @@ namespace Honoo.IO
         /// <param name="places">保留小数位数。</param>
         /// <param name="unit">字节数值的容量单位的字符串表示。</param>
         /// <returns></returns>
-        public static double GetSize(long byteLength, SizeThousands radix, int places, out string unit)
+        internal static double GetSize(long byteLength, SizeThousands radix, int places, out string unit)
         {
             double value = byteLength;
             int unitIndex = 0;
@@ -274,7 +274,7 @@ namespace Honoo.IO
         /// <param name="radix">位类型的速度单位。</param>
         /// <param name="places">保留小数位数。</param>
         /// <param name="unit">字节数值的容量单位的字符串表示。</param>
-        public static double GetSpeed(long bytesPerSecond, SpeedBits radix, int places, out string unit)
+        internal static double GetSpeed(long bytesPerSecond, SpeedBits radix, int places, out string unit)
         {
             double value = bytesPerSecond * 8;
             int unitIndex = 0;
@@ -316,7 +316,7 @@ namespace Honoo.IO
         /// <param name="radix">字节类型的速度单位。</param>
         /// <param name="places">保留小数位数。</param>
         /// <param name="unit">字节数值的容量单位的字符串表示。</param>
-        public static double GetSpeed(long bytesPerSecond, SpeedKilo radix, int places, out string unit)
+        internal static double GetSpeed(long bytesPerSecond, SpeedKilo radix, int places, out string unit)
         {
             double value = bytesPerSecond;
             int unitIndex = 0;
@@ -358,7 +358,7 @@ namespace Honoo.IO
         /// <param name="radix">字节类型的速度单位。</param>
         /// <param name="places">保留小数位数。</param>
         /// <param name="unit">字节数值的容量单位的字符串表示。</param>
-        public static double GetSpeed(long bytesPerSecond, SpeedThousands radix, int places, out string unit)
+        internal static double GetSpeed(long bytesPerSecond, SpeedThousands radix, int places, out string unit)
         {
             double value = bytesPerSecond;
             int unitIndex = 0;

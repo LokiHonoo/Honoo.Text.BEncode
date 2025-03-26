@@ -12,7 +12,7 @@
     - [Basic](#basic)
     - [Torrent](#torrent)
   - [CHANGELOG](#changelog)
-    - [1.2.1](#121)
+    - [1.2.2](#122)
     - [1.1.4](#114)
     - [1.1.3](#113)
     - [1.0.9](#109)
@@ -184,7 +184,7 @@ private static void CreateTorrent()
 
 ## CHANGELOG
 
-### 1.2.1
+### 1.2.2
 
 **Removed* 删除了只读接口。
 

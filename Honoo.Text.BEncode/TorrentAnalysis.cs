@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Honoo.Text.BEncode
 {
     /// <summary>
-    /// Torrent 文件的根元素。从 <see cref="BEncodeDictionary"/> 继承并增加 Torrent 文件的相关方法。
+    /// Torrent 文档。从 <see cref="BEncodeDocument"/> 继承并增加 Torrent 文件的相关方法。
     /// </summary>
     public class TorrentAnalysis : BEncodeDocument
     {
@@ -82,7 +82,7 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 设置主要 Tracker 服务器。转换元素的值时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。设置 <see langword="null"/> 移除此元素。
+        /// 设置主要 Tracker 服务器。设置 <see langword="null"/> 移除此元素。转换元素的值时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。
         /// </summary>
         /// <param name="announce">Tracker 服务器地址。设置 <see langword="null"/> 移除此元素。</param>
         public void SetAnnounce(string announce)
@@ -147,7 +147,7 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 设置备用 Tracker 服务器列表。转换元素的值时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。设置 <see langword="null"/> 移除此元素。
+        /// 设置备用 Tracker 服务器列表。设置 <see langword="null"/> 移除此元素。转换元素的值时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。
         /// </summary>
         /// <param name="announceList">Tracker 服务器列表。设置 <see langword="null"/> 移除此元素。</param>
         public void SetAnnounceList(string[][] announceList)
@@ -210,7 +210,7 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 设置创建者名称。转换元素的值时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。设置 <see langword="null"/> 移除此元素。
+        /// 设置创建者名称。设置 <see langword="null"/> 移除此元素。转换元素的值时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。
         /// </summary>
         /// <param name="createdBy">创建者名称。设置 <see langword="null"/> 移除此元素。</param>
         public void SetCreatedBy(string createdBy)
@@ -300,7 +300,7 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 设置编码标识。转换元素的值时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。设置 <see langword="null"/> 移除此元素。
+        /// 设置编码标识。设置 <see langword="null"/> 移除此元素。转换元素的值时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。
         /// </summary>
         /// <param name="flag">编码标识。设置 <see langword="null"/> 移除此元素。</param>
         public void SetEncoding(string flag)
@@ -355,7 +355,7 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 设置注释。转换元素的值时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。设置 <see langword="null"/> 移除此元素。
+        /// 设置注释。设置 <see langword="null"/> 移除此元素。转换元素的值时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。
         /// </summary>
         /// <param name="comment">注释。设置 <see langword="null"/> 移除此元素。</param>
         public void SetComment(string comment)
@@ -461,7 +461,7 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 设置推荐文件名。转换元素的值时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。设置 <see langword="null"/> 移除此元素。添加文件后会重置此元素。
+        /// 设置推荐文件名。设置 <see langword="null"/> 移除此元素。转换元素的值时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。
         /// </summary>
         /// <param name="name">推荐文件名。设置 <see langword="null"/> 移除此元素。</param>
         public void SetName(string name)
@@ -470,7 +470,7 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 设置推荐文件名。设置 <see langword="null"/> 移除此元素。添加文件后会重置此元素。
+        /// 设置推荐文件名。设置 <see langword="null"/> 移除此元素。
         /// </summary>
         /// <param name="name">推荐文件名。设置 <see langword="null"/> 移除此元素。</param>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。不使用所属的 <see cref="BEncodeDocument"/> 实例的默认字符编码。</param>
@@ -756,22 +756,24 @@ namespace Honoo.Text.BEncode
         /// 转换元素的值时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。
         /// </summary>
         /// <param name="file">本地文件。</param>
+        /// <param name="name">推荐文件名。设置 <see langword="null"/> 移除此元素。</param>
         /// <param name="pieceLength">设置分块大小。此设置与 "pieces" 元素值相关，更改后必须重新添加文件以生成新的 "pieces" 元素。</param>
         /// <exception cref="Exception"/>
-        public void SetFile(FileInfo file, int pieceLength)
+        public void SetFile(FileInfo file, string name, int pieceLength)
         {
-            SetFile(file, pieceLength, base.Encoding);
+            SetFile(file, name, pieceLength, base.Encoding);
         }
 
         /// <summary>
         /// 设置单文件。添加文件后会重置 "length", "pieces" 等元素值。设置 <see langword="null"/> 移除所有文件相关元素，无论之前存在的是单文件格式还是多文件格式。
         /// </summary>
         /// <param name="file">本地文件。</param>
+        /// <param name="name">推荐文件名。设置 <see langword="null"/> 移除此元素。</param>
         /// <param name="pieceLength">设置分块大小。此设置与 "pieces" 元素值相关，更改后必须重新添加文件以生成新的 "pieces" 元素。</param>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。不使用所属的 <see cref="BEncodeDocument"/> 实例的默认字符编码。</param>
         /// <exception cref="Exception"/>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5350:不要使用弱加密算法", Justification = "<挂起>")]
-        public void SetFile(FileInfo file, int pieceLength, Encoding valueEncoding)
+        public void SetFile(FileInfo file, string name, int pieceLength, Encoding valueEncoding)
         {
             if (file == null || !file.Exists)
             {
@@ -791,7 +793,14 @@ namespace Honoo.Text.BEncode
                     info = base.Root.Add("info", new BEncodeDictionary(this));
                 }
                 info.Remove("files");
-                info.AddOrUpdate("name", new BEncodeString(file.Name, valueEncoding, this));
+                if (name == null)
+                {
+                    info.Remove("name");
+                }
+                else
+                {
+                    info.AddOrUpdate("name", new BEncodeString(name, valueEncoding, this));
+                }
                 info.AddOrUpdate("length", new BEncodeInteger(file.Length, this));
                 info.AddOrUpdate("piece length", new BEncodeInteger(pieceLength, this));
                 using (SHA1 sha1 = SHA1.Create())
@@ -814,30 +823,32 @@ namespace Honoo.Text.BEncode
         /// 转换元素的值时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。
         /// </summary>
         /// <param name="file">本地文件。</param>
+        /// <param name="name">推荐文件名。设置 <see langword="null"/> 移除此元素。</param>
         /// <param name="pieceLength">设置分块大小。此设置与 "pieces" 元素值相关，更改后必须重新添加文件以生成新的 "pieces" 元素。</param>
         /// <param name="completed">任务结束后执行。</param>
         /// <param name="userState">在回调中传递参数。</param>
         /// <exception cref="Exception"/>
-        public void SetFileAsync(FileInfo file, int pieceLength, TorrentSetFileCompletedCallback completed, object userState)
+        public void SetFileAsync(FileInfo file, string name, int pieceLength, TorrentSetFileCompletedCallback completed, object userState)
         {
-            SetFileAsync(file, pieceLength, base.Encoding, completed, userState);
+            SetFileAsync(file, name, pieceLength, base.Encoding, completed, userState);
         }
 
         /// <summary>
         /// 设置复数文件。添加文件后会重置 "length", "pieces" 等元素值。设置 <see langword="null"/> 移除所有文件相关元素，无论之前存在的是单文件格式还是多文件格式。
         /// </summary>
         /// <param name="file">本地文件。</param>
+        /// <param name="name">推荐文件名。设置 <see langword="null"/> 移除此元素。</param>
         /// <param name="pieceLength">设置分块大小。此设置与 "pieces" 元素值相关，更改后必须重新添加文件以生成新的 "pieces" 元素。</param>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。不使用所属的 <see cref="BEncodeDocument"/> 实例的默认字符编码。</param>
         /// <param name="completed">任务结束后执行。</param>
         /// <param name="userState">在回调中传递参数。</param>
         /// <exception cref="Exception"/>
-        public void SetFileAsync(FileInfo file, int pieceLength, Encoding valueEncoding, TorrentSetFileCompletedCallback completed, object userState)
+        public void SetFileAsync(FileInfo file, string name, int pieceLength, Encoding valueEncoding, TorrentSetFileCompletedCallback completed, object userState)
         {
             Task.Factory.StartNew(() =>
             {
-                SetFile(file, pieceLength, valueEncoding);
-                completed?.Invoke(new TorrentSetFileCompletedEventArgs(1, userState, false));
+                SetFile(file, name, pieceLength, valueEncoding);
+                completed?.Invoke(this, new TorrentSetFileCompletedEventArgs(1, userState, false));
             }, CancellationToken.None, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
         }
 
@@ -850,23 +861,25 @@ namespace Honoo.Text.BEncode
         /// 转换元素的值时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。
         /// </summary>
         /// <param name="folder">选择本地文件夹，添加其中所有文件。</param>
+        /// <param name="name">推荐文件名。设置 <see langword="null"/> 移除此元素。</param>
         /// <param name="pieceLength">设置分块大小。此设置与 "pieces" 元素值相关，更改后必须重新添加文件以生成新的 "pieces" 元素。</param>
         /// <exception cref="Exception"/>
-        public void SetFiles(DirectoryInfo folder, int pieceLength)
+        public void SetFiles(DirectoryInfo folder, string name, int pieceLength)
         {
-            SetFiles(folder, pieceLength, base.Encoding);
+            SetFiles(folder, name, pieceLength, base.Encoding);
         }
 
         /// <summary>
         /// 设置复数文件。添加文件后会重置 "length", "pieces" 等元素值。设置 <see langword="null"/> 移除所有文件相关元素，无论之前存在的是单文件格式还是多文件格式。
         /// </summary>
         /// <param name="folder">选择本地文件夹，添加其中所有文件。</param>
+        /// <param name="name">推荐文件名。设置 <see langword="null"/> 移除此元素。</param>
         /// <param name="pieceLength">设置分块大小。此设置与 "pieces" 元素值相关，更改后必须重新添加文件以生成新的 "pieces" 元素。</param>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。不使用所属的 <see cref="BEncodeDocument"/> 实例的默认字符编码。</param>
         /// <exception cref="Exception"/>
-        public void SetFiles(DirectoryInfo folder, int pieceLength, Encoding valueEncoding)
+        public void SetFiles(DirectoryInfo folder, string name, int pieceLength, Encoding valueEncoding)
         {
-            SetFiles(folder, pieceLength, valueEncoding, null, null);
+            SetFiles(folder, name, pieceLength, valueEncoding, null, null);
         }
 
         /// <summary>
@@ -874,28 +887,30 @@ namespace Honoo.Text.BEncode
         /// 转换元素的值时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。
         /// </summary>
         /// <param name="folder">选择本地文件夹，添加其中所有文件。</param>
+        /// <param name="name">推荐文件名。设置 <see langword="null"/> 移除此元素。</param>
         /// <param name="pieceLength">设置分块大小。此设置与 "pieces" 元素值相关，更改后必须重新添加文件以生成新的 "pieces" 元素。</param>
         /// <param name="fileEntryAdded">添加一个文件后执行。</param>
         /// <param name="userState">在回调中传递参数。</param>
         /// <exception cref="Exception"/>
-        public void SetFiles(DirectoryInfo folder, int pieceLength, TorrentFileEntryAddedCallback fileEntryAdded, object userState)
+        public void SetFiles(DirectoryInfo folder, string name, int pieceLength, TorrentFileEntryAddedCallback fileEntryAdded, object userState)
         {
-            SetFiles(folder, pieceLength, base.Encoding, fileEntryAdded, userState);
+            SetFiles(folder, name, pieceLength, base.Encoding, fileEntryAdded, userState);
         }
 
         /// <summary>
         /// 设置复数文件。添加文件后会重置 "length", "pieces" 等元素值。设置 <see langword="null"/> 移除所有文件相关元素，无论之前存在的是单文件格式还是多文件格式。
         /// </summary>
         /// <param name="folder">选择本地文件夹，添加其中所有文件。</param>
+        /// <param name="name">推荐文件名。设置 <see langword="null"/> 移除此元素。</param>
         /// <param name="pieceLength">设置分块大小。此设置与 "pieces" 元素值相关，更改后必须重新添加文件以生成新的 "pieces" 元素。</param>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。不使用所属的 <see cref="BEncodeDocument"/> 实例的默认字符编码。</param>
         /// <param name="fileEntryAdded">添加一个文件后执行。</param>
         /// <param name="userState">在回调中传递参数。</param>
         /// <returns></returns>
         /// <exception cref="Exception"/>
-        public int SetFiles(DirectoryInfo folder, int pieceLength, Encoding valueEncoding, TorrentFileEntryAddedCallback fileEntryAdded, object userState)
+        public int SetFiles(DirectoryInfo folder, string name, int pieceLength, Encoding valueEncoding, TorrentFileEntryAddedCallback fileEntryAdded, object userState)
         {
-            return SetFiles(folder, pieceLength, valueEncoding, fileEntryAdded, userState, out _);
+            return SetFiles(folder, name, pieceLength, valueEncoding, fileEntryAdded, userState, out _);
         }
 
         /// <summary>
@@ -903,37 +918,39 @@ namespace Honoo.Text.BEncode
         /// 转换元素的值时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。
         /// </summary>
         /// <param name="folder">选择本地文件夹，添加其中所有文件。</param>
+        /// <param name="name">推荐文件名。设置 <see langword="null"/> 移除此元素。</param>
         /// <param name="pieceLength">设置分块大小。此设置与 "pieces" 元素值相关，更改后必须重新添加文件以生成新的 "pieces" 元素。</param>
         /// <param name="fileEntryAdded">添加一个文件后执行。</param>
         /// <param name="completed">任务结束后执行。</param>
         /// <param name="userState">在回调中传递参数。</param>
         /// <exception cref="Exception"/>
-        public void SetFilesAsync(DirectoryInfo folder, int pieceLength, TorrentFileEntryAddedCallback fileEntryAdded, TorrentSetFileCompletedCallback completed, object userState)
+        public void SetFilesAsync(DirectoryInfo folder, string name, int pieceLength, TorrentFileEntryAddedCallback fileEntryAdded, TorrentSetFileCompletedCallback completed, object userState)
         {
-            SetFilesAsync(folder, pieceLength, base.Encoding, fileEntryAdded, completed, userState);
+            SetFilesAsync(folder, name, pieceLength, base.Encoding, fileEntryAdded, completed, userState);
         }
 
         /// <summary>
         /// 设置复数文件。添加文件后会重置 "length", "pieces" 等元素值。设置 <see langword="null"/> 移除所有文件相关元素，无论之前存在的是单文件格式还是多文件格式。
         /// </summary>
         /// <param name="folder">选择本地文件夹，添加其中所有文件。</param>
+        /// <param name="name">推荐文件名。设置 <see langword="null"/> 移除此元素。</param>
         /// <param name="pieceLength">设置分块大小。此设置与 "pieces" 元素值相关，更改后必须重新添加文件以生成新的 "pieces" 元素。</param>
         /// <param name="valueEncoding">用于转换元素的值的字符编码。不使用所属的 <see cref="BEncodeDocument"/> 实例的默认字符编码。</param>
         /// <param name="fileEntryAdded">添加一个文件后执行。</param>
         /// <param name="completed">任务结束后执行。</param>
         /// <param name="userState">在回调中传递参数。</param>
         /// <exception cref="Exception"/>
-        public void SetFilesAsync(DirectoryInfo folder, int pieceLength, Encoding valueEncoding, TorrentFileEntryAddedCallback fileEntryAdded, TorrentSetFileCompletedCallback completed, object userState)
+        public void SetFilesAsync(DirectoryInfo folder, string name, int pieceLength, Encoding valueEncoding, TorrentFileEntryAddedCallback fileEntryAdded, TorrentSetFileCompletedCallback completed, object userState)
         {
             Task.Factory.StartNew(() =>
             {
-                int total = SetFiles(folder, pieceLength, valueEncoding, fileEntryAdded, userState, out bool isCancelled);
-                completed?.Invoke(new TorrentSetFileCompletedEventArgs(total, userState, isCancelled));
+                int total = SetFiles(folder, name, pieceLength, valueEncoding, fileEntryAdded, userState, out bool isCancelled);
+                completed?.Invoke(this, new TorrentSetFileCompletedEventArgs(total, userState, isCancelled));
             }, CancellationToken.None, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5350:不要使用弱加密算法", Justification = "<挂起>")]
-        private int SetFiles(DirectoryInfo folder, int pieceLength, Encoding valueEncoding, TorrentFileEntryAddedCallback fileEntryAdded, object userState, out bool isCancelled)
+        private int SetFiles(DirectoryInfo folder, string name, int pieceLength, Encoding valueEncoding, TorrentFileEntryAddedCallback fileEntryAdded, object userState, out bool isCancelled)
         {
             if (folder == null || !folder.Exists)
             {
@@ -972,7 +989,14 @@ namespace Honoo.Text.BEncode
                     }
                     info.Remove("length");
                     info.Remove("pieces");
-                    info.AddOrUpdate("name", new BEncodeString(folder.Name, valueEncoding, this));
+                    if (name == null)
+                    {
+                        info.Remove("name");
+                    }
+                    else
+                    {
+                        info.AddOrUpdate("name", new BEncodeString(name, valueEncoding, this));
+                    }
                     info.GetOrAdd("piece length", new BEncodeInteger(pieceLength, this));
                     var fileEntries = info.AddOrUpdate("files", new BEncodeList(this));
                     using (SHA1 sha1 = SHA1.Create())
@@ -996,7 +1020,7 @@ namespace Honoo.Text.BEncode
                             if (fileEntryAdded != null)
                             {
                                 var e = new TorrentFileEntryAddedEventArgs(new TorrentFileEntry(entry, i, _multiple, this), i, files.Count, userState, false);
-                                fileEntryAdded.Invoke(e);
+                                fileEntryAdded.Invoke(this, e);
                                 if (e.Cancel)
                                 {
                                     info.Remove("length");

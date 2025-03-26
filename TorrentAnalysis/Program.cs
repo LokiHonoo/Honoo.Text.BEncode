@@ -124,7 +124,8 @@ namespace TorrentAnalysis
             ]);
             torrent.SetComment("https://github.com/LokiHonoo/Honoo.Text.BEncode");
             torrent.SetNodes([new IPEndPoint(IPAddress.Parse("111.111.111.111"), 7777)]);
-            torrent.SetFiles(new DirectoryInfo(dst), 16 * 1024 * 1024);
+            var di = new DirectoryInfo(dst);
+            torrent.SetFiles(di, di.Name, 16 * 1024 * 1024);
 
             using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
             {
@@ -157,7 +158,8 @@ namespace TorrentAnalysis
             ]);
             torrent.SetComment("https://github.com/LokiHonoo/Honoo.Text.BEncode");
             torrent.SetNodes([new IPEndPoint(IPAddress.Parse("111.111.111.111"), 7777)]);
-            torrent.SetFile(new FileInfo(dst), 16 * 1024 * 1024);
+            var fi = new FileInfo(dst);
+            torrent.SetFile(fi, fi.Name, 16 * 1024 * 1024);
             using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
             {
                 torrent.Save(stream, "LokiHonoo", DateTime.UtcNow, true);
@@ -189,7 +191,8 @@ namespace TorrentAnalysis
             ]);
             torrent.SetComment("https://github.com/LokiHonoo/Honoo.Text.BEncode");
             torrent.SetNodes([new IPEndPoint(IPAddress.Parse("111.111.111.111"), 7777)]);
-            torrent.SetFiles(new DirectoryInfo(dst), 256 * 1024);
+            var di = new DirectoryInfo(dst);
+            torrent.SetFiles(di, di.Name, 256 * 1024);
 
             using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
             {
@@ -222,7 +225,8 @@ namespace TorrentAnalysis
             ]);
             torrent.SetComment("https://github.com/LokiHonoo/Honoo.Text.BEncode");
             torrent.SetNodes([new IPEndPoint(IPAddress.Parse("111.111.111.111"), 7777)]);
-            torrent.SetFile(new FileInfo(dst), 256 * 1024);
+            var fi = new FileInfo(dst);
+            torrent.SetFile(fi, fi.Name, 256 * 1024);
 
             using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
             {

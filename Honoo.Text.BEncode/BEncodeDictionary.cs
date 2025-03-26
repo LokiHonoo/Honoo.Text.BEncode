@@ -145,7 +145,7 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 获取或设置具有指定键的元素的值。转换元素的键时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。直接赋值等同于 AddOrUpdate 方法。
+        /// 获取或设置具有指定键的元素的值。直接赋值等同于 AddOrUpdate 方法。转换元素的键时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。
         /// </summary>
         /// <param name="key">元素的键。</param>
         /// <returns></returns>
@@ -274,8 +274,7 @@ namespace Honoo.Text.BEncode
         #region GetOrAdd
 
         /// <summary>
-        /// 获取与指定名称关联的元素。如果不存在，添加一个 <typeparamref name="T"/> 类型的元素并返回值。
-        /// <br/>如果元素存在但不是指定的类型，方法抛出 <see cref="ArgumentException"/>。
+        /// 获取与指定名称关联的元素。如果不存在，添加一个 <typeparamref name="T"/> 类型的元素并返回值。如果元素存在但不是指定的类型，方法抛出 <see cref="ArgumentException"/>。
         /// </summary>
         /// <typeparam name="T">指定元素类型。</typeparam>
         /// <param name="key">元素的键。</param>
@@ -302,8 +301,8 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 获取与指定名称关联的元素。如果不存在，添加一个 <typeparamref name="T"/> 类型的元素并返回值。转换元素的键时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。
-        /// <br/>如果元素存在但不是指定的类型，方法抛出 <see cref="ArgumentException"/>。
+        /// 获取与指定名称关联的元素。如果不存在，添加一个 <typeparamref name="T"/> 类型的元素并返回值。如果元素存在但不是指定的类型，方法抛出 <see cref="ArgumentException"/>。
+        /// 转换元素的键时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。
         /// </summary>
         /// <typeparam name="T">指定元素类型。</typeparam>
         /// <param name="key">元素的键。</param>
@@ -379,8 +378,7 @@ namespace Honoo.Text.BEncode
         #region TryGetValue
 
         /// <summary>
-        /// 获取与指定键关联的元素的值。
-        /// <br/>如果没有找到指定键，返回 <see langword="false"/>。如果找到了指定键但指定的类型不符，则仍返回 <see langword="false"/>。
+        /// 获取与指定键关联的元素的值。如果没有找到指定键，返回 <see langword="false"/>。如果找到了指定键但指定的类型不符，则仍返回 <see langword="false"/>。
         /// </summary>
         /// <typeparam name="T">指定元素类型。</typeparam>
         /// <param name="key">元素的键。</param>
@@ -401,8 +399,8 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 获取与指定键关联的元素的值。转换元素的键时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。
-        /// <br/>如果没有找到指定键，返回 <see langword="false"/>。如果找到了指定键但指定的类型不符，则仍返回 <see langword="false"/>。
+        /// 获取与指定键关联的元素的值。如果没有找到指定键，返回 <see langword="false"/>。如果找到了指定键但指定的类型不符，则仍返回 <see langword="false"/>。
+        /// 转换元素的键时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。
         /// </summary>
         /// <typeparam name="T">指定元素类型。</typeparam>
         /// <param name="key">元素的键。</param>
@@ -534,8 +532,7 @@ namespace Honoo.Text.BEncode
         }
 
         /// <summary>
-        /// 从元素集合中移除带有指定键的元素。转换元素的键时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。
-        /// <para/>如果该元素成功移除，返回 true。如果没有找到指定键，则仍返回 false。
+        /// 从元素集合中移除带有指定键的元素。如果该元素成功移除，返回 true。如果没有找到指定键，则仍返回 false。转换元素的键时默认使用 <see cref="BEncodeDocument.Encoding"/> 编码。
         /// </summary>
         /// <param name="key">元素的键。</param>
         /// <returns></returns>
