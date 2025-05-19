@@ -12,6 +12,7 @@
     - [Basic](#basic)
     - [Torrent](#torrent)
   - [CHANGELOG](#changelog)
+    - [1.2.3](#123)
     - [1.2.2](#122)
     - [1.1.4](#114)
     - [1.1.3](#113)
@@ -30,21 +31,21 @@
 
 读写 BEncode 编码格式，例如 torrent 文件。
 
-BEncodeDocument doc = new BEncodeDocument();
-doc.Root.AddOrUpdate("key1", doc.CreateInteger(996));
-doc.Root.AddOrUpdate("key2", doc.CreateInteger(007));
-BEncodeDictionary dict = doc.Root.AddOrUpdate("dict", doc.CreateDictionary());
-BEncodeList list = dict.AddOrUpdate("key3", doc.CreateList());
-list.Add(doc.CreateString("icu"));
-//
-doc.Root.TryGetValue("key1", out BEncodeInteger output);
-//
-//
-//
-TorrentAnalysis torrent = new TorrentAnalysis(stream);
-torrent.SetName("Torrent Name");
-//
-torrent.GetName();
+BEncodeDocument doc = new BEncodeDocument();  
+doc.Root.AddOrUpdate("key1", doc.CreateInteger(996));  
+doc.Root.AddOrUpdate("key2", doc.CreateInteger(007));  
+BEncodeDictionary dict = doc.Root.AddOrUpdate("dict", doc.CreateDictionary());  
+BEncodeList list = dict.AddOrUpdate("key3", doc.CreateList());  
+list.Add(doc.CreateString("icu"));  
+//  
+doc.Root.TryGetValue("key1", out BEncodeInteger output);  
+//  
+//  
+//  
+TorrentDocument torrent = new TorrentDocument(stream);  
+torrent.SetName("Torrent Name");  
+//  
+torrent.GetName();  
 
 ## GUIDE
 
@@ -128,7 +129,7 @@ private static void ReadTorrent()
     string fileName = "葬送的芙莉莲 Sousou no Frieren [WebRip 1080p HEVC-10bit AAC][Fin].torrent";
     using (var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read))
     {
-        var torrent = new Honoo.Text.BEncode.TorrentAnalysis(stream, true);
+        var torrent = new Honoo.Text.BEncode.TorrentDocument(stream, true);
         Console.WriteLine("created by    :" + torrent.GetCreatedBy());
         Console.WriteLine("creation date :" + torrent.GetCreationDate());
         Console.WriteLine("announce      :" + torrent.GetAnnounce());
@@ -158,7 +159,7 @@ private static void CreateTorrent()
 {
     string fileName = "test_create_" + Path.GetRandomFileName() + ".torrent";
 
-    var torrent = new Honoo.Text.BEncode.TorrentAnalysis();
+    var torrent = new Honoo.Text.BEncode.TorrentDocument();
     torrent.SetAnnounce("http://tracker1.itzmx.com:8080/announce");
     torrent.SetAnnounceList([
         ["http://tracker2.itzmx.com:6961/announce", "http://tracker2.itzmx.com:6961/announce"],
@@ -183,6 +184,10 @@ private static void CreateTorrent()
 ```
 
 ## CHANGELOG
+
+### 1.2.3
+
+**Refactored* TorrentAnalysis 重命名 TorrentDocument。
 
 ### 1.2.2
 

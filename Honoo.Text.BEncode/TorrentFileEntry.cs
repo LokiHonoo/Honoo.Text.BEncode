@@ -12,10 +12,14 @@ namespace Honoo.Text.BEncode
     {
         #region Members
 
-        private readonly TorrentAnalysis _document;
+        private readonly TorrentDocument _document;
         private readonly BEncodeDictionary _element;
         private readonly int _index;
-        private readonly bool _multiple;
+
+        /// <summary>
+        /// 获取所属的 Torrent 文档。
+        /// </summary>
+        public TorrentDocument Document => _document;
 
         /// <summary>
         /// 获取此文件的 "file" 元素映射。如果源实例是单文件种子，则获取 "info" 元素。
@@ -24,22 +28,16 @@ namespace Honoo.Text.BEncode
         public BEncodeDictionary Element => _element;
 
         /// <summary>
-        /// 获取此文件元素在 "files" 元素列表中的索引。如果源实例是单文件种子，值为 0。此参数仅在读取文档后有效，源实例修改可能导致此参数指向错误。
+        /// 获取此文件元素在 "files" 元素列表中从 0 开始的索引。如果源实例是单文件种子，值为 0。此参数仅在读取文档后有效，源实例修改可能导致此参数指向错误。
         /// </summary>
         public int Index => _index;
-
-        /// <summary>
-        /// 获取一个值，指示源实例是否是多文件格式。
-        /// </summary>
-        public bool Multiple => _multiple;
 
         #endregion Members
 
         #region Construction
 
-        internal TorrentFileEntry(BEncodeDictionary element, int index, bool multiple, TorrentAnalysis document)
+        internal TorrentFileEntry(BEncodeDictionary element, int index, TorrentDocument document)
         {
-            _multiple = multiple;
             _element = element;
             _index = index;
             _document = document;
@@ -72,7 +70,7 @@ namespace Honoo.Text.BEncode
         /// <returns></returns>
         public string[] GetPath(Encoding valueEncoding)
         {
-            if (_multiple)
+            if (_document.Multiple)
             {
                 List<string> paths = new List<string>();
                 foreach (BEncodeString path in _element.GetValue<BEncodeList>("path").Cast<BEncodeString>())
@@ -112,7 +110,7 @@ namespace Honoo.Text.BEncode
             {
                 throw new ArgumentNullException(nameof(paths));
             }
-            if (_multiple)
+            if (_document.Multiple)
             {
                 BEncodeList path = _element.GetValue<BEncodeList>("path");
                 path.Clear();

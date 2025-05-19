@@ -14,7 +14,7 @@ namespace Honoo.Text.BEncode
     /// <summary>
     /// Torrent 文档。从 <see cref="BEncodeDocument"/> 继承并增加 Torrent 文件的相关方法。
     /// </summary>
-    public class TorrentAnalysis : BEncodeDocument
+    public class TorrentDocument : BEncodeDocument
     {
         #region Members
 
@@ -33,7 +33,7 @@ namespace Honoo.Text.BEncode
         /// <summary>
         /// 初始化 TorrentAnalysis 类的新实例。
         /// </summary>
-        public TorrentAnalysis() : base()
+        public TorrentDocument() : base()
         {
         }
 
@@ -42,7 +42,7 @@ namespace Honoo.Text.BEncode
         /// </summary>
         /// <param name="content">指定从中读取的流。定位必须在编码标记 <see langword="d"/> 处。</param>
         /// <exception cref="Exception"/>
-        public TorrentAnalysis(Stream content) : base(content)
+        public TorrentDocument(Stream content) : base(content)
         {
             if (base.Root.TryGetValue("info", out BEncodeDictionary info))
             {
@@ -720,7 +720,7 @@ namespace Honoo.Text.BEncode
                         }
                         if (matched)
                         {
-                            result.Add(new TorrentFileEntry(file, index, _multiple, this));
+                            result.Add(new TorrentFileEntry(file, index, this));
                         }
                     }
                 }
@@ -740,7 +740,7 @@ namespace Honoo.Text.BEncode
                     }
                     if (matched)
                     {
-                        result.Add(new TorrentFileEntry(info, 0, _multiple, this));
+                        result.Add(new TorrentFileEntry(info, 0, this));
                     }
                 }
             }
@@ -1019,7 +1019,7 @@ namespace Honoo.Text.BEncode
                             ComputeHash(sha1, file, buffer, ref hashIndex, pieces);
                             if (fileEntryAdded != null)
                             {
-                                var e = new TorrentFileEntryAddedEventArgs(new TorrentFileEntry(entry, i, _multiple, this), i, files.Count, userState, false);
+                                var e = new TorrentFileEntryAddedEventArgs(new TorrentFileEntry(entry, i, this), i, files.Count, userState, false);
                                 fileEntryAdded.Invoke(this, e);
                                 if (e.Cancel)
                                 {

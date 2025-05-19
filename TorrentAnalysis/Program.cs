@@ -74,7 +74,7 @@ namespace TorrentAnalysis
 
             using (var stream = new FileStream(bc, FileMode.Open, FileAccess.Read))
             {
-                var torrent = new Honoo.Text.BEncode.TorrentAnalysis(stream);
+                var torrent = new Honoo.Text.BEncode.TorrentDocument(stream);
                 Console.WriteLine("created by    :" + torrent.GetCreatedBy());
                 Console.WriteLine("creation date :" + torrent.GetCreationDate());
                 Console.WriteLine("announce      :" + torrent.GetAnnounce());
@@ -93,7 +93,7 @@ namespace TorrentAnalysis
             Console.WriteLine();
             using (var stream = new FileStream(cre, FileMode.Open, FileAccess.Read))
             {
-                var torrent = new Honoo.Text.BEncode.TorrentAnalysis(stream);
+                var torrent = new Honoo.Text.BEncode.TorrentDocument(stream);
                 Console.WriteLine("created by    :" + torrent.GetCreatedBy());
                 Console.WriteLine("creation date :" + torrent.GetCreationDate());
                 Console.WriteLine("announce      :" + torrent.GetAnnounce());
@@ -116,7 +116,7 @@ namespace TorrentAnalysis
         {
             Console.WriteLine("========== Create 16M Multiple ==========");
 
-            var torrent = new Honoo.Text.BEncode.TorrentAnalysis();
+            var torrent = new Honoo.Text.BEncode.TorrentDocument();
             torrent.SetAnnounce("http://tracker1.itzmx.com:8080/announce");
             torrent.SetAnnounceList([
                 ["http://tracker2.itzmx.com:6961/announce", "http://tracker2.itzmx.com:6961/announce"],
@@ -150,7 +150,7 @@ namespace TorrentAnalysis
         {
             Console.WriteLine("========== Create 16M Single ==========");
 
-            var torrent = new Honoo.Text.BEncode.TorrentAnalysis();
+            var torrent = new Honoo.Text.BEncode.TorrentDocument();
             torrent.SetAnnounce("http://tracker1.itzmx.com:8080/announce");
             torrent.SetAnnounceList([
                 ["http://tracker2.itzmx.com:6961/announce", "http://tracker2.itzmx.com:6961/announce"],
@@ -183,7 +183,7 @@ namespace TorrentAnalysis
         {
             Console.WriteLine("========== Create 256K Multiple ==========");
 
-            var torrent = new Honoo.Text.BEncode.TorrentAnalysis();
+            var torrent = new Honoo.Text.BEncode.TorrentDocument();
             torrent.SetAnnounce("http://tracker1.itzmx.com:8080/announce");
             torrent.SetAnnounceList([
                 ["http://tracker2.itzmx.com:6961/announce", "http://tracker2.itzmx.com:6961/announce"],
@@ -217,7 +217,7 @@ namespace TorrentAnalysis
         {
             Console.WriteLine("========== Create 256K Single ==========");
 
-            var torrent = new Honoo.Text.BEncode.TorrentAnalysis();
+            var torrent = new Honoo.Text.BEncode.TorrentDocument();
             torrent.SetAnnounce("http://tracker1.itzmx.com:8080/announce");
             torrent.SetAnnounceList([
                 ["http://tracker2.itzmx.com:6961/announce", "http://tracker2.itzmx.com:6961/announce"],
@@ -253,7 +253,7 @@ namespace TorrentAnalysis
 
             using (var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read))
             {
-                var torrent = new Honoo.Text.BEncode.TorrentAnalysis(stream);
+                var torrent = new Honoo.Text.BEncode.TorrentDocument(stream);
                 Console.WriteLine("created by    :" + torrent.GetCreatedBy());
                 Console.WriteLine("creation date :" + torrent.GetCreationDate());
                 Console.WriteLine("announce      :" + torrent.GetAnnounce());
